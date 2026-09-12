@@ -20,8 +20,15 @@ The baseline currently provides:
 - identity, key, signature, PRF-control, and `largeBlob` oracles;
 - a deterministic 100-credential/8-route pilot producing 800 observations.
 
-It does **not** yet implement complete CXF 1.0 conformance, CXP/HPKE, real
-WebAuthn ceremonies, Chromium automation, or commercial providers.
+Phase 2 additionally provides a standards-aligned CXF passkey profile covering
+the normative `Header → Account → Item → Passkey` envelope and passkey FIDO2
+extensions. Its 29-requirement matrix distinguishes automated checks from
+requirements that need a real WebAuthn or provider-behavior oracle.
+
+It does **not** claim complete support for every CXF credential type, and it
+does not yet implement CXP/HPKE, real WebAuthn ceremonies, Chromium automation,
+or commercial providers. The legacy `cxf_subset` module exists only to preserve
+the reproducibility of the reconstructed Phase 0 pilot.
 
 ## Quick start
 
@@ -31,6 +38,7 @@ From PowerShell:
 ./research.ps1 setup
 ./research.ps1 test
 ./research.ps1 protocol
+./research.ps1 requirements
 ./research.ps1 pilot
 ```
 
@@ -41,6 +49,7 @@ and a recorded seed.
 ## Repository map
 
 - `src/passkeytransit/`: executable research harness.
+- `spec/`: versioned normative requirement matrices for the tested profile.
 - `tests/`: baseline verification.
 - `experiments/`: versioned experiment configurations.
 - `datasets/`: generated datasets and future immutable releases.

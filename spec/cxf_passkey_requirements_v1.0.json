@@ -1,0 +1,37 @@
+{
+  "profile_id": "cxf-passkey-profile-ps-errata-20260309",
+  "source": "https://fidoalliance.org/specs/cx/cxf-v1.0-ps-errata-20260309.html",
+  "scope": "CXF Header, Account, Item, Passkey, and passkey FIDO2 extensions",
+  "requirements": [
+    {"id":"CXF-ENC-001","section":"2.1","level":"MUST","actor":"participant","text":"Support JSON encoding of CXF types.","verification":"automated","tests":["test_cxf_document_uses_normative_envelope"]},
+    {"id":"CXF-ENC-002","section":"2.1","level":"MUST","actor":"participant","text":"Encode byte strings as RFC 4648 base64url strings.","verification":"automated","tests":["test_cxf_profile_round_trip_preserves_known_values","test_cxf_validator_rejects_invalid_base64url"]},
+    {"id":"CXF-FWD-001","section":"2.1.1, 3.1.1","level":"MUST","actor":"participant","text":"Ignore unknown fields and enumeration values according to the versioning rules.","verification":"automated","tests":["test_cxf_import_ignores_unknown_optional_member"]},
+    {"id":"CXF-ARR-001","section":"2.1.2","level":"MUST","actor":"participant","text":"Emit required arrays even when empty.","verification":"automated","tests":["test_cxf_document_uses_normative_envelope"]},
+    {"id":"CXF-ARR-002","section":"2.1.2","level":"MUST","actor":"participant","text":"Omit optional arrays when empty.","verification":"automated","tests":["test_cxf_validator_rejects_empty_optional_array"]},
+    {"id":"CXF-HDR-001","section":"3.1","level":"MUST","actor":"document","text":"Header contains version, exporterRpId, exporterDisplayName, timestamp, and accounts.","verification":"automated","tests":["test_cxf_document_uses_normative_envelope","test_cxf_validator_reports_missing_required_member"]},
+    {"id":"CXF-VER-001","section":"3.1.1","level":"MUST","actor":"document","text":"Version corresponds to a published CXF level.","verification":"automated-profile","tests":["test_cxf_validator_rejects_unknown_major_version"]},
+    {"id":"CXF-ACC-001","section":"1.3, 3.2.1","level":"MUST","actor":"document","text":"Account identifier is opaque, unique in the account, and at most 64 decoded bytes.","verification":"automated-partial","tests":["test_cxf_validator_rejects_oversized_entity_id"]},
+    {"id":"CXF-ACC-002","section":"3.2.1","level":"MUST","actor":"document","text":"Account contains id, username, email, collections, and items.","verification":"automated","tests":["test_cxf_document_uses_normative_envelope"]},
+    {"id":"CXF-ITEM-001","section":"1.3, 3.2.3","level":"MUST","actor":"document","text":"Item identifier is opaque, unique in the account, and at most 64 decoded bytes.","verification":"automated-partial","tests":["test_cxf_validator_rejects_oversized_entity_id"]},
+    {"id":"CXF-ITEM-002","section":"3.2.3","level":"MUST","actor":"document","text":"Item contains id, title, and credentials.","verification":"automated","tests":["test_cxf_document_uses_normative_envelope"]},
+    {"id":"CXF-PK-001","section":"3.3.12","level":"MUST","actor":"document","text":"Passkey type is present and exactly passkey.","verification":"automated","tests":["test_cxf_validator_rejects_wrong_credential_type"]},
+    {"id":"CXF-PK-002","section":"3.3.12","level":"MUST","actor":"document","text":"A passkey is not governed by the enclosing Item CredentialScope.","verification":"automated-profile","tests":["test_cxf_validator_rejects_scope_for_passkey_only_item"]},
+    {"id":"CXF-PK-003","section":"3.3.12","level":"MUST","actor":"document","text":"Decoded credentialId equals the registration rawId.","verification":"external-oracle","tests":["test_cxf_profile_round_trip_preserves_known_values"]},
+    {"id":"CXF-PK-004","section":"3.3.12","level":"MUST","actor":"document","text":"rpId equals the RP ID established during registration.","verification":"external-oracle","tests":["test_cxf_profile_round_trip_preserves_known_values"]},
+    {"id":"CXF-PK-005","section":"3.3.12","level":"MUST","actor":"document","text":"userHandle equals the user id established during registration.","verification":"external-oracle","tests":["test_cxf_profile_round_trip_preserves_known_values"]},
+    {"id":"CXF-PK-006","section":"3.3.12","level":"MUST","actor":"document","text":"key is a base64url-encoded PKCS#8 ASN.1 DER private key.","verification":"automated","tests":["test_cxf_validator_rejects_malformed_pkcs8"]},
+    {"id":"CXF-PK-007","section":"3.3.12","level":"MUST","actor":"document","text":"Private key derives the public key produced at registration.","verification":"external-oracle","tests":["test_cxf_key_matches_registered_public_key"]},
+    {"id":"CXF-PK-008","section":"3.3.12","level":"MUST","actor":"exporter","text":"Exclude passkeys with a non-zero signature counter.","verification":"automated-provider","tests":["test_cxf_export_rejects_nonzero_signature_counter"]},
+    {"id":"CXF-PK-009","section":"3.3.12","level":"MUST","actor":"importer","text":"Set imported signature counters to zero and do not increment them.","verification":"phase-3","tests":[]},
+    {"id":"CXF-PK-010","section":"3.3.12.1","level":"MUST NOT","actor":"provider","text":"Do not expose passkey fields other than username and userDisplayName as user editable.","verification":"provider-behavior","tests":[]},
+    {"id":"CXF-HMAC-001","section":"3.3.12.3","level":"MUST","actor":"importer","text":"Store and use exchanged HMAC credentials as-is without additional derivation or domain separator.","verification":"phase-3","tests":[]},
+    {"id":"CXF-HMAC-002","section":"3.3.12.3","level":"MUST","actor":"exporter","text":"Generate a stable missing UV or non-UV HMAC credential when only one exists.","verification":"provider-behavior","tests":[]},
+    {"id":"CXF-HMAC-003","section":"3.3.12.3","level":"MUST","actor":"document","text":"HMAC structure contains algorithm, credWithUV, and credWithoutUV.","verification":"automated","tests":["test_cxf_hmac_credentials_use_normative_shape"]},
+    {"id":"CXF-HMAC-004","section":"3.3.12.3","level":"SHOULD","actor":"document","text":"UV and non-UV HMAC credentials are 32 bytes.","verification":"automated","tests":["test_cxf_validator_warns_on_nonrecommended_hmac_length"]},
+    {"id":"CXF-HMAC-005","section":"3.3.12.3","level":"SHOULD","actor":"importer","text":"Ignore an HMAC entry using an unknown algorithm.","verification":"automated-profile","tests":["test_cxf_import_ignores_unknown_hmac_algorithm"]},
+    {"id":"CXF-LB-001","section":"3.3.12.5","level":"MUST","actor":"document","text":"largeBlob contains uncompressedSize and DEFLATE-compressed data.","verification":"automated","tests":["test_cxf_large_blob_is_deflate_compressed_and_round_trips"]},
+    {"id":"CXF-OPT-001","section":"3.3.12.2","level":"MUST","actor":"document","text":"credBlob, when present, is base64url-encoded bytes.","verification":"automated","tests":["test_cxf_profile_round_trip_preserves_known_values"]},
+    {"id":"CXF-OPT-002","section":"3.3.12.2","level":"MUST","actor":"document","text":"payments, when present, is boolean.","verification":"automated","tests":["test_cxf_validator_rejects_nonboolean_payments"]}
+  ]
+}
+
