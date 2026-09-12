@@ -26,9 +26,12 @@ extensions. Its 29-requirement matrix distinguishes automated checks from
 requirements that need a real WebAuthn or provider-behavior oracle.
 
 It does **not** claim complete support for every CXF credential type, and it
-does not yet implement CXP/HPKE, real WebAuthn ceremonies, Chromium automation,
-or commercial providers. The legacy `cxf_subset` module exists only to preserve
-the reproducibility of the reconstructed Phase 0 pilot.
+does not yet implement CXP/HPKE or commercial providers. Phase 3 implements a
+real browser-mediated WebAuthn ceremony using Chromium virtual authenticators,
+including independent RP signature verification and `largeBlob` retrieval.
+The public CDP import interface cannot inject CXF PRF/HMAC seed material, so PRF
+preservation remains explicitly unevaluated. The legacy `cxf_subset` module
+exists only to preserve the reconstructed Phase 0 pilot.
 
 ## Quick start
 
@@ -39,6 +42,7 @@ From PowerShell:
 ./research.ps1 test
 ./research.ps1 protocol
 ./research.ps1 requirements
+./research.ps1 webauthn
 ./research.ps1 pilot
 ```
 

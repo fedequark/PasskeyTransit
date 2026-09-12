@@ -16,13 +16,13 @@
     {"id":"CXF-ITEM-002","section":"3.2.3","level":"MUST","actor":"document","text":"Item contains id, title, and credentials.","verification":"automated","tests":["test_cxf_document_uses_normative_envelope"]},
     {"id":"CXF-PK-001","section":"3.3.12","level":"MUST","actor":"document","text":"Passkey type is present and exactly passkey.","verification":"automated","tests":["test_cxf_validator_rejects_wrong_credential_type"]},
     {"id":"CXF-PK-002","section":"3.3.12","level":"MUST","actor":"document","text":"A passkey is not governed by the enclosing Item CredentialScope.","verification":"automated-profile","tests":["test_cxf_validator_rejects_scope_for_passkey_only_item"]},
-    {"id":"CXF-PK-003","section":"3.3.12","level":"MUST","actor":"document","text":"Decoded credentialId equals the registration rawId.","verification":"external-oracle","tests":["test_cxf_profile_round_trip_preserves_known_values"]},
-    {"id":"CXF-PK-004","section":"3.3.12","level":"MUST","actor":"document","text":"rpId equals the RP ID established during registration.","verification":"external-oracle","tests":["test_cxf_profile_round_trip_preserves_known_values"]},
-    {"id":"CXF-PK-005","section":"3.3.12","level":"MUST","actor":"document","text":"userHandle equals the user id established during registration.","verification":"external-oracle","tests":["test_cxf_profile_round_trip_preserves_known_values"]},
+    {"id":"CXF-PK-003","section":"3.3.12","level":"MUST","actor":"document","text":"Decoded credentialId equals the registration rawId.","verification":"automated-browser","tests":["test_cxf_profile_round_trip_preserves_known_values","test_real_webauthn_assertion_after_cxf_migration"]},
+    {"id":"CXF-PK-004","section":"3.3.12","level":"MUST","actor":"document","text":"rpId equals the RP ID established during registration.","verification":"automated-browser","tests":["test_cxf_profile_round_trip_preserves_known_values","test_real_webauthn_assertion_after_cxf_migration"]},
+    {"id":"CXF-PK-005","section":"3.3.12","level":"MUST","actor":"document","text":"userHandle equals the user id established during registration.","verification":"automated-browser","tests":["test_cxf_profile_round_trip_preserves_known_values","test_real_webauthn_assertion_after_cxf_migration"]},
     {"id":"CXF-PK-006","section":"3.3.12","level":"MUST","actor":"document","text":"key is a base64url-encoded PKCS#8 ASN.1 DER private key.","verification":"automated","tests":["test_cxf_validator_rejects_malformed_pkcs8"]},
-    {"id":"CXF-PK-007","section":"3.3.12","level":"MUST","actor":"document","text":"Private key derives the public key produced at registration.","verification":"external-oracle","tests":["test_cxf_key_matches_registered_public_key"]},
+    {"id":"CXF-PK-007","section":"3.3.12","level":"MUST","actor":"document","text":"Private key derives the public key produced at registration.","verification":"automated-browser","tests":["test_cxf_key_matches_registered_public_key","test_real_webauthn_assertion_after_cxf_migration"]},
     {"id":"CXF-PK-008","section":"3.3.12","level":"MUST","actor":"exporter","text":"Exclude passkeys with a non-zero signature counter.","verification":"automated-provider","tests":["test_cxf_export_rejects_nonzero_signature_counter"]},
-    {"id":"CXF-PK-009","section":"3.3.12","level":"MUST","actor":"importer","text":"Set imported signature counters to zero and do not increment them.","verification":"phase-3","tests":[]},
+    {"id":"CXF-PK-009","section":"3.3.12","level":"MUST","actor":"importer","text":"Set imported signature counters to zero and do not increment them.","verification":"automated-browser-reference","tests":["test_real_webauthn_assertion_after_cxf_migration"]},
     {"id":"CXF-PK-010","section":"3.3.12.1","level":"MUST NOT","actor":"provider","text":"Do not expose passkey fields other than username and userDisplayName as user editable.","verification":"provider-behavior","tests":[]},
     {"id":"CXF-HMAC-001","section":"3.3.12.3","level":"MUST","actor":"importer","text":"Store and use exchanged HMAC credentials as-is without additional derivation or domain separator.","verification":"phase-3","tests":[]},
     {"id":"CXF-HMAC-002","section":"3.3.12.3","level":"MUST","actor":"exporter","text":"Generate a stable missing UV or non-UV HMAC credential when only one exists.","verification":"provider-behavior","tests":[]},
@@ -34,4 +34,3 @@
     {"id":"CXF-OPT-002","section":"3.3.12.2","level":"MUST","actor":"document","text":"payments, when present, is boolean.","verification":"automated","tests":["test_cxf_validator_rejects_nonboolean_payments"]}
   ]
 }
-

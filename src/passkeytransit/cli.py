@@ -8,6 +8,7 @@ from . import __version__
 from .experiment import run_pilot
 from .protocol import validate_protocol
 from .requirements import requirement_coverage
+from .webauthn_lab import run_webauthn_migration
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -21,6 +22,9 @@ def build_parser() -> argparse.ArgumentParser:
     protocol.add_argument("--config", type=Path, required=True)
     requirements = subparsers.add_parser("requirements", help="audit CXF requirement coverage")
     requirements.add_argument("--matrix", type=Path, required=True)
+    webauthn = subparsers.add_parser("webauthn", help="run a real browser WebAuthn migration")
+    webauthn.add_argument("--browser", type=Path, required=True)
+    webauthn.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -31,8 +35,8 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {
                     "version": __version__,
-                    "phase": "2-cxf-passkey-profile",
-                    "evidence_class": "synthetic-policy-control",
+                    "phase": "3-browser-webauthn-reference-migration",
+                    "evidence_class": "browser-webauthn-reference-migration",
                 },
                 indent=2,
             )
@@ -44,6 +48,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "requirements":
         print(json.dumps(requirement_coverage(args.matrix), indent=2))
         return 0
+    if args.command == "webauthn":
+        result = run_webauthn_migration(args.browser, args.output)
+        print(json.dumps(result, indent=2))
+        return 0 if result["all_checks_pass"] else 1
     result = run_pilot(args.config, args.output)
     print(json.dumps(result, indent=2))
     return 0

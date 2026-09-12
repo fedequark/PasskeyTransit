@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "webauthn", "status")]
     [string]$Action = "status"
 )
 
@@ -42,6 +42,19 @@ switch ($Action) {
         Require-Venv
         & $VenvPython -m passkeytransit requirements `
             --matrix (Join-Path $ProjectRoot "spec\cxf_passkey_requirements_v1.0.json")
+    }
+    "webauthn" {
+        Require-Venv
+        $BrowserPath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+        if (-not (Test-Path -LiteralPath $BrowserPath)) {
+            $BrowserPath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+        }
+        if (-not (Test-Path -LiteralPath $BrowserPath)) {
+            throw "No supported local Chromium executable was found."
+        }
+        & $VenvPython -m passkeytransit webauthn `
+            --browser $BrowserPath `
+            --output (Join-Path $ProjectRoot "datasets\generated\webauthn_phase3_result.json")
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {
