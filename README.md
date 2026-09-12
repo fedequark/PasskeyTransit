@@ -35,7 +35,10 @@ reference transport for the CXP Working Draft's core request/response fields.
 Because that draft omits fields needed for challenge signatures and HPKE
 encapsulation and underspecifies its ZIP/JWE payload, the missing pieces use a
 clearly named experimental binding and normative interoperability is not
-claimed. The legacy `cxf_subset` module
+claimed. Phase 5 operationalizes the complete registered C1 shape as a
+6,144-attempt synthetic reference-policy control campaign with structured
+oracle states, cluster-bootstrap intervals, and hashed artifacts. It is harness
+qualification, not commercial-provider evidence. The legacy `cxf_subset` module
 exists only to preserve the reconstructed Phase 0 pilot.
 
 ## Quick start
@@ -50,6 +53,7 @@ From PowerShell:
 ./research.ps1 cxp-requirements
 ./research.ps1 webauthn
 ./research.ps1 cxp
+./research.ps1 campaign-c1
 ./research.ps1 pilot
 ```
 

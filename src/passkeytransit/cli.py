@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from . import __version__
+from .campaign import run_c1_reference_control
 from .cxp import run_cxp_reference
 from .experiment import run_pilot
 from .protocol import validate_protocol
@@ -28,6 +29,9 @@ def build_parser() -> argparse.ArgumentParser:
     webauthn.add_argument("--output", type=Path, required=True)
     cxp = subparsers.add_parser("cxp", help="run the experimental CXP/HPKE reference exchange")
     cxp.add_argument("--output", type=Path, required=True)
+    campaign = subparsers.add_parser("campaign-c1", help="run the Phase 5 C1 reference-control campaign")
+    campaign.add_argument("--protocol", type=Path, required=True)
+    campaign.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -38,8 +42,8 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {
                     "version": __version__,
-                    "phase": "4-cxp-hpke-reference-transport",
-                    "evidence_class": "protocol-reference-implementation",
+                    "phase": "5-c1-reference-control-campaign",
+                    "evidence_class": "synthetic-reference-policy-control",
                 },
                 indent=2,
             )
@@ -59,6 +63,10 @@ def main(argv: list[str] | None = None) -> int:
         result = run_cxp_reference(args.output)
         print(json.dumps(result, indent=2))
         return 0 if result["round_trip_equal"] else 1
+    if args.command == "campaign-c1":
+        result = run_c1_reference_control(args.protocol, args.output)
+        print(json.dumps(result, indent=2))
+        return 0 if result["summary"]["repeat_equivalent"] else 1
     result = run_pilot(args.config, args.output)
     print(json.dumps(result, indent=2))
     return 0
