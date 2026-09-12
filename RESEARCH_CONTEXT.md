@@ -19,13 +19,19 @@ Migration is treated as a transformation `C' = M(C, A, B)`. PasskeyTransit
 compares required invariants before and after direct, round-trip, and multihop
 routes.
 
-## Research questions
+## Frozen research questions (protocol v1.0)
 
-1. Which properties are preserved by a direct migration?
-2. How does preservation change under round trips and multihop routes?
-3. Which losses remain invisible to a basic authentication test?
-4. How do provider policies handle unknown extensions, downgrade, duplicates,
-   and partial failure?
+1. To what extent do direct migrations preserve identity, public-key
+   correspondence, and an assertion accepted by the original relying party?
+2. Among accepted imports, which functions survive, and when does basic
+   authentication conceal loss of another applicable function?
+3. For the same credential and final provider, does the outcome depend on
+   intermediate providers or a round trip?
+4. How do implementations handle unknown values, version mismatch, duplicate
+   imports, malformed data, and injected failures?
+
+The authoritative design is `docs/EXPERIMENT_PROTOCOL.md`, with the registered
+machine-readable configuration in `experiments/protocol_v1.0.json`.
 
 ## Evidence boundaries
 
@@ -40,4 +46,3 @@ routes.
 
 PasskeyTransit v0.2: complete CXF subset under test, a local relying party,
 Chromium virtual authenticators, and one end-to-end migrated WebAuthn assertion.
-

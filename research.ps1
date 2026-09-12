@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "status")]
     [string]$Action = "status"
 )
 
@@ -32,6 +32,11 @@ switch ($Action) {
         & $VenvPython -m passkeytransit pilot `
             --config (Join-Path $ProjectRoot "experiments\pilot_v0.1.json") `
             --output (Join-Path $ProjectRoot "datasets\generated")
+    }
+    "protocol" {
+        Require-Venv
+        & $VenvPython -m passkeytransit protocol `
+            --config (Join-Path $ProjectRoot "experiments\protocol_v1.0.json")
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {

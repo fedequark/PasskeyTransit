@@ -8,6 +8,7 @@ from passkeytransit.experiment import run_pilot
 from passkeytransit.model import generate_synthetic_passkey
 from passkeytransit.oracles import evaluate
 from passkeytransit.providers import migrate_route
+from passkeytransit.protocol import ProtocolValidationError, validate_protocol
 
 
 def test_generation_is_deterministic():
@@ -56,3 +57,25 @@ def test_pilot_is_reproducible(tmp_path):
     assert first["manifest"]["result_sha256"] == second["manifest"]["result_sha256"]
     assert first["summary"] == second["summary"]
 
+
+def test_frozen_protocol_is_internally_consistent():
+    project_root = __import__("pathlib").Path(__file__).parents[1]
+    result = validate_protocol(project_root / "experiments" / "protocol_v1.0.json")
+    assert result["valid"]
+    assert result["routes"] == 12
+    assert result["c1_attempts_per_repetition"] == 3072
+
+
+def test_protocol_validator_rejects_unknown_claim_oracle(tmp_path):
+    project_root = __import__("pathlib").Path(__file__).parents[1]
+    source = project_root / "experiments" / "protocol_v1.0.json"
+    protocol = json.loads(source.read_text(encoding="utf-8"))
+    protocol["claims"][0]["required_oracles"].append("invented_oracle")
+    altered = tmp_path / "invalid-protocol.json"
+    altered.write_text(json.dumps(protocol), encoding="utf-8")
+    try:
+        validate_protocol(altered)
+    except ProtocolValidationError as error:
+        assert "unknown oracles" in str(error)
+    else:
+        raise AssertionError("invalid protocol unexpectedly passed validation")
