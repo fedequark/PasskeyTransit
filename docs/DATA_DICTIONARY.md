@@ -50,7 +50,30 @@ Required oracle keys are `cxf_structure`, `credential_id`, `rp_id`,
 | `false_reassurance` | boolean/null | Auth pass plus another applicable functional failure |
 | `exclusion_reason` | string/null | Registered infrastructure-only exclusion code |
 
+## C2 robustness additions
+
+| Field | Type | Meaning |
+|---|---|---|
+| `mutation_recipe` | object | Non-secret deterministic seed/index/family recipe for reproducing the case |
+| `minimal_reproducer_ref` | SHA-256 reference | Digest of the complete ephemeral mutated input |
+
+C2 never stores the complete mutated document because valid mutation cases can
+contain passkey private material. Mutation-family summaries are not pooled into
+a preservation estimate.
+
+## C3 sequence and event additions
+
+The C3 sequence JSONL contains one record per registered failure sequence. Its
+top-level `execution_status` describes the injected initial attempt and
+`final_execution_status` describes the retry. `state_before`,
+`state_after_failure`, and `state_after_retry` contain only copy counts,
+committed counts, and state digests.
+
+The separate C3 event JSONL contains two records per sequence. `retry_index=0`
+is the injected attempt and `retry_index=1` is the provider-level retry. This
+preserves the 960-sequence analysis unit while retaining 1,920 immutable event
+observations.
+
 Raw records never contain private keys, PRF seeds, plaintext credential blobs,
 or account PII. Such synthetic secrets remain in access-controlled ephemeral
 ground-truth artifacts and are referenced by hash.
-

@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "status")]
     [string]$Action = "status"
 )
 
@@ -72,6 +72,31 @@ switch ($Action) {
         & $VenvPython -m passkeytransit campaign-c1 `
             --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
             --output (Join-Path $ProjectRoot "datasets\generated\phase5_c1\$RunStamp")
+    }
+    "campaign-c2" {
+        Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        & $VenvPython -m passkeytransit campaign-c2 `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --output (Join-Path $ProjectRoot "datasets\generated\phase6\$RunStamp\c2")
+    }
+    "campaign-c3" {
+        Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        & $VenvPython -m passkeytransit campaign-c3 `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --output (Join-Path $ProjectRoot "datasets\generated\phase6\$RunStamp\c3")
+    }
+    "phase6" {
+        Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        $RunRoot = Join-Path $ProjectRoot "datasets\generated\phase6\$RunStamp"
+        & $VenvPython -m passkeytransit campaign-c2 `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --output (Join-Path $RunRoot "c2")
+        & $VenvPython -m passkeytransit campaign-c3 `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --output (Join-Path $RunRoot "c3")
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {

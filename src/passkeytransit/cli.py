@@ -10,6 +10,7 @@ from .cxp import run_cxp_reference
 from .experiment import run_pilot
 from .protocol import validate_protocol
 from .requirements import requirement_coverage
+from .robustness import run_c2_robustness, run_c3_faults
 from .webauthn_lab import run_webauthn_migration
 
 
@@ -32,6 +33,12 @@ def build_parser() -> argparse.ArgumentParser:
     campaign = subparsers.add_parser("campaign-c1", help="run the Phase 5 C1 reference-control campaign")
     campaign.add_argument("--protocol", type=Path, required=True)
     campaign.add_argument("--output", type=Path, required=True)
+    c2 = subparsers.add_parser("campaign-c2", help="run the Phase 6 C2 robustness controls")
+    c2.add_argument("--protocol", type=Path, required=True)
+    c2.add_argument("--output", type=Path, required=True)
+    c3 = subparsers.add_parser("campaign-c3", help="run the Phase 6 C3 fault controls")
+    c3.add_argument("--protocol", type=Path, required=True)
+    c3.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -42,8 +49,8 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {
                     "version": __version__,
-                    "phase": "5-c1-reference-control-campaign",
-                    "evidence_class": "synthetic-reference-policy-control",
+                    "phase": "6-robustness-and-fault-campaigns",
+                    "evidence_class": "synthetic-rq4-control-campaigns",
                 },
                 indent=2,
             )
@@ -67,6 +74,14 @@ def main(argv: list[str] | None = None) -> int:
         result = run_c1_reference_control(args.protocol, args.output)
         print(json.dumps(result, indent=2))
         return 0 if result["summary"]["repeat_equivalent"] else 1
+    if args.command == "campaign-c2":
+        result = run_c2_robustness(args.protocol, args.output)
+        print(json.dumps(result, indent=2))
+        return 0
+    if args.command == "campaign-c3":
+        result = run_c3_faults(args.protocol, args.output)
+        print(json.dumps(result, indent=2))
+        return 0 if result["summary"]["failure_sequence_count"] == 960 else 1
     result = run_pilot(args.config, args.output)
     print(json.dumps(result, indent=2))
     return 0

@@ -38,7 +38,11 @@ clearly named experimental binding and normative interoperability is not
 claimed. Phase 5 operationalizes the complete registered C1 shape as a
 6,144-attempt synthetic reference-policy control campaign with structured
 oracle states, cluster-bootstrap intervals, and hashed artifacts. It is harness
-qualification, not commercial-provider evidence. The legacy `cxf_subset` module
+qualification, not commercial-provider evidence. Phase 6 adds the frozen C2
+robustness matrix and all 960 C3 fault/retry
+sequences, including deliberate positive controls for atomicity and
+idempotence. These remain synthetic RQ4 harness evidence. The legacy
+`cxf_subset` module
 exists only to preserve the reconstructed Phase 0 pilot.
 
 ## Quick start
@@ -54,6 +58,7 @@ From PowerShell:
 ./research.ps1 webauthn
 ./research.ps1 cxp
 ./research.ps1 campaign-c1
+./research.ps1 phase6
 ./research.ps1 pilot
 ```
 
