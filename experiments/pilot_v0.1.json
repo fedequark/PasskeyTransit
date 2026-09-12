@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "experiment_id": "pilot-v0.1-reconstructed",
+  "seed": 20260912,
+  "credential_count": 100,
+  "routes": [
+    ["strict"],
+    ["permissive"],
+    ["legacy"],
+    ["strict", "permissive"],
+    ["permissive", "strict"],
+    ["strict", "legacy"],
+    ["legacy", "strict"],
+    ["permissive", "legacy", "strict"]
+  ]
+}
+
