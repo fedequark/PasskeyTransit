@@ -1,0 +1,25 @@
+{
+  "profile_id": "passkeytransit-cxp-wd-20241003-experimental-v1",
+  "source": "https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html",
+  "scope": "CXP version 0 direct exchange of one CXF passkey document using an explicit experimental binding",
+  "requirements": [
+    {"id":"CXP-REQ-001","section":"3.2","level":"MUST","actor":"importer","text":"Request carries version, HPKE preferences, archive preferences, mode and importer.","verification":"automated-profile","tests":["test_cxp_round_trip_transports_valid_cxf_over_hpke"]},
+    {"id":"CXP-REQ-002","section":"3.2","level":"MUST","actor":"importer","text":"Request version corresponds to a supported CXP level.","verification":"automated-profile","tests":["test_cxp_rejects_unsupported_request_version"]},
+    {"id":"CXP-REQ-003","section":"3.2","level":"MUST","actor":"exporter","text":"Select an offered HPKE parameter set.","verification":"automated","tests":["test_cxp_negotiates_offered_suite_and_deflate","test_cxp_rejects_unsupported_suite"]},
+    {"id":"CXP-REQ-004","section":"3.2","level":"SHOULD","actor":"exporter","text":"Ignore unknown HPKE parameter sets.","verification":"automated","tests":["test_cxp_ignores_unknown_hpke_preference"]},
+    {"id":"CXP-REQ-005","section":"3.2","level":"MUST","actor":"exporter","text":"Select an offered archive algorithm.","verification":"automated","tests":["test_cxp_negotiates_offered_suite_and_deflate"]},
+    {"id":"CXP-RSP-001","section":"3.3","level":"MUST","actor":"exporter","text":"Response carries version, selected HPKE parameters, archive, exporter and payload.","verification":"automated-profile","tests":["test_cxp_round_trip_transports_valid_cxf_over_hpke"]},
+    {"id":"CXP-RSP-002","section":"3.3","level":"MAY","actor":"importer","text":"Refuse a protocol version downgrade.","verification":"automated","tests":["test_cxp_rejects_version_downgrade"]},
+    {"id":"CXP-PAY-001","section":"3.1, 3.4","level":"MUST","actor":"exporter","text":"Exported credential content is normatively formatted as CXF.","verification":"automated-profile","tests":["test_cxp_round_trip_transports_valid_cxf_over_hpke","test_cxp_rejects_invalid_cxf_before_export"]},
+    {"id":"CXP-PAY-002","section":"3.4","level":"MUST","actor":"exporter","text":"Payload follows the CXF ZIP archive and each file is separately stored as JWE.","verification":"not-implemented-draft-gap","tests":[]},
+    {"id":"CXP-HPKE-001","section":"3.5.1","level":"SHOULD","actor":"participant","text":"KEM, KDF and AEAD identifiers come from the HPKE IANA registries.","verification":"automated-profile","tests":["test_hpke_rfc9180_x25519_base_vector"]},
+    {"id":"CXP-HPKE-002","section":"3.5.1","level":"MUST","actor":"participant","text":"Selected base-mode HPKE implements RFC 9180.","verification":"automated-vector","tests":["test_hpke_rfc9180_x25519_base_vector"]},
+    {"id":"CXP-HPKE-003","section":"3.5.1","level":"MUST","actor":"participant","text":"Public migration key is represented as JWK.","verification":"automated-profile","tests":["test_cxp_round_trip_transports_valid_cxf_over_hpke"]},
+    {"id":"CXP-ARC-001","section":"3.5.3","level":"MUST","actor":"participant","text":"Deflate uses RFC 1951 raw DEFLATE framing.","verification":"automated-profile","tests":["test_cxp_round_trip_transports_valid_cxf_over_hpke"]},
+    {"id":"CXP-FLOW-001","section":"2 step 3","level":"MUST","actor":"exporter","text":"Exporter signs the importer challenge.","verification":"not-implementable-schema-gap","tests":[]},
+    {"id":"CXP-FLOW-002","section":"2 steps 4-5","level":"MUST","actor":"importer","text":"Response transports and importer validates the signed challenge.","verification":"not-implementable-schema-gap","tests":[]},
+    {"id":"PT-CXP-001","section":"experimental","level":"PROFILE","actor":"participant","text":"Challenge, request id and response metadata are authenticated as HPKE AAD.","verification":"automated-experimental","tests":["test_cxp_response_is_bound_to_challenge","test_cxp_response_is_bound_to_exporter_metadata","test_cxp_tampered_ciphertext_fails_authentication"]},
+    {"id":"PT-CXP-002","section":"experimental","level":"PROFILE","actor":"importer","text":"A successfully consumed exchange request cannot be replayed.","verification":"automated-experimental","tests":["test_cxp_replay_is_rejected_after_successful_import"]},
+    {"id":"PT-CXP-003","section":"experimental","level":"PROFILE","actor":"importer","text":"Only the holder of the request private key can decrypt the payload.","verification":"automated-experimental","tests":["test_cxp_wrong_private_key_cannot_decrypt"]}
+  ]
+}

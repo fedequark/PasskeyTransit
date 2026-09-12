@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from . import __version__
+from .cxp import run_cxp_reference
 from .experiment import run_pilot
 from .protocol import validate_protocol
 from .requirements import requirement_coverage
@@ -25,6 +26,8 @@ def build_parser() -> argparse.ArgumentParser:
     webauthn = subparsers.add_parser("webauthn", help="run a real browser WebAuthn migration")
     webauthn.add_argument("--browser", type=Path, required=True)
     webauthn.add_argument("--output", type=Path, required=True)
+    cxp = subparsers.add_parser("cxp", help="run the experimental CXP/HPKE reference exchange")
+    cxp.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -35,8 +38,8 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {
                     "version": __version__,
-                    "phase": "3-browser-webauthn-reference-migration",
-                    "evidence_class": "browser-webauthn-reference-migration",
+                    "phase": "4-cxp-hpke-reference-transport",
+                    "evidence_class": "protocol-reference-implementation",
                 },
                 indent=2,
             )
@@ -52,6 +55,10 @@ def main(argv: list[str] | None = None) -> int:
         result = run_webauthn_migration(args.browser, args.output)
         print(json.dumps(result, indent=2))
         return 0 if result["all_checks_pass"] else 1
+    if args.command == "cxp":
+        result = run_cxp_reference(args.output)
+        print(json.dumps(result, indent=2))
+        return 0 if result["round_trip_equal"] else 1
     result = run_pilot(args.config, args.output)
     print(json.dumps(result, indent=2))
     return 0

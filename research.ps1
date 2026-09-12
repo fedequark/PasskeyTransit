@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "webauthn", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "status")]
     [string]$Action = "status"
 )
 
@@ -43,6 +43,11 @@ switch ($Action) {
         & $VenvPython -m passkeytransit requirements `
             --matrix (Join-Path $ProjectRoot "spec\cxf_passkey_requirements_v1.0.json")
     }
+    "cxp-requirements" {
+        Require-Venv
+        & $VenvPython -m passkeytransit requirements `
+            --matrix (Join-Path $ProjectRoot "spec\cxp_requirements_wd_20241003.json")
+    }
     "webauthn" {
         Require-Venv
         $BrowserPath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
@@ -55,6 +60,11 @@ switch ($Action) {
         & $VenvPython -m passkeytransit webauthn `
             --browser $BrowserPath `
             --output (Join-Path $ProjectRoot "datasets\generated\webauthn_phase3_result.json")
+    }
+    "cxp" {
+        Require-Venv
+        & $VenvPython -m passkeytransit cxp `
+            --output (Join-Path $ProjectRoot "datasets\generated\cxp_phase4_result.json")
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {
