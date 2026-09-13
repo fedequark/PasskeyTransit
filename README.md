@@ -41,8 +41,12 @@ oracle states, cluster-bootstrap intervals, and hashed artifacts. It is harness
 qualification, not commercial-provider evidence. Phase 6 adds the frozen C2
 robustness matrix and all 960 C3 fault/retry
 sequences, including deliberate positive controls for atomicity and
-idempotence. These remain synthetic RQ4 harness evidence. The legacy
-`cxf_subset` module
+idempotence. These remain synthetic RQ4 harness evidence. Phase 7 adds
+browser-backed WebAuthn evidence to C1, including UV, independent
+assertion verification, zero-counter behavior, and `largeBlob`. Phase 8 checks
+HPKE in both directions against the native `cryptography` implementation,
+validates CXF with an independent Node.js consumer, and records a separate
+ML-KEM-768+X25519 exploratory round trip. The legacy `cxf_subset` module
 exists only to preserve the reconstructed Phase 0 pilot.
 
 ## Quick start
@@ -59,6 +63,8 @@ From PowerShell:
 ./research.ps1 cxp
 ./research.ps1 campaign-c1
 ./research.ps1 phase6
+./research.ps1 phase7
+./research.ps1 phase8
 ./research.ps1 pilot
 ```
 

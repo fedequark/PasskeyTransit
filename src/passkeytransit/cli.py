@@ -6,11 +6,13 @@ from pathlib import Path
 
 from . import __version__
 from .campaign import run_c1_reference_control
+from .browser_campaign import run_browser_c1
 from .cxp import run_cxp_reference
 from .experiment import run_pilot
 from .protocol import validate_protocol
 from .requirements import requirement_coverage
 from .robustness import run_c2_robustness, run_c3_faults
+from .interop import run_independent_interop
 from .webauthn_lab import run_webauthn_migration
 
 
@@ -39,6 +41,15 @@ def build_parser() -> argparse.ArgumentParser:
     c3 = subparsers.add_parser("campaign-c3", help="run the Phase 6 C3 fault controls")
     c3.add_argument("--protocol", type=Path, required=True)
     c3.add_argument("--output", type=Path, required=True)
+    browser_c1 = subparsers.add_parser("browser-c1", help="run the Phase 7 browser-backed C1 campaign")
+    browser_c1.add_argument("--protocol", type=Path, required=True)
+    browser_c1.add_argument("--browser", type=Path, required=True)
+    browser_c1.add_argument("--output", type=Path, required=True)
+    browser_c1.add_argument("--mode", choices=("calibration", "full"), required=True)
+    interop = subparsers.add_parser("interop", help="run Phase 8 independent interoperability checks")
+    interop.add_argument("--node", type=Path, required=True)
+    interop.add_argument("--node-verifier", type=Path, required=True)
+    interop.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -82,6 +93,16 @@ def main(argv: list[str] | None = None) -> int:
         result = run_c3_faults(args.protocol, args.output)
         print(json.dumps(result, indent=2))
         return 0 if result["summary"]["failure_sequence_count"] == 960 else 1
+    if args.command == "browser-c1":
+        result = run_browser_c1(
+            args.protocol, args.browser, args.output, calibration=args.mode == "calibration"
+        )
+        print(json.dumps(result, indent=2))
+        return 0 if result["summary"]["oracle_statuses"]["webauthn_assertion"] == {"PASS": result["summary"]["attempt_count"]} else 1
+    if args.command == "interop":
+        result = run_independent_interop(args.node, args.node_verifier, args.output)
+        print(json.dumps(result, indent=2))
+        return 0 if result["all_applicable_checks_pass"] else 1
     result = run_pilot(args.config, args.output)
     print(json.dumps(result, indent=2))
     return 0

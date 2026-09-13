@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "status")]
     [string]$Action = "status"
 )
 
@@ -97,6 +97,48 @@ switch ($Action) {
         & $VenvPython -m passkeytransit campaign-c3 `
             --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
             --output (Join-Path $RunRoot "c3")
+    }
+    "phase7-calibration" {
+        Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        $BrowserPath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+        if (-not (Test-Path -LiteralPath $BrowserPath)) {
+            $BrowserPath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+        }
+        & $VenvPython -m passkeytransit browser-c1 `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --browser $BrowserPath `
+            --mode calibration `
+            --output (Join-Path $ProjectRoot "datasets\generated\phase7\$RunStamp\calibration")
+    }
+    "phase7" {
+        Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        $RunRoot = Join-Path $ProjectRoot "datasets\generated\phase7\$RunStamp"
+        $BrowserPath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+        if (-not (Test-Path -LiteralPath $BrowserPath)) {
+            $BrowserPath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+        }
+        & $VenvPython -m passkeytransit browser-c1 `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --browser $BrowserPath `
+            --mode calibration `
+            --output (Join-Path $RunRoot "calibration")
+        if ($LASTEXITCODE -ne 0) { throw "Phase 7 calibration failed; full campaign was not started." }
+        & $VenvPython -m passkeytransit browser-c1 `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --browser $BrowserPath `
+            --mode full `
+            --output (Join-Path $RunRoot "full")
+    }
+    "phase8" {
+        Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        $NodePath = (Get-Command node -ErrorAction Stop).Source
+        & $VenvPython -m passkeytransit interop `
+            --node $NodePath `
+            --node-verifier (Join-Path $ProjectRoot "interop\node_cxf_verifier.mjs") `
+            --output (Join-Path $ProjectRoot "datasets\generated\phase8\$RunStamp\interop_result.json")
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {
