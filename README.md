@@ -47,7 +47,9 @@ assertion verification, zero-counter behavior, and `largeBlob`. Phase 8 checks
 HPKE in both directions against the native `cryptography` implementation,
 validates CXF with an independent Node.js consumer, and records a separate
 ML-KEM-768+X25519 exploratory round trip. The legacy `cxf_subset` module
-exists only to preserve the reconstructed Phase 0 pilot.
+exists only to preserve the reconstructed Phase 0 pilot. Phase 9 derives a
+hash-verified results package and current manuscript whose allowed and
+prohibited claims are machine-readable.
 
 ## Quick start
 
@@ -65,6 +67,7 @@ From PowerShell:
 ./research.ps1 phase6
 ./research.ps1 phase7
 ./research.ps1 phase8
+./research.ps1 phase9
 ./research.ps1 pilot
 ```
 

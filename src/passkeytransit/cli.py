@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from . import __version__
+from .analysis import run_analysis
 from .campaign import run_c1_reference_control
 from .browser_campaign import run_browser_c1
 from .cxp import run_cxp_reference
@@ -50,6 +51,15 @@ def build_parser() -> argparse.ArgumentParser:
     interop.add_argument("--node", type=Path, required=True)
     interop.add_argument("--node-verifier", type=Path, required=True)
     interop.add_argument("--output", type=Path, required=True)
+    analysis = subparsers.add_parser("analyze", help="generate the Phase 9 analysis and manuscript")
+    analysis.add_argument("--phase7-summary", type=Path, required=True)
+    analysis.add_argument("--phase7-manifest", type=Path, required=True)
+    analysis.add_argument("--c2-summary", type=Path, required=True)
+    analysis.add_argument("--c2-manifest", type=Path, required=True)
+    analysis.add_argument("--c3-summary", type=Path, required=True)
+    analysis.add_argument("--c3-manifest", type=Path, required=True)
+    analysis.add_argument("--interop", type=Path, required=True)
+    analysis.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -60,8 +70,8 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {
                     "version": __version__,
-                    "phase": "6-robustness-and-fault-campaigns",
-                    "evidence_class": "synthetic-rq4-control-campaigns",
+                    "phase": "9-analysis-and-manuscript",
+                    "evidence_class": "reference-control-research-package",
                 },
                 indent=2,
             )
@@ -103,6 +113,13 @@ def main(argv: list[str] | None = None) -> int:
         result = run_independent_interop(args.node, args.node_verifier, args.output)
         print(json.dumps(result, indent=2))
         return 0 if result["all_applicable_checks_pass"] else 1
+    if args.command == "analyze":
+        result = run_analysis(
+            args.phase7_summary, args.phase7_manifest, args.c2_summary, args.c2_manifest,
+            args.c3_summary, args.c3_manifest, args.interop, args.output,
+        )
+        print(json.dumps({"output": str(args.output), "claim_boundary_enforced": result["manifest"]["claim_boundary_enforced"]}, indent=2))
+        return 0
     result = run_pilot(args.config, args.output)
     print(json.dumps(result, indent=2))
     return 0

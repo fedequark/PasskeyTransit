@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "status")]
     [string]$Action = "status"
 )
 
@@ -139,6 +139,21 @@ switch ($Action) {
             --node $NodePath `
             --node-verifier (Join-Path $ProjectRoot "interop\node_cxf_verifier.mjs") `
             --output (Join-Path $ProjectRoot "datasets\generated\phase8\$RunStamp\interop_result.json")
+    }
+    "phase9" {
+        Require-Venv
+        $Phase7Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase7") -Directory | Sort-Object Name | Select-Object -Last 1
+        $Phase6Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase6") -Directory | Sort-Object Name | Select-Object -Last 1
+        $Phase8Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase8") -Directory | Sort-Object Name | Select-Object -Last 1
+        & $VenvPython -m passkeytransit analyze `
+            --phase7-summary (Join-Path $Phase7Run.FullName "full\c1_phase7_full_summary.json") `
+            --phase7-manifest (Join-Path $Phase7Run.FullName "full\c1_phase7_full_manifest.json") `
+            --c2-summary (Join-Path $Phase6Run.FullName "c2\c2_phase6_summary.json") `
+            --c2-manifest (Join-Path $Phase6Run.FullName "c2\c2_phase6_manifest.json") `
+            --c3-summary (Join-Path $Phase6Run.FullName "c3\c3_phase6_summary.json") `
+            --c3-manifest (Join-Path $Phase6Run.FullName "c3\c3_phase6_manifest.json") `
+            --interop (Join-Path $Phase8Run.FullName "interop_result.json") `
+            --output (Join-Path $ProjectRoot "paper\current")
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {

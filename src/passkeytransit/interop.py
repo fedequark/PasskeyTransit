@@ -72,6 +72,12 @@ def run_independent_interop(node_path: Path, node_verifier: Path, output_path: P
         and node_result["largeBlobSha256"] == hashlib.sha256(credential.large_blob or b"").hexdigest()
     )
     node_version = subprocess.check_output([str(node_path), "--version"], text=True).strip()
+    project_root = node_verifier.resolve().parent.parent
+    try:
+        source_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project_root, text=True).strip()
+        source_dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=project_root, text=True).strip())
+    except Exception:
+        source_commit, source_dirty = None, None
     result = {
         "phase": 8,
         "evidence_class": "independent-implementation-interoperability",
@@ -80,6 +86,7 @@ def run_independent_interop(node_path: Path, node_verifier: Path, output_path: P
             "native_hpke": f"cryptography {version('cryptography')}",
             "independent_cxf_consumer": f"Node.js {node_version}",
         },
+        "git": {"source_commit": source_commit, "source_dirty": source_dirty},
         "hpke": {
             "suite": "DHKEM(X25519,HKDF-SHA256)/HKDF-SHA256/AES-128-GCM",
             "native_to_reference": native_to_reference,
