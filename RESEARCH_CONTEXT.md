@@ -40,9 +40,13 @@ machine-readable configuration in `experiments/protocol_v1.0.json`.
 - A reference policy is not a proxy for a commercial provider.
 - The PRF control in v0.1 is a deterministic oracle over synthetic secret
   material, not a browser WebAuthn PRF ceremony.
-- Claims about CXF conformance require the future normative requirement matrix.
+- Claims about CXF/CXP conformance require the versioned requirement matrices.
 
-## Immediate milestone
+## Current evidence frontier
 
-PasskeyTransit v0.2: complete CXF subset under test, a local relying party,
-Chromium virtual authenticators, and one end-to-end migrated WebAuthn assertion.
+PasskeyTransit v0.2 now includes the CXF profile, experimental CXP/HPKE
+transport, browser-backed C1 controls, C2 robustness cases, C3 transactional
+faults, an independent HPKE/Node.js boundary, and a hash-verified manuscript.
+The next evidence frontier is an identified external provider or independent
+CXP implementation; until then, no result may be generalized beyond the
+versioned reference controls.

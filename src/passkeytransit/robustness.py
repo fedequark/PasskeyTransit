@@ -315,6 +315,8 @@ def _manifest(
         for name, path in paths.items()
         if name != "manifest" and path.exists()
     }
+    project_root = protocol_path.resolve().parent.parent
+    protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
     return {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "passkeytransit_version": __version__,
@@ -323,6 +325,10 @@ def _manifest(
         "source_commit": commit,
         "source_dirty": dirty,
         "protocol_sha256": hashlib.sha256(protocol_path.read_bytes()).hexdigest(),
+        "specification_baseline": protocol["specification_baseline"],
+        "dependency_lock_sha256": hashlib.sha256((project_root / "requirements.lock").read_bytes()).hexdigest(),
+        "browser": "NOT_APPLICABLE",
+        "cdp": "NOT_APPLICABLE",
         **hashes,
         "limitations": limitations,
     }

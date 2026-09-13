@@ -38,6 +38,6 @@ Frozen for protocol `passkeytransit-semantic-preservation-v1.0` on
 - Version handling: section 3.1.1.
 - Conformance: section 7.
 
-This file freezes sources; it is not yet the complete requirement extraction.
-The normative requirement matrix is a Phase 2 deliverable.
-
+This file freezes sources. The completed normative requirement matrices are
+`spec/cxf_passkey_requirements_v1.0.json` and
+`spec/cxp_requirements_wd_20241003.json`.

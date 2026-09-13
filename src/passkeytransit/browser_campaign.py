@@ -199,11 +199,20 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
         try:
             context = browser.new_context()
             surfaces: dict[str, tuple[Any, Any, str]] = {}
+            cdp_metadata: dict[str, Any] | None = None
             for rp_id in rp_ids:
                 page = context.new_page()
                 page.goto(origins[rp_id], wait_until="domcontentloaded")
                 cdp = context.new_cdp_session(page)
                 cdp.send("WebAuthn.enable", {"enableUI": False})
+                if cdp_metadata is None:
+                    browser_metadata = cdp.send("Browser.getVersion")
+                    schema = cdp.send("Schema.getDomains")
+                    cdp_metadata = {
+                        "protocol_version": browser_metadata.get("protocolVersion"),
+                        "product": browser_metadata.get("product"),
+                        "schema_sha256": hashlib.sha256(_canonical(schema)).hexdigest(),
+                    }
                 authenticator = cdp.send(
                     "WebAuthn.addVirtualAuthenticator",
                     {"options": {"protocol": "ctap2", "ctap2Version": "ctap2_1", "transport": "internal", "hasResidentKey": True, "hasUserVerification": True, "hasLargeBlob": True, "hasPrf": True, "automaticPresenceSimulation": True, "isUserVerified": True}},
@@ -290,11 +299,15 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
     }
     with summary_path.open("x", encoding="utf-8") as handle:
         handle.write(json.dumps(summary, indent=2) + "\n")
+    project_root = protocol_path.resolve().parent.parent
     manifest = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(), "passkeytransit_version": __version__,
         "python": sys.version, "platform": platform.platform(), "source_commit": commit, "source_dirty": dirty,
         "protocol_sha256": hashlib.sha256(protocol_path.read_bytes()).hexdigest(),
+        "specification_baseline": protocol["specification_baseline"],
+        "dependency_lock_sha256": hashlib.sha256((project_root / "requirements.lock").read_bytes()).hexdigest(),
         "browser": {"path": str(browser_path), "version": browser_version, "sha256": hashlib.sha256(browser_path.read_bytes()).hexdigest()},
+        "cdp": cdp_metadata,
         "playwright_version": version("playwright"), "raw_sha256": hashlib.sha256(raw_path.read_bytes()).hexdigest(),
         "summary_sha256": hashlib.sha256(summary_path.read_bytes()).hexdigest(),
         "limitations": ["reference policies and Chromium virtual authenticators are not commercial providers", "CDP cannot inject CXF HMAC/PRF or credBlob state", "SPC behavior is not exercised"],

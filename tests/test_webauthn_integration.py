@@ -32,3 +32,6 @@ def test_phase7_browser_calibration(tmp_path):
         "FAIL": 12,
         "NOT_APPLICABLE": 72,
     }
+    assert result["manifest"]["cdp"]["protocol_version"]
+    assert len(result["manifest"]["cdp"]["schema_sha256"]) == 64
+    assert len(result["manifest"]["dependency_lock_sha256"]) == 64

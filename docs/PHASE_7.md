@@ -36,6 +36,9 @@ credential from every stratum across all routes. The complete 6,144-attempt
 campaign starts only if every calibration WebAuthn assertion passes. Both runs
 use immutable timestamped artifact directories and record the browser binary
 hash, browser version, Playwright version, source commit and protocol hash.
+The manifest also records the CDP protocol version, a hash of the exposed CDP
+domain schema, the dependency lock hash, and the complete frozen specification
+baseline.
 
 This remains a reference-policy/virtual-authenticator control. It supplies
 real browser evidence but does not authorize claims about commercial providers.
