@@ -42,3 +42,20 @@ baseline.
 
 This remains a reference-policy/virtual-authenticator control. It supplies
 real browser evidence but does not authorize claims about commercial providers.
+
+## Verified full run
+
+The definitive run used Edge `153.0.4234.32`, CDP protocol `1.3`, Playwright
+`1.62.0`, and clean source commit `d2893c3`. Results:
+
+- 6,144/6,144 imports, WebAuthn assertions, and UV checks passed;
+- 2,304 semantic `PASS`, 1,408 visible degradations, 1,920 silent
+  degradations, and 512 `NOT_EVALUABLE`;
+- 768/1,536 applicable `largeBlob` cases passed and 768 deliberately lossy
+  routes failed;
+- preserving yield: 2,304/6,144 = 37.50% (credential-bootstrap 95% interval
+  32.42%–42.77%);
+- false reassurance: 2,944/6,144 = 47.92% (43.36%–52.93%);
+- both repetitions were deterministically equivalent.
+
+These proportions describe the registered mixture of synthetic controls.

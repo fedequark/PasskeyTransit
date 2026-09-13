@@ -1,0 +1,11 @@
+mutation,attempts,execution_statuses,semantic_classes,normative_classes
+missing-required,8,"{""REJECTED"": 8}","{""NOT_APPLICABLE"": 8}","{""CONFORMANT"": 8}"
+invalid-base64url,8,"{""REJECTED"": 8}","{""NOT_APPLICABLE"": 8}","{""CONFORMANT"": 8}"
+malformed-pkcs8,8,"{""REJECTED"": 8}","{""NOT_APPLICABLE"": 8}","{""CONFORMANT"": 8}"
+key-mismatch,8,"{""IMPORTED"": 8}","{""DEGRADED_SILENT"": 8}","{""VIOLATION"": 8}"
+rp-id-change,8,"{""IMPORTED"": 8}","{""DEGRADED_SILENT"": 8}","{""VIOLATION"": 8}"
+credential-id-collision,8,"{""REJECTED"": 8}","{""NOT_APPLICABLE"": 8}","{""AMBIGUOUS"": 8}"
+unknown-optional-member,8,"{""IMPORTED"": 8}","{""NOT_EVALUABLE"": 8}","{""CONFORMANT"": 8}"
+unknown-required-enum,8,"{""REJECTED"": 8}","{""NOT_APPLICABLE"": 8}","{""CONFORMANT"": 8}"
+minor-version-increase,8,"{""IMPORTED"": 8}","{""NOT_EVALUABLE"": 8}","{""CONFORMANT"": 8}"
+major-version-mismatch,8,"{""REJECTED"": 8}","{""NOT_APPLICABLE"": 8}","{""CONFORMANT"": 8}"

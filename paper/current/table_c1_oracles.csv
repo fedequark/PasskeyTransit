@@ -1,0 +1,16 @@
+oracle,pass,fail,not_applicable,not_evaluable
+cxf_structure,6144,0,0,0
+credential_id,6144,0,0,0
+rp_id,6144,0,0,0
+user_handle,6144,0,0,0
+public_key,6144,0,0,0
+webauthn_assertion,6144,0,0,0
+uv,6144,0,0,0
+prf_uv,0,1280,4608,256
+prf_no_uv,0,640,5376,128
+large_blob,768,768,4608,0
+cred_blob,0,1280,4608,256
+payments_marker,384,384,5376,0
+idempotence,0,0,6144,0
+atomicity,0,0,6144,0
+custody_ground_truth,6144,0,0,0

@@ -154,9 +154,9 @@ y el retry creó un duplicado, haciendo fallar atomicidad e idempotencia.
 ## 5. Discusión
 
 El experimento demuestra una capacidad del método, no una incidencia del mundo
-real: dentro de controles construidos para degradar propiedades, el 100% de los
-logins puede funcionar mientras otras propiedades desaparecen. Por tanto, un
-test de login aislado no es un oráculo suficiente para migración semántica.
+real: la autenticación funcionó en el 100% de los intentos, incluidos aquellos
+en los que los controles descartaron otras propiedades. Por tanto, un test de
+login aislado no es un oráculo suficiente para migración semántica.
 
 También observamos dependencia de ruta: un destino final sin pérdidas propias
 no puede reconstruir material descartado por un intermediario. La declaración
@@ -218,10 +218,15 @@ def run_analysis(
     interop_path: Path,
     output_dir: Path,
 ) -> dict[str, Any]:
-    input_paths = (
-        phase7_summary, phase7_manifest, c2_summary, c2_manifest,
-        c3_summary, c3_manifest, interop_path,
-    )
+    input_paths = {
+        "phase7_summary": phase7_summary,
+        "phase7_manifest": phase7_manifest,
+        "c2_summary": c2_summary,
+        "c2_manifest": c2_manifest,
+        "c3_summary": c3_summary,
+        "c3_manifest": c3_manifest,
+        "phase8_interop": interop_path,
+    }
     c1, c1_manifest = _verify(phase7_summary, phase7_manifest)
     c2, c2_manifest = _verify(c2_summary, c2_manifest)
     c3, c3_manifest = _verify(c3_summary, c3_manifest)
@@ -288,7 +293,7 @@ def run_analysis(
         if path.is_file() and path.name != "analysis_manifest.json"
     }
     manifest = {
-        "input_hashes": {str(path): _sha(path) for path in input_paths},
+        "input_hashes": {name: _sha(path) for name, path in input_paths.items()},
         "output_hashes": output_hashes,
         "claim_boundary_enforced": True,
     }

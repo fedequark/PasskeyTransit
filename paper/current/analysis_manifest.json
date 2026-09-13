@@ -1,0 +1,20 @@
+{
+  "input_hashes": {
+    "phase7_summary": "9b4f3344810d2d09397b3244c52372503bc268c95428a89e2d3d4d908c39ffcb",
+    "phase7_manifest": "1a01a0545789561b61cccb93c92a4522d06fd297ebafdb47f8b16aaaca4e0f6f",
+    "c2_summary": "567bd53828c8198062f00a9bcca485db829defe36a11131bd3b7607be368ca77",
+    "c2_manifest": "f045abf77b69050e27135f681e0fde4bda2160f76363384f4d3ea569116236f8",
+    "c3_summary": "16512c88531d67338ab33ac2562378873fdb28875e072b4fbf81c60216a2902d",
+    "c3_manifest": "6f8d374adf18bfc59a68d6e9dd1cac3f6786a5023a672a441639a329a8ea926d",
+    "phase8_interop": "7af9fa43d3332f9fa71159b11aea579325bba4b79f5e8d5ebf75015496d6f953"
+  },
+  "output_hashes": {
+    "MANUSCRIPT.md": "0deb98f6b1b2821b28f85ed8fb74995c5137fe8a526b50113821d6c4f0c6bec3",
+    "results_v0.2.json": "7dfab9081778cd1e2cfd4ba7e6cae014b74091bc431416a20bd3f6840e0e3544",
+    "table_c1_estimands.csv": "cea288f4d6e633a0671b75ca30daf2353196f6d9ada6761c1b7acecf4b77c9f9",
+    "table_c1_oracles.csv": "f76fa9eb2a5b9aace065c33f671553064f5a073c95945c8e3897ccea5e57a6b7",
+    "table_c2_mutations.csv": "9a30db7b87613b50ac0fdea9f2a225ce070a677686e948097bc9ff1ccf60c63b",
+    "table_c3_faults.csv": "7cd69b1352e6e1131805d317a8b2321d99d564d1f6390a401d648d4cd60535a9"
+  },
+  "claim_boundary_enforced": true
+}

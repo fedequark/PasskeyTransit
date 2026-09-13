@@ -1,0 +1,529 @@
+{
+  "evidence_class": "reference-control-analysis",
+  "c1": {
+    "protocol_id": "passkeytransit-semantic-preservation-v1.0",
+    "campaign_id": "C1",
+    "mode": "full",
+    "evidence_class": "browser-webauthn-reference-policy-control",
+    "attempt_count": 6144,
+    "credential_count": 256,
+    "route_count": 12,
+    "repetitions": 2,
+    "execution_statuses": {
+      "IMPORTED": 6144
+    },
+    "semantic_classes": {
+      "DEGRADED_SILENT": 1920,
+      "PASS": 2304,
+      "DEGRADED_VISIBLE": 1408,
+      "NOT_EVALUABLE": 512
+    },
+    "oracle_statuses": {
+      "cxf_structure": {
+        "PASS": 6144
+      },
+      "credential_id": {
+        "PASS": 6144
+      },
+      "rp_id": {
+        "PASS": 6144
+      },
+      "user_handle": {
+        "PASS": 6144
+      },
+      "public_key": {
+        "PASS": 6144
+      },
+      "webauthn_assertion": {
+        "PASS": 6144
+      },
+      "uv": {
+        "PASS": 6144
+      },
+      "prf_uv": {
+        "NOT_APPLICABLE": 4608,
+        "FAIL": 1280,
+        "NOT_EVALUABLE": 256
+      },
+      "prf_no_uv": {
+        "NOT_APPLICABLE": 5376,
+        "FAIL": 640,
+        "NOT_EVALUABLE": 128
+      },
+      "large_blob": {
+        "NOT_APPLICABLE": 4608,
+        "FAIL": 768,
+        "PASS": 768
+      },
+      "cred_blob": {
+        "FAIL": 1280,
+        "NOT_APPLICABLE": 4608,
+        "NOT_EVALUABLE": 256
+      },
+      "payments_marker": {
+        "NOT_APPLICABLE": 5376,
+        "PASS": 384,
+        "FAIL": 384
+      },
+      "idempotence": {
+        "NOT_APPLICABLE": 6144
+      },
+      "atomicity": {
+        "NOT_APPLICABLE": 6144
+      },
+      "custody_ground_truth": {
+        "PASS": 6144
+      }
+    },
+    "estimands": {
+      "preserving_migration_yield": {
+        "numerator": 2304,
+        "denominator": 6144,
+        "estimate": 0.375,
+        "ci95": [
+          0.32421875,
+          0.427734375
+        ]
+      },
+      "conditional_semantic_preservation": {
+        "numerator": 2304,
+        "denominator": 6144,
+        "estimate": 0.375,
+        "ci95": [
+          0.32421875,
+          0.421875
+        ]
+      },
+      "silent_degradation_rate": {
+        "numerator": 1920,
+        "denominator": 6144,
+        "estimate": 0.3125,
+        "ci95": [
+          0.2884114583333333,
+          0.3365885416666667
+        ]
+      },
+      "false_reassurance_rate": {
+        "numerator": 2944,
+        "denominator": 6144,
+        "estimate": 0.4791666666666667,
+        "ci95": [
+          0.4303385416666667,
+          0.5247395833333334
+        ]
+      }
+    },
+    "paired_route_comparisons": [
+      {
+        "destination": "compatible-lossy",
+        "left_route": "R02",
+        "right_route": "R07",
+        "paired_attempts": 512,
+        "semantic_discordant": 0,
+        "any_oracle_discordant": 0
+      },
+      {
+        "destination": "legacy",
+        "left_route": "R03",
+        "right_route": "R09",
+        "paired_attempts": 512,
+        "semantic_discordant": 0,
+        "any_oracle_discordant": 0
+      },
+      {
+        "destination": "reference",
+        "left_route": "R04",
+        "right_route": "R05",
+        "paired_attempts": 512,
+        "semantic_discordant": 256,
+        "any_oracle_discordant": 256
+      },
+      {
+        "destination": "reference",
+        "left_route": "R04",
+        "right_route": "R06",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 384
+      },
+      {
+        "destination": "reference",
+        "left_route": "R04",
+        "right_route": "R12",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 384
+      },
+      {
+        "destination": "reference",
+        "left_route": "R05",
+        "right_route": "R06",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 192
+      },
+      {
+        "destination": "reference",
+        "left_route": "R05",
+        "right_route": "R12",
+        "paired_attempts": 512,
+        "semantic_discordant": 192,
+        "any_oracle_discordant": 192
+      },
+      {
+        "destination": "reference",
+        "left_route": "R06",
+        "right_route": "R12",
+        "paired_attempts": 512,
+        "semantic_discordant": 192,
+        "any_oracle_discordant": 0
+      },
+      {
+        "destination": "strict",
+        "left_route": "R01",
+        "right_route": "R08",
+        "paired_attempts": 512,
+        "semantic_discordant": 256,
+        "any_oracle_discordant": 256
+      },
+      {
+        "destination": "strict",
+        "left_route": "R01",
+        "right_route": "R10",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 384
+      },
+      {
+        "destination": "strict",
+        "left_route": "R01",
+        "right_route": "R11",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 384
+      },
+      {
+        "destination": "strict",
+        "left_route": "R08",
+        "right_route": "R10",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 192
+      },
+      {
+        "destination": "strict",
+        "left_route": "R08",
+        "right_route": "R11",
+        "paired_attempts": 512,
+        "semantic_discordant": 192,
+        "any_oracle_discordant": 192
+      },
+      {
+        "destination": "strict",
+        "left_route": "R10",
+        "right_route": "R11",
+        "paired_attempts": 512,
+        "semantic_discordant": 192,
+        "any_oracle_discordant": 0
+      }
+    ],
+    "repeat_equivalent": true,
+    "confirmatory_provider_claims_authorized": false
+  },
+  "c2": {
+    "protocol_id": "passkeytransit-semantic-preservation-v1.0",
+    "campaign_id": "C2",
+    "evidence_class": "synthetic-reference-robustness-control",
+    "attempt_count": 80,
+    "strata": 8,
+    "mutation_families": {
+      "missing-required": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "invalid-base64url": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "malformed-pkcs8": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "key-mismatch": {
+        "attempts": 8,
+        "execution_statuses": {
+          "IMPORTED": 8
+        },
+        "semantic_classes": {
+          "DEGRADED_SILENT": 8
+        },
+        "normative_classes": {
+          "VIOLATION": 8
+        }
+      },
+      "rp-id-change": {
+        "attempts": 8,
+        "execution_statuses": {
+          "IMPORTED": 8
+        },
+        "semantic_classes": {
+          "DEGRADED_SILENT": 8
+        },
+        "normative_classes": {
+          "VIOLATION": 8
+        }
+      },
+      "credential-id-collision": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "AMBIGUOUS": 8
+        }
+      },
+      "unknown-optional-member": {
+        "attempts": 8,
+        "execution_statuses": {
+          "IMPORTED": 8
+        },
+        "semantic_classes": {
+          "NOT_EVALUABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "unknown-required-enum": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "minor-version-increase": {
+        "attempts": 8,
+        "execution_statuses": {
+          "IMPORTED": 8
+        },
+        "semantic_classes": {
+          "NOT_EVALUABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "major-version-mismatch": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      }
+    },
+    "pooled_preservation_estimate": null,
+    "confirmatory_provider_claims_authorized": false
+  },
+  "c3": {
+    "protocol_id": "passkeytransit-semantic-preservation-v1.0",
+    "campaign_id": "C3",
+    "evidence_class": "synthetic-transaction-fault-control",
+    "credential_count": 64,
+    "failure_sequence_count": 960,
+    "event_count": 1920,
+    "initial_execution_statuses": {
+      "ROLLED_BACK": 832,
+      "PARTIAL": 128
+    },
+    "final_execution_statuses": {
+      "IMPORTED": 960
+    },
+    "atomicity": {
+      "PASS": 832,
+      "FAIL": 128
+    },
+    "idempotence": {
+      "PASS": 832,
+      "FAIL": 128
+    },
+    "semantic_classes": {
+      "NOT_EVALUABLE": 528,
+      "DEGRADED_SILENT": 272,
+      "DEGRADED_VISIBLE": 160
+    },
+    "by_destination_and_failure_point": {
+      "strict:after-validation": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "strict:after-approval": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "strict:after-payload-decode": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "strict:after-provisional-persistence": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "strict:before-commit": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:after-validation": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:after-approval": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:after-payload-decode": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:after-provisional-persistence": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:before-commit": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "legacy:after-validation": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "legacy:after-approval": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "legacy:after-payload-decode": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "legacy:after-provisional-persistence": {
+        "sequences": 64,
+        "atomicity_failures": 64,
+        "idempotence_failures": 64
+      },
+      "legacy:before-commit": {
+        "sequences": 64,
+        "atomicity_failures": 64,
+        "idempotence_failures": 64
+      }
+    },
+    "confirmatory_provider_claims_authorized": false
+  },
+  "interop": {
+    "phase": 8,
+    "evidence_class": "independent-implementation-interoperability",
+    "implementations": {
+      "reference_hpke": "passkeytransit.hpke",
+      "native_hpke": "cryptography 50.0.1",
+      "independent_cxf_consumer": "Node.js v24.18.0"
+    },
+    "git": {
+      "source_commit": "d2893c324caa525916922f73f76f1fe87678f106",
+      "source_dirty": false
+    },
+    "hpke": {
+      "suite": "DHKEM(X25519,HKDF-SHA256)/HKDF-SHA256/AES-128-GCM",
+      "native_to_reference": true,
+      "reference_to_native": true,
+      "aad_profile_interop": "NOT_EVALUATED_NATIVE_API_HAS_NO_AAD_PARAMETER"
+    },
+    "cxf_node_consumer": {
+      "verified": true,
+      "envelope": true,
+      "passkeyType": true,
+      "pkcs8Parsed": true,
+      "publicSpkiSha256": "ea7328ba36d7f1cf47648be91fc88cbbe661aa7e68c276c46bbce927b41e2968",
+      "credentialIdSha256": "4e9db700153b25fbc6fcebe2bc833c791eb5f07a1b5dda795c462e3ffb89ab32",
+      "largeBlobSha256": "288586e28a43fe7effba6abdb20f75db7bd634a73af11e7147dc7ed7482fe3f9"
+    },
+    "pqc_exploration": {
+      "suite": "ML-KEM-768+X25519/HKDF-SHA256/AES-128-GCM",
+      "round_trip": true,
+      "encapsulation_bytes": 1120,
+      "message_bytes": 1171,
+      "cxp_normative_assessment": "OUT_OF_SCOPE"
+    },
+    "all_applicable_checks_pass": true,
+    "limitations": [
+      "independent HPKE check covers the RFC 9180 base suite, not the underspecified full CXP ZIP/JWE framing",
+      "cryptography's single-shot native HPKE API does not expose application AAD",
+      "the hybrid PQC suite is exploratory and is not claimed as a CXP v0 profile"
+    ]
+  },
+  "environment": {
+    "browser_version": "153.0.4234.32",
+    "playwright_version": "1.62.0",
+    "source_commits": [
+      "d2893c324caa525916922f73f76f1fe87678f106"
+    ]
+  },
+  "supported_claims": [
+    "browser assertion alone is insufficient in the designed lossy controls",
+    "the harness detects route-dependent, atomicity, and idempotence losses",
+    "the RFC 9180 base suite interoperates with cryptography's native implementation"
+  ],
+  "prohibited_claims": [
+    "commercial provider behavior or prevalence",
+    "complete normative CXP interoperability",
+    "positive PRF or credBlob preservation",
+    "a vulnerability or novelty claim"
+  ]
+}

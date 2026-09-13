@@ -30,3 +30,11 @@ estimands.
 - `cryptography` HPKE API: <https://cryptography.io/en/49.0.0/hazmat/primitives/hpke/>
 - FIDO CXP Working Draft baseline:
   <https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html>
+
+## Verified run
+
+With clean source commit `d2893c3`, `cryptography 50.0.1` and Node.js
+`v24.18.0` passed every applicable check. The hybrid ML-KEM-768+X25519
+encapsulation was 1,120 bytes; its complete encrypted test message was 1,171
+bytes. These sizes are descriptive for this one plaintext and suite, not a CXP
+wire-format benchmark.

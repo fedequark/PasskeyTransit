@@ -1,0 +1,16 @@
+destination_failure_point,sequences,atomicity_failures,idempotence_failures
+strict:after-validation,64,0,0
+strict:after-approval,64,0,0
+strict:after-payload-decode,64,0,0
+strict:after-provisional-persistence,64,0,0
+strict:before-commit,64,0,0
+compatible-lossy:after-validation,64,0,0
+compatible-lossy:after-approval,64,0,0
+compatible-lossy:after-payload-decode,64,0,0
+compatible-lossy:after-provisional-persistence,64,0,0
+compatible-lossy:before-commit,64,0,0
+legacy:after-validation,64,0,0
+legacy:after-approval,64,0,0
+legacy:after-payload-decode,64,0,0
+legacy:after-provisional-persistence,64,64,64
+legacy:before-commit,64,64,64
