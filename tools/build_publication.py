@@ -134,6 +134,8 @@ def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
         style.font.color.rgb = RGBColor(0, 0, 0)
         style._element.rPr.rFonts.set(qn("w:ascii"), "Arial")
         style._element.rPr.rFonts.set(qn("w:hAnsi"), "Arial")
+        style._element.rPr.rFonts.set(qn("w:eastAsia"), "Arial")
+        style._element.rPr.rFonts.set(qn("w:cs"), "Arial")
     styles["Normal"].paragraph_format.space_after = Pt(6)
     styles["Normal"].paragraph_format.line_spacing = 1.08
     styles["Heading 1"].paragraph_format.space_before = Pt(14)
