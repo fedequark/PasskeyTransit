@@ -41,6 +41,15 @@ def privacy_audit(paths: Iterable[Path]) -> dict[str, Any]:
     for path in paths:
         if path.suffix not in {".json", ".jsonl"}:
             continue
+        if path.suffix == ".json":
+            inspected += 1
+            try:
+                value = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                findings.append(f"{path}:invalid-json")
+            else:
+                _scan_json_value(value, str(path), findings)
+            continue
         with path.open("r", encoding="utf-8") as handle:
             for line_number, line in enumerate(handle, 1):
                 if not line.strip():

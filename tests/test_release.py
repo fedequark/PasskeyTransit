@@ -14,6 +14,14 @@ def test_privacy_audit_rejects_private_key_field(tmp_path):
     assert result["passed"] is False
 
 
+def test_privacy_audit_accepts_pretty_printed_json(tmp_path):
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps({"source": {"commit": "abc"}}, indent=2), encoding="utf-8")
+    result = privacy_audit([path])
+    assert result["passed"] is True
+    assert result["json_records_inspected"] == 1
+
+
 def test_verify_release_checks_internal_and_external_hashes(tmp_path):
     archive_path = tmp_path / "release.zip"
     payload = b"evidence"
