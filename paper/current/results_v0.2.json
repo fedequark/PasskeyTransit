@@ -82,7 +82,7 @@
         "estimate": 0.375,
         "ci95": [
           0.32421875,
-          0.427734375
+          0.42578125
         ]
       },
       "conditional_semantic_preservation": {
@@ -90,8 +90,8 @@
         "denominator": 6144,
         "estimate": 0.375,
         "ci95": [
-          0.32421875,
-          0.421875
+          0.326171875,
+          0.42578125
         ]
       },
       "silent_degradation_rate": {
@@ -99,7 +99,7 @@
         "denominator": 6144,
         "estimate": 0.3125,
         "ci95": [
-          0.2884114583333333,
+          0.2877604166666667,
           0.3365885416666667
         ]
       },
@@ -108,7 +108,7 @@
         "denominator": 6144,
         "estimate": 0.4791666666666667,
         "ci95": [
-          0.4303385416666667,
+          0.4342447916666667,
           0.5247395833333334
         ]
       }
@@ -476,7 +476,7 @@
       "independent_cxf_consumer": "Node.js v24.18.0"
     },
     "git": {
-      "source_commit": "d2893c324caa525916922f73f76f1fe87678f106",
+      "source_commit": "309dfac732e6aba1755250fe0dc04170dd4ea815",
       "source_dirty": false
     },
     "hpke": {
@@ -600,7 +600,7 @@
     "browser_version": "153.0.4234.32",
     "playwright_version": "1.62.0",
     "source_commits": [
-      "d2893c324caa525916922f73f76f1fe87678f106"
+      "309dfac732e6aba1755250fe0dc04170dd4ea815"
     ]
   },
   "supported_claims": [

@@ -1,19 +1,19 @@
 {
   "input_hashes": {
-    "phase7_summary": "9b4f3344810d2d09397b3244c52372503bc268c95428a89e2d3d4d908c39ffcb",
-    "phase7_manifest": "1a01a0545789561b61cccb93c92a4522d06fd297ebafdb47f8b16aaaca4e0f6f",
+    "phase7_summary": "9c24ce09d74fa1cecac744a7d101e062a978ba38c62b387828c3bb394f0fa4d0",
+    "phase7_manifest": "5c81df8946f470745f6a7b84eb0f1aac796aceb4de5b70a216631761c91921c8",
     "c2_summary": "567bd53828c8198062f00a9bcca485db829defe36a11131bd3b7607be368ca77",
-    "c2_manifest": "f045abf77b69050e27135f681e0fde4bda2160f76363384f4d3ea569116236f8",
+    "c2_manifest": "4a780824d0a086c0bbb3921133c2fda4218bf29204a51474d833c46487dbcd31",
     "c3_summary": "16512c88531d67338ab33ac2562378873fdb28875e072b4fbf81c60216a2902d",
-    "c3_manifest": "6f8d374adf18bfc59a68d6e9dd1cac3f6786a5023a672a441639a329a8ea926d",
-    "phase8_interop": "7af9fa43d3332f9fa71159b11aea579325bba4b79f5e8d5ebf75015496d6f953",
+    "c3_manifest": "4360fa2962788e25937b376a8e37ddf5500bb93c5d13c0452ce6f4eff9b50b9e",
+    "phase8_interop": "84d53ee5c5c16c0a78c887ce21ac7c13c86ad4cb34a5d9765dbea03318298381",
     "phase11_external_cxf": "da6b0f303a000d29cf8b0711664950c2b77d01c6e6014e206c3a56358c2dc126",
     "phase12_oracles": "2db7a6643d79c9070ee08bba6da7d01a54d21b9c46d1ea27f38e40f8f98a10df"
   },
   "output_hashes": {
-    "results_v0.2.json": "0c29b59e08f56be195c12549630723fa2526fc7aa7fe572572a3a574b44ab126",
-    "MANUSCRIPT.md": "a05946bf7c78d5bebfe79cc49eb69934db14f30044581aa63ff8aae4e5c48437",
-    "table_c1_estimands.csv": "cea288f4d6e633a0671b75ca30daf2353196f6d9ada6761c1b7acecf4b77c9f9",
+    "results_v0.2.json": "468a33b20059891d8bdd3cb65dcc82e018ace528440c4001543b5a57814fd786",
+    "MANUSCRIPT.md": "f4e48b1e1be718696dba4183c881aaa1ba7f5c3591a2254c88d82ae10d262fc7",
+    "table_c1_estimands.csv": "58f6b3be45188b8157a033bdc30cbcaef86eab77b4c4c465eb48b789262f45d1",
     "table_c1_oracles.csv": "f76fa9eb2a5b9aace065c33f671553064f5a073c95945c8e3897ccea5e57a6b7",
     "table_c2_mutations.csv": "9a30db7b87613b50ac0fdea9f2a225ce070a677686e948097bc9ff1ccf60c63b",
     "table_c3_faults.csv": "7cd69b1352e6e1131805d317a8b2321d99d564d1f6390a401d648d4cd60535a9"

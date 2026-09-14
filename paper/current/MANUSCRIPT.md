@@ -11,11 +11,11 @@ mutaciones y fallos transaccionales. La campaña principal ejecutó
 autenticadores virtuales Chromium. Las 6,144
 aserciones WebAuthn fueron aceptadas, pero 2,944 intentos
 (47.92%; IC95% por bootstrap de credencial
-43.03%–52.47%) combinaron
+43.42%–52.47%) combinaron
 login correcto con el fallo de otra propiedad aplicable. La preservación
 semántica completa observable fue 37.50%
 (2,304/6,144; IC95%
-32.42%–42.77%). Estos
+32.42%–42.58%). Estos
 porcentajes caracterizan estímulos sintéticos diseñados, no productos ni
 prevalencia real. PRF y preservación positiva de `credBlob` permanecen no
 evaluables por límites de la interfaz CDP.
@@ -93,7 +93,7 @@ Las dos repeticiones produjeron resultados determinísticos equivalentes.
 
 La tasa de degradación silenciosa fue 31.25%
 (1,920/6,144; IC95%
-28.84%–33.66%). `largeBlob` fue
+28.78%–33.66%). `largeBlob` fue
 observable en 1.536 casos aplicables: 768 pasaron y 768 fallaron según la ruta
 de control. La pérdida en un intermediario persistió al volver a un destino
 capaz, produciendo discordancias en comparaciones pareadas con el mismo destino.
