@@ -44,6 +44,20 @@ def _manuscript(results: dict[str, Any]) -> str:
     reassurance = estimands["false_reassurance_rate"]
     atomic_pass = c3["atomicity"]["PASS"]
     total_c3 = c3["failure_sequence_count"]
+    external = results.get("external_cxf")
+    external_text = ""
+    if external:
+        external_text = f"""
+
+### 3.1. Implementación CXF externa
+
+La librería Rust `credential-exchange-format` {external['adapter']['version']} de
+Bitwarden, fijada al commit `{external['adapter']['source_revision']}`, parseó y
+serializó un documento CXF con passkey y extensiones. El documento normalizado
+conservó exactamente su hash SHA-256. Esta prueba establece interoperabilidad de
+formato con una implementación abierta independiente; no ejecuta el flujo de un
+producto ni autoriza afirmaciones sobre Bitwarden como proveedor.
+"""
     return f"""# Migrar una passkey no basta: preservación semántica en controles CXF/CXP
 
 ## Resumen
@@ -110,6 +124,7 @@ HPKE en ambas direcciones con PasskeyTransit. Un consumidor Node.js independient
 validó el envelope CXF, PKCS#8, SPKI, credential ID y `largeBlob` DEFLATE. El
 ensayo híbrido ML-KEM-768+X25519 fue exitoso, pero permanece fuera del perfil
 CXP y de los estimandos.
+{external_text}
 
 ## 4. Resultados
 
@@ -205,6 +220,10 @@ los mismos oráculos y límites de afirmación.
    https://www.w3.org/TR/webauthn-3/.
 5. PyCA, `cryptography` HPKE API documentation,
    https://cryptography.io/en/49.0.0/hazmat/primitives/hpke/.
+6. Bitwarden, `credential-exchange` v0.4.0,
+   https://github.com/bitwarden/credential-exchange/tree/v0.4.0.
+7. Jannett et al., The State of Passkeys, USENIX Security 2026,
+   https://www.usenix.org/conference/usenixsecurity26/presentation/jannett.
 """
 
 
@@ -217,6 +236,8 @@ def run_analysis(
     c3_manifest: Path,
     interop_path: Path,
     output_dir: Path,
+    external_path: Path | None = None,
+    oracle_report_path: Path | None = None,
 ) -> dict[str, Any]:
     input_paths = {
         "phase7_summary": phase7_summary,
@@ -227,10 +248,16 @@ def run_analysis(
         "c3_manifest": c3_manifest,
         "phase8_interop": interop_path,
     }
+    if external_path is not None:
+        input_paths["phase11_external_cxf"] = external_path
+    if oracle_report_path is not None:
+        input_paths["phase12_oracles"] = oracle_report_path
     c1, c1_manifest = _verify(phase7_summary, phase7_manifest)
     c2, c2_manifest = _verify(c2_summary, c2_manifest)
     c3, c3_manifest = _verify(c3_summary, c3_manifest)
     interop = _load(interop_path)
+    external = _load(external_path) if external_path is not None else None
+    oracle_report = _load(oracle_report_path) if oracle_report_path is not None else None
     if c1.get("mode") != "full" or c1.get("attempt_count") != 6144 or c1.get("repeat_equivalent") is not True:
         raise ValueError("Phase 7 input is not the complete equivalent-repeat C1 run")
     if c3.get("failure_sequence_count") != 960:
@@ -239,12 +266,16 @@ def run_analysis(
         raise ValueError("Phase 8 interoperability checks did not pass")
     if interop.get("git", {}).get("source_dirty") is not False:
         raise ValueError("Phase 8 interoperability evidence was not generated from a clean source tree")
+    if external is not None and external.get("semantic_json_equal") is not True:
+        raise ValueError("Phase 11 external CXF round trip did not preserve normalized JSON")
     results = {
         "evidence_class": "reference-control-analysis",
         "c1": c1,
         "c2": c2,
         "c3": c3,
         "interop": interop,
+        "external_cxf": external,
+        "oracle_capabilities": oracle_report,
         "environment": {
             "browser_version": c1_manifest["browser"]["version"],
             "playwright_version": c1_manifest["playwright_version"],
@@ -254,6 +285,7 @@ def run_analysis(
             "browser assertion alone is insufficient in the designed lossy controls",
             "the harness detects route-dependent, atomicity, and idempotence losses",
             "the RFC 9180 base suite interoperates with cryptography's native implementation",
+            "a pinned independent open-source CXF parser preserves the normalized test document",
         ],
         "prohibited_claims": [
             "commercial provider behavior or prevalence",
@@ -287,11 +319,15 @@ def run_analysis(
         [{"destination_failure_point": name, **value} for name, value in c3["by_destination_and_failure_point"].items()],
     )
     manuscript_path.write_text(_manuscript(results), encoding="utf-8")
-    output_hashes = {
-        path.name: _sha(path)
-        for path in output_dir.iterdir()
-        if path.is_file() and path.name != "analysis_manifest.json"
-    }
+    managed_outputs = (
+        "results_v0.2.json",
+        "MANUSCRIPT.md",
+        "table_c1_estimands.csv",
+        "table_c1_oracles.csv",
+        "table_c2_mutations.csv",
+        "table_c3_faults.csv",
+    )
+    output_hashes = {name: _sha(output_dir / name) for name in managed_outputs}
     manifest = {
         "input_hashes": {name: _sha(path) for name, path in input_paths.items()},
         "output_hashes": output_hashes,

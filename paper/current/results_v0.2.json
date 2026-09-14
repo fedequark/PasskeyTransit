@@ -508,6 +508,94 @@
       "the hybrid PQC suite is exploratory and is not claimed as a CXP v0 profile"
     ]
   },
+  "external_cxf": {
+    "adapter": {
+      "name": "bitwarden/credential-exchange credential-exchange-format",
+      "version": "0.4.0",
+      "source_url": "https://github.com/bitwarden/credential-exchange",
+      "source_revision": "0ee5516e4c0481ab6b0a68f8541fc39c3c3379b1"
+    },
+    "adapter_protocol_version": 1,
+    "process_exit_code": 0,
+    "source_sha256": "5f91de7a12458ef53045e2ccd3683b89d9071f24d5716c5c5d08571d116cf287",
+    "round_trip_sha256": "5f91de7a12458ef53045e2ccd3683b89d9071f24d5716c5c5d08571d116cf287",
+    "semantic_json_equal": true,
+    "adapter_metadata": {
+      "accounts": 1,
+      "crate": "credential-exchange-format",
+      "credentials": 1,
+      "implementation": "bitwarden/credential-exchange",
+      "items": 1,
+      "revision": "0ee5516e4c0481ab6b0a68f8541fc39c3c3379b1",
+      "version": "0.4.0"
+    },
+    "evidence_class": "independent-open-source-parser-round-trip",
+    "limitations": [
+      "the tested crate is a parser and serializer, not a credential-provider product flow",
+      "semantic JSON equality does not establish WebAuthn import behavior or CXP interoperability",
+      "the input contains deterministic synthetic key material only"
+    ]
+  },
+  "oracle_capabilities": {
+    "schema_version": 1,
+    "evidence_rule": "only EXECUTED capabilities can support positive behavioral claims",
+    "capabilities": [
+      {
+        "oracle": "webauthn_assertion",
+        "status": "EXECUTED",
+        "path": "Chromium virtual authenticator plus independent RP verification",
+        "claim_effect": "positive and negative browser-backed observations are admissible"
+      },
+      {
+        "oracle": "large_blob",
+        "status": "EXECUTED",
+        "path": "CDP credential injection followed by WebAuthn largeBlob read",
+        "claim_effect": "positive and negative browser-backed observations are admissible"
+      },
+      {
+        "oracle": "prf_uv",
+        "status": "BLOCKED_BY_INTERFACE",
+        "path": "native OS credential-provider test adapter or software CTAP authenticator",
+        "blocker": "CDP addCredential exposes no CXF hmacCredentials seed injection",
+        "claim_effect": "positive preservation remains NOT_EVALUABLE"
+      },
+      {
+        "oracle": "prf_no_uv",
+        "status": "BLOCKED_BY_INTERFACE",
+        "path": "native OS credential-provider test adapter or software CTAP authenticator",
+        "blocker": "CDP addCredential exposes no CXF hmacCredentials seed injection",
+        "claim_effect": "positive preservation remains NOT_EVALUABLE"
+      },
+      {
+        "oracle": "cred_blob",
+        "status": "BLOCKED_BY_INTERFACE",
+        "path": "native CTAP2 import path with credBlob state control",
+        "blocker": "CDP addCredential exposes no credBlob injection",
+        "claim_effect": "positive preservation remains NOT_EVALUABLE"
+      },
+      {
+        "oracle": "payments_marker",
+        "status": "FORMAT_ONLY",
+        "path": "SPC-capable browser and enrolled payment instrument test environment",
+        "blocker": "the current lab has no payment-instrument enrollment or SPC relying-party flow",
+        "claim_effect": "the CXF marker is checked, but SPC behavior is NOT_EVALUABLE"
+      },
+      {
+        "oracle": "cxp_pqc",
+        "status": "OUT_OF_SCOPE",
+        "path": "a separately versioned CXP-PQC profile with algorithm identifiers and transcript binding",
+        "blocker": "CXP v0 does not register the exploratory hybrid construction",
+        "claim_effect": "no CXP-PQC interoperability estimand is authorized"
+      }
+    ],
+    "open_behavioral_oracles": [
+      "prf_uv",
+      "prf_no_uv",
+      "cred_blob",
+      "payments_marker",
+      "cxp_pqc"
+    ]
+  },
   "environment": {
     "browser_version": "153.0.4234.32",
     "playwright_version": "1.62.0",
@@ -518,7 +606,8 @@
   "supported_claims": [
     "browser assertion alone is insufficient in the designed lossy controls",
     "the harness detects route-dependent, atomicity, and idempotence losses",
-    "the RFC 9180 base suite interoperates with cryptography's native implementation"
+    "the RFC 9180 base suite interoperates with cryptography's native implementation",
+    "a pinned independent open-source CXF parser preserves the normalized test document"
   ],
   "prohibited_claims": [
     "commercial provider behavior or prevalence",

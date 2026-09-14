@@ -1,0 +1,35 @@
+name: research-verification
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  python-verification:
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: ./research.ps1 setup
+      - run: ./research.ps1 test
+      - run: ./research.ps1 protocol
+      - run: ./research.ps1 requirements
+      - run: ./research.ps1 cxp-requirements
+      - run: ./research.ps1 phase7-calibration
+
+  external-cxf:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip1
+      - run: pwsh ./research.ps1 setup
+      - run: pwsh ./research.ps1 phase11

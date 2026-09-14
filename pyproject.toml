@@ -17,6 +17,10 @@ dependencies = [
 dev = [
   "pytest>=8,<10",
 ]
+publication = [
+  "python-docx>=1.2,<2",
+  "reportlab>=4.4,<5",
+]
 
 [project.scripts]
 passkeytransit = "passkeytransit.cli:main"

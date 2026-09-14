@@ -14,6 +14,9 @@ from .protocol import validate_protocol
 from .requirements import requirement_coverage
 from .robustness import run_c2_robustness, run_c3_faults
 from .interop import run_independent_interop
+from .external_adapter import run_bitwarden_interop
+from .oracle_capabilities import write_oracle_capability_report
+from .release import build_release, verify_release
 from .webauthn_lab import run_webauthn_migration
 
 
@@ -60,6 +63,27 @@ def build_parser() -> argparse.ArgumentParser:
     analysis.add_argument("--c3-manifest", type=Path, required=True)
     analysis.add_argument("--interop", type=Path, required=True)
     analysis.add_argument("--output", type=Path, required=True)
+    analysis.add_argument("--external", type=Path)
+    analysis.add_argument("--oracle-report", type=Path)
+    external = subparsers.add_parser("bitwarden-interop", help="run the pinned Bitwarden CXF adapter")
+    external.add_argument("--protocol", type=Path, required=True)
+    external.add_argument("--cargo", type=Path, required=True)
+    external.add_argument("--manifest", type=Path, required=True)
+    external.add_argument("--node", type=Path, required=True)
+    external.add_argument("--wasi-runner", type=Path, required=True)
+    external.add_argument("--cargo-toolchain")
+    external.add_argument("--output", type=Path, required=True)
+    oracle_audit = subparsers.add_parser("oracle-audit", help="write the Phase 12 capability report")
+    oracle_audit.add_argument("--output", type=Path, required=True)
+    release = subparsers.add_parser("release", help="build a self-contained replication archive")
+    release.add_argument("--project-root", type=Path, required=True)
+    release.add_argument("--evidence-root", type=Path, action="append", required=True)
+    release.add_argument("--external-result", type=Path, required=True)
+    release.add_argument("--oracle-report", type=Path, required=True)
+    release.add_argument("--output", type=Path, required=True)
+    release_verify = subparsers.add_parser("verify-release", help="verify a replication archive")
+    release_verify.add_argument("--archive", type=Path, required=True)
+    release_verify.add_argument("--manifest", type=Path, required=True)
     return parser
 
 
@@ -70,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
             json.dumps(
                 {
                     "version": __version__,
-                    "phase": "9-analysis-and-manuscript",
+                    "phase": "13-publication-package",
                     "evidence_class": "reference-control-research-package",
                 },
                 indent=2,
@@ -117,9 +141,30 @@ def main(argv: list[str] | None = None) -> int:
         result = run_analysis(
             args.phase7_summary, args.phase7_manifest, args.c2_summary, args.c2_manifest,
             args.c3_summary, args.c3_manifest, args.interop, args.output,
+            args.external, args.oracle_report,
         )
         print(json.dumps({"output": str(args.output), "claim_boundary_enforced": result["manifest"]["claim_boundary_enforced"]}, indent=2))
         return 0
+    if args.command == "bitwarden-interop":
+        result = run_bitwarden_interop(
+            args.protocol, args.cargo, args.manifest, args.node, args.wasi_runner, args.output,
+            args.cargo_toolchain,
+        )
+        print(json.dumps(result, indent=2))
+        return 0 if result["semantic_json_equal"] else 1
+    if args.command == "oracle-audit":
+        print(json.dumps(write_oracle_capability_report(args.output), indent=2))
+        return 0
+    if args.command == "release":
+        result = build_release(
+            args.project_root, args.evidence_root, args.external_result, args.oracle_report, args.output
+        )
+        print(json.dumps(result, indent=2))
+        return 0
+    if args.command == "verify-release":
+        result = verify_release(args.archive, args.manifest)
+        print(json.dumps(result, indent=2))
+        return 0 if result["verified"] else 1
     result = run_pilot(args.config, args.output)
     print(json.dumps(result, indent=2))
     return 0

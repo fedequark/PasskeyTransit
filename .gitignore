@@ -8,4 +8,4 @@ datasets/generated/
 dist/
 build/
 *.egg-info/
-
+interop/bitwarden-cxf-adapter/target/

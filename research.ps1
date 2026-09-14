@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "verify-release", "status")]
     [string]$Action = "status"
 )
 
@@ -145,15 +145,68 @@ switch ($Action) {
         $Phase7Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase7") -Directory | Sort-Object Name | Select-Object -Last 1
         $Phase6Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase6") -Directory | Sort-Object Name | Select-Object -Last 1
         $Phase8Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase8") -Directory | Sort-Object Name | Select-Object -Last 1
-        & $VenvPython -m passkeytransit analyze `
-            --phase7-summary (Join-Path $Phase7Run.FullName "full\c1_phase7_full_summary.json") `
-            --phase7-manifest (Join-Path $Phase7Run.FullName "full\c1_phase7_full_manifest.json") `
-            --c2-summary (Join-Path $Phase6Run.FullName "c2\c2_phase6_summary.json") `
-            --c2-manifest (Join-Path $Phase6Run.FullName "c2\c2_phase6_manifest.json") `
-            --c3-summary (Join-Path $Phase6Run.FullName "c3\c3_phase6_summary.json") `
-            --c3-manifest (Join-Path $Phase6Run.FullName "c3\c3_phase6_manifest.json") `
-            --interop (Join-Path $Phase8Run.FullName "interop_result.json") `
-            --output (Join-Path $ProjectRoot "paper\current")
+        $AnalysisArgs = @(
+            "-m", "passkeytransit", "analyze",
+            "--phase7-summary", (Join-Path $Phase7Run.FullName "full\c1_phase7_full_summary.json"),
+            "--phase7-manifest", (Join-Path $Phase7Run.FullName "full\c1_phase7_full_manifest.json"),
+            "--c2-summary", (Join-Path $Phase6Run.FullName "c2\c2_phase6_summary.json"),
+            "--c2-manifest", (Join-Path $Phase6Run.FullName "c2\c2_phase6_manifest.json"),
+            "--c3-summary", (Join-Path $Phase6Run.FullName "c3\c3_phase6_summary.json"),
+            "--c3-manifest", (Join-Path $Phase6Run.FullName "c3\c3_phase6_manifest.json"),
+            "--interop", (Join-Path $Phase8Run.FullName "interop_result.json"),
+            "--output", (Join-Path $ProjectRoot "paper\current")
+        )
+        $ExternalPath = Join-Path $ProjectRoot "paper\current\bitwarden_cxf_interop.json"
+        $OraclePath = Join-Path $ProjectRoot "paper\current\oracle_capabilities.json"
+        if (Test-Path -LiteralPath $ExternalPath) { $AnalysisArgs += @("--external", $ExternalPath) }
+        if (Test-Path -LiteralPath $OraclePath) { $AnalysisArgs += @("--oracle-report", $OraclePath) }
+        & $VenvPython @AnalysisArgs
+    }
+    "phase11" {
+        Require-Venv
+        $CargoPath = (Get-Command cargo -ErrorAction Stop).Source
+        $NodePath = (Get-Command node -ErrorAction Stop).Source
+        & $VenvPython -m passkeytransit bitwarden-interop `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --cargo $CargoPath `
+            --manifest (Join-Path $ProjectRoot "interop\bitwarden-cxf-adapter\Cargo.toml") `
+            --node $NodePath `
+            --wasi-runner (Join-Path $ProjectRoot "interop\wasi_runner.mjs") `
+            --cargo-toolchain $(if ($IsWindows) { "stable-x86_64-pc-windows-gnu" } else { "stable" }) `
+            --output (Join-Path $ProjectRoot "paper\current\bitwarden_cxf_interop.json")
+    }
+    "phase12" {
+        Require-Venv
+        & $VenvPython -m passkeytransit oracle-audit `
+            --output (Join-Path $ProjectRoot "paper\current\oracle_capabilities.json")
+    }
+    "phase13" {
+        Require-Venv
+        & $VenvPython (Join-Path $ProjectRoot "tools\build_publication.py") `
+            --source (Join-Path $ProjectRoot "paper\current\MANUSCRIPT.md") `
+            --docx (Join-Path $ProjectRoot "paper\current\PasskeyTransit_v0.2.docx") `
+            --pdf (Join-Path $ProjectRoot "paper\current\PasskeyTransit_v0.2.pdf")
+    }
+    "phase10" {
+        Require-Venv
+        $Phase7Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase7") -Directory | Sort-Object Name | Select-Object -Last 1
+        $Phase6Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase6") -Directory | Sort-Object Name | Select-Object -Last 1
+        $Phase8Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase8") -Directory | Sort-Object Name | Select-Object -Last 1
+        & $VenvPython -m passkeytransit release `
+            --project-root $ProjectRoot `
+            --evidence-root $Phase6Run.FullName `
+            --evidence-root $Phase7Run.FullName `
+            --evidence-root $Phase8Run.FullName `
+            --evidence-root (Join-Path $ProjectRoot "paper\current") `
+            --external-result (Join-Path $ProjectRoot "paper\current\bitwarden_cxf_interop.json") `
+            --oracle-report (Join-Path $ProjectRoot "paper\current\oracle_capabilities.json") `
+            --output (Join-Path $ProjectRoot "releases\v0.2.0")
+    }
+    "verify-release" {
+        Require-Venv
+        & $VenvPython -m passkeytransit verify-release `
+            --archive (Join-Path $ProjectRoot "releases\v0.2.0\passkeytransit-v0.2.0-replication.zip") `
+            --manifest (Join-Path $ProjectRoot "releases\v0.2.0\release_manifest.json")
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {

@@ -50,6 +50,12 @@ ML-KEM-768+X25519 exploratory round trip. The legacy `cxf_subset` module
 exists only to preserve the reconstructed Phase 0 pilot. Phase 9 derives a
 hash-verified results package and current manuscript whose allowed and
 prohibited claims are machine-readable.
+Phase 10 adds a clean-tree, privacy-audited replication archive with two-level
+hash verification. Phase 11 runs the pinned Bitwarden CXF Rust crate through a
+stable external adapter. Phase 12 records an executable disposition for every
+remaining oracle, and Phase 13 adds the focused literature review and
+publication package. None of these additions converts parser interop or
+synthetic controls into commercial-provider evidence.
 
 ## Quick start
 
@@ -68,6 +74,11 @@ From PowerShell:
 ./research.ps1 phase7
 ./research.ps1 phase8
 ./research.ps1 phase9
+./research.ps1 phase11
+./research.ps1 phase12
+./research.ps1 phase13
+./research.ps1 phase10
+./research.ps1 verify-release
 ./research.ps1 pilot
 ```
 

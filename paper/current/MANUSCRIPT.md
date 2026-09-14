@@ -65,6 +65,17 @@ validó el envelope CXF, PKCS#8, SPKI, credential ID y `largeBlob` DEFLATE. El
 ensayo híbrido ML-KEM-768+X25519 fue exitoso, pero permanece fuera del perfil
 CXP y de los estimandos.
 
+
+### 3.1. Implementación CXF externa
+
+La librería Rust `credential-exchange-format` 0.4.0 de
+Bitwarden, fijada al commit `0ee5516e4c0481ab6b0a68f8541fc39c3c3379b1`, parseó y
+serializó un documento CXF con passkey y extensiones. El documento normalizado
+conservó exactamente su hash SHA-256. Esta prueba establece interoperabilidad de
+formato con una implementación abierta independiente; no ejecuta el flujo de un
+producto ni autoriza afirmaciones sobre Bitwarden como proveedor.
+
+
 ## 4. Resultados
 
 ### 4.1. Campaña C1 con navegador
@@ -159,3 +170,7 @@ los mismos oráculos y límites de afirmación.
    https://www.w3.org/TR/webauthn-3/.
 5. PyCA, `cryptography` HPKE API documentation,
    https://cryptography.io/en/49.0.0/hazmat/primitives/hpke/.
+6. Bitwarden, `credential-exchange` v0.4.0,
+   https://github.com/bitwarden/credential-exchange/tree/v0.4.0.
+7. Jannett et al., The State of Passkeys, USENIX Security 2026,
+   https://www.usenix.org/conference/usenixsecurity26/presentation/jannett.

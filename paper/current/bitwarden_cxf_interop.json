@@ -1,0 +1,28 @@
+{
+  "adapter": {
+    "name": "bitwarden/credential-exchange credential-exchange-format",
+    "version": "0.4.0",
+    "source_url": "https://github.com/bitwarden/credential-exchange",
+    "source_revision": "0ee5516e4c0481ab6b0a68f8541fc39c3c3379b1"
+  },
+  "adapter_protocol_version": 1,
+  "process_exit_code": 0,
+  "source_sha256": "5f91de7a12458ef53045e2ccd3683b89d9071f24d5716c5c5d08571d116cf287",
+  "round_trip_sha256": "5f91de7a12458ef53045e2ccd3683b89d9071f24d5716c5c5d08571d116cf287",
+  "semantic_json_equal": true,
+  "adapter_metadata": {
+    "accounts": 1,
+    "crate": "credential-exchange-format",
+    "credentials": 1,
+    "implementation": "bitwarden/credential-exchange",
+    "items": 1,
+    "revision": "0ee5516e4c0481ab6b0a68f8541fc39c3c3379b1",
+    "version": "0.4.0"
+  },
+  "evidence_class": "independent-open-source-parser-round-trip",
+  "limitations": [
+    "the tested crate is a parser and serializer, not a credential-provider product flow",
+    "semantic JSON equality does not establish WebAuthn import behavior or CXP interoperability",
+    "the input contains deterministic synthetic key material only"
+  ]
+}

@@ -1,0 +1,9 @@
+[package]
+name = "passkeytransit-bitwarden-cxf-adapter"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+credential-exchange-format = { git = "https://github.com/bitwarden/credential-exchange.git", rev = "0ee5516e4c0481ab6b0a68f8541fc39c3c3379b1" }
+serde_json = "1"
