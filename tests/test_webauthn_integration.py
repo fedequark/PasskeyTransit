@@ -3,10 +3,39 @@ from pathlib import Path
 import pytest
 
 from passkeytransit.webauthn_lab import run_webauthn_migration
-from passkeytransit.browser_campaign import run_browser_c1
+import hashlib
+import json
+
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+
+from passkeytransit.browser_campaign import ASSERT_CHALLENGE, _verify, run_browser_c1
+from passkeytransit.campaign import _passkey, build_c1_corpus
+from passkeytransit.model import b64url, unb64url
 
 
 EDGE = Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
+
+
+def test_invalid_assertion_signature_is_recorded_as_failure():
+    protocol = json.loads((Path(__file__).parents[1] / "experiments" / "protocol_v1.0.json").read_text())
+    source = build_c1_corpus(protocol)[0][2]
+    key = _passkey(source)
+    origin = f"https://{key['rpId']}"
+    client_json = json.dumps({
+        "type": "webauthn.get", "challenge": b64url(ASSERT_CHALLENGE), "origin": origin,
+    }, separators=(",", ":")).encode()
+    authenticator_data = hashlib.sha256(key["rpId"].encode()).digest() + bytes([0x05]) + bytes(4)
+    private_key = serialization.load_der_private_key(unb64url(key["key"]), password=None)
+    signature = bytearray(private_key.sign(authenticator_data + hashlib.sha256(client_json).digest(), ec.ECDSA(hashes.SHA256())))
+    signature[-1] ^= 1
+    assertion = {
+        "rawId": key["credentialId"], "userHandle": key["userHandle"],
+        "authenticatorData": b64url(authenticator_data), "clientDataJSON": b64url(client_json),
+        "signature": b64url(bytes(signature)),
+    }
+    checks = _verify(assertion, key, origin)
+    assert checks["signature"] is False
 
 
 @pytest.mark.skipif(not EDGE.is_file(), reason="Microsoft Edge/Chromium is unavailable")
@@ -25,13 +54,10 @@ def test_phase7_browser_calibration(tmp_path):
     result = run_browser_c1(protocol, EDGE, tmp_path, calibration=True)
     summary = result["summary"]
     assert summary["attempt_count"] == 96
-    assert summary["oracle_statuses"]["webauthn_assertion"] == {"PASS": 96}
-    assert summary["oracle_statuses"]["uv"] == {"PASS": 96}
-    assert summary["oracle_statuses"]["large_blob"] == {
-        "PASS": 12,
-        "FAIL": 12,
-        "NOT_APPLICABLE": 72,
-    }
+    assert summary["execution_statuses"] == {"IMPORTED": 80, "REJECTED": 16}
+    assert summary["oracle_statuses"]["webauthn_assertion"] == {"PASS": 80, "NOT_APPLICABLE": 16}
+    assert summary["oracle_statuses"]["uv"] == {"PASS": 80, "NOT_APPLICABLE": 16}
+    assert summary["oracle_statuses"]["large_blob"] == {"PASS": 11, "FAIL": 8, "NOT_APPLICABLE": 77}
     assert result["manifest"]["cdp"]["protocol_version"]
     assert len(result["manifest"]["cdp"]["schema_sha256"]) == 64
     assert len(result["manifest"]["dependency_lock_sha256"]) == 64

@@ -7,7 +7,7 @@ from pathlib import Path
 from . import __version__
 from .analysis import run_analysis
 from .campaign import run_c1_reference_control
-from .browser_campaign import run_browser_c1
+from .browser_campaign import resolve_browser_path, run_browser_c1
 from .cxp import run_cxp_reference
 from .experiment import run_pilot
 from .protocol import validate_protocol
@@ -47,7 +47,7 @@ def build_parser() -> argparse.ArgumentParser:
     c3.add_argument("--output", type=Path, required=True)
     browser_c1 = subparsers.add_parser("browser-c1", help="run the Phase 7 browser-backed C1 campaign")
     browser_c1.add_argument("--protocol", type=Path, required=True)
-    browser_c1.add_argument("--browser", type=Path, required=True)
+    browser_c1.add_argument("--browser", type=Path)
     browser_c1.add_argument("--output", type=Path, required=True)
     browser_c1.add_argument("--mode", choices=("calibration", "full"), required=True)
     interop = subparsers.add_parser("interop", help="run Phase 8 independent interoperability checks")
@@ -129,10 +129,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if result["summary"]["failure_sequence_count"] == 960 else 1
     if args.command == "browser-c1":
         result = run_browser_c1(
-            args.protocol, args.browser, args.output, calibration=args.mode == "calibration"
+            args.protocol, resolve_browser_path(args.browser), args.output, calibration=args.mode == "calibration"
         )
         print(json.dumps(result, indent=2))
-        return 0 if result["summary"]["oracle_statuses"]["webauthn_assertion"] == {"PASS": result["summary"]["attempt_count"]} else 1
+        statuses = result["summary"]["oracle_statuses"]["webauthn_assertion"]
+        imported = result["summary"]["execution_statuses"].get("IMPORTED", 0)
+        return 0 if statuses.get("PASS", 0) == imported and statuses.get("FAIL", 0) == 0 else 1
     if args.command == "interop":
         result = run_independent_interop(args.node, args.node_verifier, args.output)
         print(json.dumps(result, indent=2))

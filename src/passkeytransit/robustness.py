@@ -42,6 +42,30 @@ MUTATION_REQUIREMENTS = {
     "major-version-mismatch": "CXF-VER-001",
 }
 
+REQUIREMENT_ORACLES = {
+    "CXF-PK-004": "rp_id",
+    "CXF-PK-007": "public_key",
+}
+
+
+def _normative_class(
+    requirement: dict[str, Any] | None,
+    execution: str,
+    oracles: dict[str, dict[str, Any]],
+    *,
+    collision: bool,
+) -> str:
+    """Classify from requirement metadata and observations, not mutation labels."""
+    if requirement is None:
+        return "AMBIGUOUS" if collision else "NOT_ASSESSED"
+    level = str(requirement.get("level", ""))
+    if execution == "REJECTED":
+        return "CONFORMANT" if level in {"MUST", "MUST NOT"} else "AMBIGUOUS"
+    target = REQUIREMENT_ORACLES.get(str(requirement.get("id")))
+    if target and oracles[target]["status"] == "FAIL":
+        return "VIOLATION" if level in {"MUST", "MUST NOT"} else "AMBIGUOUS"
+    return "CONFORMANT"
+
 
 def _git_state(project_root: Path) -> tuple[str | None, bool | None]:
     try:
@@ -121,29 +145,39 @@ def _has_credential_collision(document: dict[str, Any]) -> bool:
 
 
 def _c2_record(
-    protocol: dict[str, Any], source: dict[str, Any], mutated: dict[str, Any], stratum: str, index: int, family: str
+    protocol: dict[str, Any], source: dict[str, Any], mutated: dict[str, Any], stratum: str, index: int,
+    family: str, requirements: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
     findings = validate_passkey_document(mutated)
     errors = [finding for finding in findings if finding.severity == "error"]
     collision = _has_credential_collision(mutated)
-    requirement = MUTATION_REQUIREMENTS[family]
+    requirement_id = MUTATION_REQUIREMENTS[family]
+    requirement = requirements.get(requirement_id) if requirement_id else None
     if errors or collision:
         oracles = _rejected_oracles(errors)
         if collision and not errors:
             oracles["cxf_structure"] = _oracle("PASS", "valid CXF rejected by duplicate-credential store policy")
         execution = "REJECTED"
         semantic = "NOT_APPLICABLE"
-        normative = "AMBIGUOUS" if collision and not errors else "CONFORMANT"
     else:
-        migrated = _transport(mutated, "reference", "strict")
         properties = set(map(str, protocol["feature_strata"][int(stratum[1:])]["properties"]))
-        oracles = _evaluate(source, migrated, properties)
-        execution = "IMPORTED"
-        semantic = _classify(oracles, set())
-        normative = "VIOLATION" if family in {"key-mismatch", "rp-id-change"} else "CONFORMANT"
-        if normative == "VIOLATION" and requirement:
-            target = "public_key" if family == "key-mismatch" else "rp_id"
-            oracles[target]["requirement_ids"] = [requirement]
+        migrated = _transport(mutated, "reference", "strict")
+        try:
+            migrated, _ = _apply_profile(
+                migrated, "strict", source_document=source, required_properties=properties
+            )
+        except ValueError:
+            oracles = _rejected_oracles([])
+            execution = "REJECTED"
+            semantic = "NOT_APPLICABLE"
+        else:
+            oracles = _evaluate(source, migrated, properties)
+            execution = "IMPORTED"
+            semantic = _classify(oracles, set())
+        target = REQUIREMENT_ORACLES.get(requirement_id or "")
+        if target and requirement_id:
+            oracles[target]["requirement_ids"] = [requirement_id]
+    normative = _normative_class(requirement, execution, oracles, collision=collision)
     credential_hash = hashlib.sha256(unb64url(_passkey(source)["credentialId"])).hexdigest()
     return {
         "protocol_id": protocol["protocol_id"],
@@ -164,6 +198,11 @@ def _c2_record(
         "oracles": oracles,
         "semantic_class": semantic,
         "normative_class": normative,
+        "normative_evidence": {
+            "requirement_id": requirement_id,
+            "requirement_level": requirement.get("level") if requirement else None,
+            "requirement_actor": requirement.get("actor") if requirement else None,
+        },
         "basic_auth_pass": None,
         "false_reassurance": None,
         "exclusion_reason": None,
@@ -175,11 +214,14 @@ def run_c2_robustness(protocol_path: Path, output_dir: Path) -> dict[str, Any]:
     paths = _paths(output_dir, "c2_phase6", ["attempts"])
     validate_protocol(protocol_path)
     protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    requirements_path = protocol_path.resolve().parent.parent / "spec" / "cxf_passkey_requirements_v1.0.json"
+    requirements_document = json.loads(requirements_path.read_text(encoding="utf-8"))
+    requirements = {item["id"]: item for item in requirements_document["requirements"]}
     corpus = build_c1_corpus(protocol)
     representatives = [next(item for item in corpus if item[1] == f"F{index}") for index in range(8)]
     families = list(map(str, protocol["campaigns"]["C2"]["mutation_families"]))
     rows = [
-        _c2_record(protocol, source, _mutate(source, family, index), stratum, index, family)
+        _c2_record(protocol, source, _mutate(source, family, index), stratum, index, family, requirements)
         for index, stratum, source in representatives
         for family in families
     ]

@@ -101,13 +101,8 @@ switch ($Action) {
     "phase7-calibration" {
         Require-Venv
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
-        $BrowserPath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-        if (-not (Test-Path -LiteralPath $BrowserPath)) {
-            $BrowserPath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
-        }
         & $VenvPython -m passkeytransit browser-c1 `
             --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
-            --browser $BrowserPath `
             --mode calibration `
             --output (Join-Path $ProjectRoot "datasets\generated\phase7\$RunStamp\calibration")
     }
@@ -115,19 +110,13 @@ switch ($Action) {
         Require-Venv
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         $RunRoot = Join-Path $ProjectRoot "datasets\generated\phase7\$RunStamp"
-        $BrowserPath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-        if (-not (Test-Path -LiteralPath $BrowserPath)) {
-            $BrowserPath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
-        }
         & $VenvPython -m passkeytransit browser-c1 `
             --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
-            --browser $BrowserPath `
             --mode calibration `
             --output (Join-Path $RunRoot "calibration")
         if ($LASTEXITCODE -ne 0) { throw "Phase 7 calibration failed; full campaign was not started." }
         & $VenvPython -m passkeytransit browser-c1 `
             --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
-            --browser $BrowserPath `
             --mode full `
             --output (Join-Path $RunRoot "full")
     }
@@ -142,6 +131,7 @@ switch ($Action) {
     }
     "phase9" {
         Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         $Phase7Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase7") -Directory | Sort-Object Name | Select-Object -Last 1
         $Phase6Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase6") -Directory | Sort-Object Name | Select-Object -Last 1
         $Phase8Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase8") -Directory | Sort-Object Name | Select-Object -Last 1
@@ -154,16 +144,17 @@ switch ($Action) {
             "--c3-summary", (Join-Path $Phase6Run.FullName "c3\c3_phase6_summary.json"),
             "--c3-manifest", (Join-Path $Phase6Run.FullName "c3\c3_phase6_manifest.json"),
             "--interop", (Join-Path $Phase8Run.FullName "interop_result.json"),
-            "--output", (Join-Path $ProjectRoot "paper\current")
+            "--output", (Join-Path $ProjectRoot "datasets\generated\analysis\$RunStamp")
         )
-        $ExternalPath = Join-Path $ProjectRoot "paper\current\bitwarden_cxf_interop.json"
-        $OraclePath = Join-Path $ProjectRoot "paper\current\oracle_capabilities.json"
-        if (Test-Path -LiteralPath $ExternalPath) { $AnalysisArgs += @("--external", $ExternalPath) }
-        if (Test-Path -LiteralPath $OraclePath) { $AnalysisArgs += @("--oracle-report", $OraclePath) }
+        $ExternalRun = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase11") -Directory -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1
+        $OracleRun = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase12") -Directory -ErrorAction SilentlyContinue | Sort-Object Name | Select-Object -Last 1
+        if ($ExternalRun) { $AnalysisArgs += @("--external", (Join-Path $ExternalRun.FullName "bitwarden_cxf_interop.json")) }
+        if ($OracleRun) { $AnalysisArgs += @("--oracle-report", (Join-Path $OracleRun.FullName "oracle_capabilities.json")) }
         & $VenvPython @AnalysisArgs
     }
     "phase11" {
         Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         $CargoPath = (Get-Command cargo -ErrorAction Stop).Source
         $NodePath = (Get-Command node -ErrorAction Stop).Source
         & $VenvPython -m passkeytransit bitwarden-interop `
@@ -173,40 +164,47 @@ switch ($Action) {
             --node $NodePath `
             --wasi-runner (Join-Path $ProjectRoot "interop\wasi_runner.mjs") `
             --cargo-toolchain $(if ($IsWindows) { "stable-x86_64-pc-windows-gnu" } else { "stable" }) `
-            --output (Join-Path $ProjectRoot "paper\current\bitwarden_cxf_interop.json")
+            --output (Join-Path $ProjectRoot "datasets\generated\phase11\$RunStamp\bitwarden_cxf_interop.json")
     }
     "phase12" {
         Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         & $VenvPython -m passkeytransit oracle-audit `
-            --output (Join-Path $ProjectRoot "paper\current\oracle_capabilities.json")
+            --output (Join-Path $ProjectRoot "datasets\generated\phase12\$RunStamp\oracle_capabilities.json")
     }
     "phase13" {
         Require-Venv
+        $AnalysisRun = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\analysis") -Directory | Sort-Object Name | Select-Object -Last 1
         & $VenvPython (Join-Path $ProjectRoot "tools\build_publication.py") `
-            --source (Join-Path $ProjectRoot "paper\current\MANUSCRIPT.md") `
-            --docx (Join-Path $ProjectRoot "paper\current\PasskeyTransit_v0.2.docx") `
-            --pdf (Join-Path $ProjectRoot "paper\current\PasskeyTransit_v0.2.pdf")
+            --source (Join-Path $AnalysisRun.FullName "MANUSCRIPT.md") `
+            --docx (Join-Path $AnalysisRun.FullName "PasskeyTransit_v0.2.docx") `
+            --pdf (Join-Path $AnalysisRun.FullName "PasskeyTransit_v0.2.pdf")
     }
     "phase10" {
         Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         $Phase7Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase7") -Directory | Sort-Object Name | Select-Object -Last 1
         $Phase6Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase6") -Directory | Sort-Object Name | Select-Object -Last 1
         $Phase8Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase8") -Directory | Sort-Object Name | Select-Object -Last 1
+        $Phase11Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase11") -Directory | Sort-Object Name | Select-Object -Last 1
+        $Phase12Run = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\phase12") -Directory | Sort-Object Name | Select-Object -Last 1
+        $AnalysisRun = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\analysis") -Directory | Sort-Object Name | Select-Object -Last 1
         & $VenvPython -m passkeytransit release `
             --project-root $ProjectRoot `
             --evidence-root $Phase6Run.FullName `
             --evidence-root $Phase7Run.FullName `
             --evidence-root $Phase8Run.FullName `
-            --evidence-root (Join-Path $ProjectRoot "paper\current") `
-            --external-result (Join-Path $ProjectRoot "paper\current\bitwarden_cxf_interop.json") `
-            --oracle-report (Join-Path $ProjectRoot "paper\current\oracle_capabilities.json") `
-            --output (Join-Path $ProjectRoot "releases\v0.2.0")
+            --evidence-root $AnalysisRun.FullName `
+            --external-result (Join-Path $Phase11Run.FullName "bitwarden_cxf_interop.json") `
+            --oracle-report (Join-Path $Phase12Run.FullName "oracle_capabilities.json") `
+            --output (Join-Path $ProjectRoot "datasets\generated\releases\$RunStamp")
     }
     "verify-release" {
         Require-Venv
+        $ReleaseRun = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\releases") -Directory | Sort-Object Name | Select-Object -Last 1
         & $VenvPython -m passkeytransit verify-release `
-            --archive (Join-Path $ProjectRoot "releases\v0.2.0\passkeytransit-v0.2.0-replication.zip") `
-            --manifest (Join-Path $ProjectRoot "releases\v0.2.0\release_manifest.json")
+            --archive (Join-Path $ReleaseRun.FullName "passkeytransit-v0.2.0-replication.zip") `
+            --manifest (Join-Path $ReleaseRun.FullName "release_manifest.json")
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {

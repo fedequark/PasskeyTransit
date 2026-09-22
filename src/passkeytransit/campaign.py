@@ -51,7 +51,11 @@ def _evidence(value: object) -> str:
 
 
 def _oracle(status: str, evidence: object, requirement_ids: list[str] | None = None) -> dict[str, Any]:
-    result: dict[str, Any] = {"status": status, "evidence_ref": _evidence(evidence)}
+    result: dict[str, Any] = {
+        "status": status,
+        "evidence_ref": _evidence(evidence),
+        "evidence": evidence,
+    }
     if requirement_ids:
         result["requirement_ids"] = requirement_ids
     return result
@@ -96,12 +100,41 @@ def _passkey(document: dict[str, Any]) -> dict[str, Any]:
     return document["accounts"][0]["items"][0]["credentials"][0]
 
 
-def _apply_profile(document: dict[str, Any], profile: str) -> tuple[dict[str, Any], set[str]]:
+class StrictPreservationError(ValueError):
+    def __init__(self, losses: set[str]):
+        self.losses = losses
+        super().__init__("strict importer rejected semantic loss: " + ", ".join(sorted(losses)))
+
+
+def _strict_losses(source: dict[str, Any], candidate: dict[str, Any], properties: set[str]) -> set[str]:
+    before, after = _passkey(source), _passkey(candidate)
+    losses = {
+        name
+        for name, member in {
+            "credential_id": "credentialId", "rp_id": "rpId", "user_handle": "userHandle", "public_key": "key"
+        }.items()
+        if before.get(member) != after.get(member)
+    }
+    extensions = after.get("fido2Extensions") if isinstance(after.get("fido2Extensions"), dict) else {}
+    required_members = {
+        "prf_uv": "hmacCredentials", "prf_no_uv": "hmacCredentials", "large_blob": "largeBlob",
+        "cred_blob": "credBlob", "payments_marker": "payments",
+    }
+    losses.update(prop for prop, member in required_members.items() if prop in properties and member not in extensions)
+    if "unknown_optional_member" in properties and "futureOptionalMember" not in after:
+        losses.add("unknown_optional_member")
+    return losses
+
+
+def _apply_profile(
+    document: dict[str, Any], profile: str, *, source_document: dict[str, Any] | None = None,
+    required_properties: set[str] | None = None,
+) -> tuple[dict[str, Any], set[str]]:
     migrated = copy.deepcopy(document)
     extensions = _passkey(migrated).get("fido2Extensions")
     declared: set[str] = set()
     if not isinstance(extensions, dict):
-        return migrated, declared
+        extensions = {}
     if profile == "compatible-lossy":
         if "hmacCredentials" in extensions:
             extensions.pop("hmacCredentials")
@@ -111,6 +144,10 @@ def _apply_profile(document: dict[str, Any], profile: str) -> tuple[dict[str, An
             declared.add("cred_blob")
     elif profile == "legacy":
         _passkey(migrated).pop("fido2Extensions", None)
+    elif profile == "strict" and source_document is not None:
+        losses = _strict_losses(source_document, migrated, required_properties or set())
+        if losses:
+            raise StrictPreservationError(losses)
     elif profile not in {"reference", "strict"}:
         raise ValueError(f"unknown provider profile: {profile}")
     if extensions == {}:
@@ -205,13 +242,25 @@ def _attempt(
     current = copy.deepcopy(source)
     declared_losses: set[str] = set()
     chain = list(map(str, route["chain"]))
+    properties = set(map(str, protocol["feature_strata"][int(stratum[1:])]["properties"]))
+    rejected_losses: set[str] = set()
     for source_provider, destination in zip(chain, chain[1:]):
         current = _transport(current, source_provider, destination)
-        current, declarations = _apply_profile(current, destination)
+        try:
+            current, declarations = _apply_profile(
+                current, destination, source_document=source, required_properties=properties
+            )
+        except StrictPreservationError as exc:
+            rejected_losses = exc.losses
+            break
         declared_losses.update(declarations)
-    properties = set(map(str, protocol["feature_strata"][int(stratum[1:])]["properties"]))
-    oracles = _evaluate(source, current, properties)
-    semantic_class = _classify(oracles, declared_losses)
+    if rejected_losses:
+        oracles = {name: _oracle("NOT_APPLICABLE", "strict import rejected before commit") for name in ORACLES}
+        oracles["cxf_structure"] = _oracle("PASS", {"rejected_losses": sorted(rejected_losses)})
+        semantic_class = "NOT_APPLICABLE"
+    else:
+        oracles = _evaluate(source, current, properties)
+        semantic_class = _classify(oracles, declared_losses)
     credential_hash = hashlib.sha256(unb64url(_passkey(source)["credentialId"])).hexdigest()
     return {
         "protocol_id": protocol["protocol_id"],
@@ -227,20 +276,22 @@ def _attempt(
         "mutation_id": None,
         "failure_point": None,
         "retry_index": 0,
-        "execution_status": "IMPORTED",
+        "execution_status": "REJECTED" if rejected_losses else "IMPORTED",
         "oracles": oracles,
         "declared_losses": sorted(declared_losses),
         "semantic_class": semantic_class,
         "normative_class": "NOT_ASSESSED",
         "basic_auth_pass": None,
         "false_reassurance": None,
-        "exclusion_reason": None,
+        "exclusion_reason": "strict-preservation-rejection" if rejected_losses else None,
     }
 
 
 def _bootstrap(rows: list[dict[str, Any]], numerator: Any, denominator: Any, seed: int) -> dict[str, Any]:
     clusters: dict[str, tuple[int, int]] = {}
-    for credential in {str(row["credential_id_hash"]) for row in rows}:
+    # Stable ordering is part of the seeded procedure. Iterating a set here made
+    # the same seed produce different intervals across fresh Python processes.
+    for credential in sorted({str(row["credential_id_hash"]) for row in rows}):
         selected = [row for row in rows if row["credential_id_hash"] == credential]
         clusters[credential] = (sum(bool(numerator(row)) for row in selected), sum(bool(denominator(row)) for row in selected))
     numerator_count = sum(bool(numerator(row)) for row in rows)
@@ -303,6 +354,18 @@ def _paired_route_comparisons(rows: list[dict[str, Any]], protocol: dict[str, An
                 }
             )
     return comparisons
+
+
+def _design_cell_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    cells: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for row in rows:
+        cells.setdefault((str(row["route_id"]), str(row["feature_stratum"])), []).append(row)
+    return {
+        "unit": "route-by-feature-stratum",
+        "cell_count": len(cells),
+        "attempts_per_cell": sorted({len(items) for items in cells.values()}),
+        "interpretation": "designed synthetic result cells; attempts are repetitions within cells, not a population sample",
+    }
 
 
 def run_c1_reference_control(protocol_path: Path, output_dir: Path) -> dict[str, Any]:
@@ -368,6 +431,7 @@ def run_c1_reference_control(protocol_path: Path, output_dir: Path) -> dict[str,
         "semantic_classes": dict(Counter(row["semantic_class"] for row in rows)),
         "oracle_statuses": {name: dict(Counter(row["oracles"][name]["status"] for row in rows)) for name in ORACLES},
         "estimands": estimands,
+        "design_result_cells": _design_cell_summary(rows),
         "paired_route_comparisons": _paired_route_comparisons(rows, protocol),
         "repeat_equivalent": repeat_equivalent,
         "confirmatory_provider_claims_authorized": False,

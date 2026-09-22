@@ -33,17 +33,24 @@ Confirmation behavior is not exercised.
 
 `./research.ps1 phase7` first runs a 96-attempt calibration containing one
 credential from every stratum across all routes. The complete 6,144-attempt
-campaign starts only if every calibration WebAuthn assertion passes. Both runs
+campaign starts only if every imported calibration credential yields a valid
+WebAuthn assertion; strict-profile rejections have no browser ceremony. Both runs
 use immutable timestamped artifact directories and record the browser binary
 hash, browser version, Playwright version, source commit and protocol hash.
 The manifest also records the CDP protocol version, a hash of the exposed CDP
 domain schema, the dependency lock hash, and the complete frozen specification
 baseline.
 
+The browser is discovered from `PASSKEYTRANSIT_BROWSER`, the executable search
+path, or standard Chromium installation locations. The CLI also accepts an
+explicit `--browser` path. PRF is requested during imported assertions, and
+`prf_requested`/`prf_observed` are recorded; positive PRF preservation remains
+unassessed because the import interface cannot restore the source HMAC secret.
+
 This remains a reference-policy/virtual-authenticator control. It supplies
 real browser evidence but does not authorize claims about commercial providers.
 
-## Verified full run
+## Historical full run (superseded by the strict-profile revision)
 
 The definitive run used Edge `153.0.4234.32`, CDP protocol `1.3`, Playwright
 `1.62.0`, and clean source commit `d2893c3`. Results:
@@ -58,4 +65,5 @@ The definitive run used Edge `153.0.4234.32`, CDP protocol `1.3`, Playwright
 - false reassurance: 2,944/6,144 = 47.92% (43.36%–52.93%);
 - both repetitions were deterministically equivalent.
 
-These proportions describe the registered mixture of synthetic controls.
+These proportions describe the earlier control behavior and must not be cited
+as results of the strict-profile revision.

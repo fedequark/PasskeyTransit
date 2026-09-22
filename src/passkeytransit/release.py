@@ -10,6 +10,7 @@ from typing import Any, Iterable
 
 
 SENSITIVE_NAMES = {"private_key", "privatekey", "secret", "token", "password", "key"}
+STALE_GENERATED_PREFIXES = ("paper/current/", "releases/")
 
 
 def _sha(data: bytes) -> str:
@@ -20,7 +21,17 @@ def _tracked_files(project_root: Path) -> list[Path]:
     output = subprocess.check_output(
         ["git", "ls-files", "-z"], cwd=project_root, text=False
     )
-    return [project_root / item.decode("utf-8") for item in output.split(b"\0") if item]
+    return [
+        project_root / item.decode("utf-8") for item in output.split(b"\0")
+        if item and not item.decode("utf-8").replace("\\", "/").startswith(STALE_GENERATED_PREFIXES)
+    ]
+
+
+def _analysis_lineage_missing(analysis_manifest: dict[str, Any], hashes: set[str]) -> list[str]:
+    return [
+        f"{section}.{name}" for section in ("input_hashes", "output_hashes")
+        for name, digest in analysis_manifest.get(section, {}).items() if digest not in hashes
+    ]
 
 
 def _scan_json_value(value: Any, path: str, findings: list[str]) -> None:
@@ -98,6 +109,13 @@ def build_release(
     audit = privacy_audit(evidence_files)
     if not audit["passed"]:
         raise ValueError(f"privacy audit failed: {audit['sensitive_field_findings'][:3]}")
+    evidence_hashes = {_sha(path.read_bytes()) for path in evidence_files}
+    analysis_manifests = [path for path in evidence_files if path.name == "analysis_manifest.json"]
+    if len(analysis_manifests) != 1:
+        raise ValueError("release requires exactly one canonical analysis_manifest.json")
+    missing = _analysis_lineage_missing(json.loads(analysis_manifests[0].read_text(encoding="utf-8")), evidence_hashes)
+    if missing:
+        raise ValueError(f"analysis lineage has unresolved hashes: {missing}")
 
     commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=project_root, text=True
@@ -155,6 +173,13 @@ def verify_release(archive_path: Path, manifest_path: Path) -> dict[str, Any]:
         for name, expected in internal["entries"].items():
             if _sha(archive.read(name)) != expected:
                 mismatches.append(name)
+        analysis_names = [name for name in internal["entries"] if name.endswith("/analysis_manifest.json")]
+        if len(analysis_names) != 1:
+            mismatches.append("analysis-manifest-count")
+        else:
+            analysis = json.loads(archive.read(analysis_names[0]))
+            missing = _analysis_lineage_missing(analysis, set(internal["entries"].values()))
+            mismatches.extend(missing)
     return {
         "archive_sha256_ok": archive_hash_ok,
         "entry_hash_mismatches": mismatches,

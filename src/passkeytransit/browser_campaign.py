@@ -4,8 +4,10 @@ import base64
 import copy
 import hashlib
 import json
+import os
 import platform
 import random
+import shutil
 import subprocess
 import sys
 import threading
@@ -17,6 +19,7 @@ from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Iterator
 
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 from playwright.sync_api import sync_playwright
@@ -24,11 +27,13 @@ from playwright.sync_api import sync_playwright
 from . import __version__
 from .campaign import (
     ORACLES,
+    StrictPreservationError,
     _apply_profile,
     _bootstrap,
     _canonical,
     _classify,
     _evaluate,
+    _design_cell_summary,
     _git_state,
     _oracle,
     _paired_route_comparisons,
@@ -43,6 +48,33 @@ from .protocol import validate_protocol
 
 HTML = b"<!doctype html><meta charset=utf-8><title>PasskeyTransit Phase 7 RP</title><p>ready</p>"
 ASSERT_CHALLENGE = hashlib.sha256(b"passkeytransit-phase7-browser-assertion-v1").digest()
+PRF_SALT = hashlib.sha256(b"passkeytransit-phase7-prf-first-v1").digest()
+
+
+def resolve_browser_path(explicit: Path | None = None) -> Path:
+    candidates: list[Path] = []
+    if explicit is not None:
+        candidates.append(explicit)
+    elif os.environ.get("PASSKEYTRANSIT_BROWSER"):
+        candidates.append(Path(os.environ["PASSKEYTRANSIT_BROWSER"]))
+    else:
+        for executable in ("msedge", "chrome", "chromium", "chromium-browser"):
+            found = shutil.which(executable)
+            if found:
+                candidates.append(Path(found))
+        if os.name == "nt":
+            for variable, relative in (
+                ("PROGRAMFILES(X86)", "Microsoft/Edge/Application/msedge.exe"),
+                ("PROGRAMFILES", "Microsoft/Edge/Application/msedge.exe"),
+                ("PROGRAMFILES", "Google/Chrome/Application/chrome.exe"),
+                ("LOCALAPPDATA", "Google/Chrome/Application/chrome.exe"),
+            ):
+                if os.environ.get(variable):
+                    candidates.append(Path(os.environ[variable]) / relative)
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate.resolve()
+    raise FileNotFoundError("Chromium browser not found; set PASSKEYTRANSIT_BROWSER or pass --browser")
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -76,7 +108,7 @@ def _standard_b64(data: bytes) -> str:
 
 def _authenticate(page: Any, rp_id: str, credential_id: bytes) -> dict[str, Any]:
     return page.evaluate(
-        r"""async ({challenge, rpId, credentialId}) => {
+        r"""async ({challenge, rpId, credentialId, prfSalt}) => {
           const decode = value => {
             const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
             const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
@@ -92,17 +124,18 @@ def _authenticate(page: Any, rp_id: str, credential_id: bytes) -> dict[str, Any]
             challenge: decode(challenge), rpId,
             allowCredentials: [{type: 'public-key', id: decode(credentialId)}],
             userVerification: 'required',
-            extensions: {largeBlob: {read: true}}, timeout: 10000
+            extensions: {largeBlob: {read: true}, prf: {eval: {first: decode(prfSalt)}}}, timeout: 10000
           }});
           const ext = assertion.getClientExtensionResults();
           return {
             rawId: encode(assertion.rawId), authenticatorData: encode(assertion.response.authenticatorData),
             clientDataJSON: encode(assertion.response.clientDataJSON), signature: encode(assertion.response.signature),
             userHandle: encode(assertion.response.userHandle),
-            largeBlob: ext.largeBlob && ext.largeBlob.blob ? encode(ext.largeBlob.blob) : null
+            largeBlob: ext.largeBlob && ext.largeBlob.blob ? encode(ext.largeBlob.blob) : null,
+            prfFirst: ext.prf && ext.prf.results && ext.prf.results.first ? encode(ext.prf.results.first) : null
           };
         }""",
-        {"challenge": b64url(ASSERT_CHALLENGE), "rpId": rp_id, "credentialId": b64url(credential_id)},
+        {"challenge": b64url(ASSERT_CHALLENGE), "rpId": rp_id, "credentialId": b64url(credential_id), "prfSalt": b64url(PRF_SALT)},
     )
 
 
@@ -113,11 +146,15 @@ def _verify(assertion: dict[str, Any], source_key: dict[str, Any], origin: str) 
     client_json = unb64url(assertion["clientDataJSON"])
     client = json.loads(client_json)
     public_key = serialization.load_der_private_key(unb64url(source_key["key"]), password=None).public_key()
-    public_key.verify(
-        unb64url(assertion["signature"]),
-        authenticator_data + hashlib.sha256(client_json).digest(),
-        ec.ECDSA(hashes.SHA256()),
-    )
+    signature_valid = True
+    try:
+        public_key.verify(
+            unb64url(assertion["signature"]),
+            authenticator_data + hashlib.sha256(client_json).digest(),
+            ec.ECDSA(hashes.SHA256()),
+        )
+    except InvalidSignature:
+        signature_valid = False
     flags = authenticator_data[32]
     return {
         "credential_id": unb64url(assertion["rawId"]) == credential_id,
@@ -128,7 +165,7 @@ def _verify(assertion: dict[str, Any], source_key: dict[str, Any], origin: str) 
         "rp_id_hash": authenticator_data[:32] == hashlib.sha256(source_key["rpId"].encode()).digest(),
         "user_present": bool(flags & 0x01),
         "user_verified": bool(flags & 0x04),
-        "signature": True,
+        "signature": signature_valid,
         "counter_zero": int.from_bytes(authenticator_data[33:37], "big") == 0,
     }
 
@@ -143,13 +180,15 @@ def _prepare_cases(protocol: dict[str, Any], calibration: bool) -> list[tuple[in
     return cases
 
 
-def _migrate(source: dict[str, Any], route: dict[str, Any]) -> tuple[dict[str, Any], set[str]]:
+def _migrate(source: dict[str, Any], route: dict[str, Any], properties: set[str]) -> tuple[dict[str, Any], set[str]]:
     current = copy.deepcopy(source)
     declarations: set[str] = set()
     chain = list(map(str, route["chain"]))
     for source_provider, destination in zip(chain, chain[1:]):
         current = _transport(current, source_provider, destination)
-        current, declared = _apply_profile(current, destination)
+        current, declared = _apply_profile(
+            current, destination, source_document=source, required_properties=properties
+        )
         declarations.update(declared)
     return current, declarations
 
@@ -169,6 +208,34 @@ def _browser_oracles(
             [hashlib.sha256(expected or b"").hexdigest(), hashlib.sha256(observed or b"").hexdigest()],
         )
     return {name: oracles[name] for name in ORACLES}
+
+
+def _assertion_evidence(assertion: dict[str, Any], checks: dict[str, bool], authenticator: str) -> dict[str, Any]:
+    fields = ("rawId", "authenticatorData", "clientDataJSON", "signature", "userHandle", "largeBlob", "prfFirst")
+    return {
+        "checks": checks,
+        "artifact_sha256": {
+            name: hashlib.sha256(unb64url(assertion[name])).hexdigest() if assertion.get(name) else None
+            for name in fields
+        },
+        "prf_requested": True,
+        "prf_observed": assertion.get("prfFirst") is not None,
+        "observed_at_utc": datetime.now(timezone.utc).isoformat(),
+        "authenticator_id_hash": hashlib.sha256(authenticator.encode()).hexdigest(),
+    }
+
+
+def _repeat_outcome(row: dict[str, Any]) -> bytes:
+    return _canonical({
+        "credential_id_hash": row["credential_id_hash"],
+        "route_id": row["route_id"],
+        "execution_status": row["execution_status"],
+        "semantic_class": row["semantic_class"],
+        "declared_losses": row["declared_losses"],
+        "oracle_statuses": {name: row["oracles"][name]["status"] for name in ORACLES},
+        "basic_auth_pass": row["basic_auth_pass"],
+        "false_reassurance": row["false_reassurance"],
+    })
 
 
 def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *, calibration: bool) -> dict[str, Any]:
@@ -220,8 +287,32 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                 surfaces[rp_id] = (page, cdp, authenticator)
             for repetition in range(repetitions):
                 for index, stratum, source, route in cases:
-                    migrated, declarations = _migrate(source, route)
-                    source_key, migrated_key = _passkey(source), _passkey(migrated)
+                    properties = set(map(str, protocol["feature_strata"][int(stratum[1:])]["properties"]))
+                    source_key = _passkey(source)
+                    chain = list(map(str, route["chain"]))
+                    common = {
+                        "protocol_id": protocol["protocol_id"], "campaign_id": "C1",
+                        "run_id": f"phase7-browser-{mode}-r{repetition + 1}",
+                        "attempt_id": f"C1-browser-{mode}-r{repetition + 1}-c{index:03d}-{route['id']}",
+                        "credential_id_hash": hashlib.sha256(unb64url(source_key["credentialId"])).hexdigest(),
+                        "feature_stratum": stratum, "route_id": route["id"], "seed": protocol["seed"],
+                        "provider_chain": chain, "hop_count": len(chain) - 1, "mutation_id": None,
+                        "failure_point": None, "retry_index": 0, "normative_class": "NOT_ASSESSED",
+                    }
+                    try:
+                        migrated, declarations = _migrate(source, route, properties)
+                    except StrictPreservationError as exc:
+                        oracles = {name: _oracle("NOT_APPLICABLE", "strict import rejected before browser ceremony") for name in ORACLES}
+                        oracles["cxf_structure"] = _oracle("PASS", {"strict_rejected_losses": sorted(exc.losses)})
+                        oracles["custody_ground_truth"] = _oracle("PASS", "instrumented in-process provider chain")
+                        rows.append({
+                            **common, "execution_status": "REJECTED", "oracles": oracles,
+                            "declared_losses": [], "semantic_class": "NOT_APPLICABLE",
+                            "basic_auth_pass": None, "false_reassurance": None,
+                            "exclusion_reason": "strict-preservation-rejection", "browser_evidence": None,
+                        })
+                        continue
+                    migrated_key = _passkey(migrated)
                     rp_id = source_key["rpId"]
                     page, cdp, authenticator = surfaces[rp_id]
                     credential_id = unb64url(migrated_key["credentialId"])
@@ -240,7 +331,6 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                         checks = _verify(assertion, source_key, origins[rp_id])
                     finally:
                         cdp.send("WebAuthn.removeCredential", {"authenticatorId": authenticator, "credentialId": _standard_b64(credential_id)})
-                    properties = set(map(str, protocol["feature_strata"][int(stratum[1:])]["properties"]))
                     oracles = _browser_oracles(source, migrated, properties, assertion, checks)
                     semantic = _classify(oracles, declarations)
                     functional_fail = any(oracles[name]["status"] == "FAIL" for name in ("uv", "prf_uv", "prf_no_uv", "large_blob", "cred_blob"))
@@ -248,18 +338,13 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                     chain = list(map(str, route["chain"]))
                     rows.append(
                         {
-                            "protocol_id": protocol["protocol_id"], "campaign_id": "C1",
-                            "run_id": f"phase7-browser-{mode}-r{repetition + 1}",
-                            "attempt_id": f"C1-browser-{mode}-r{repetition + 1}-c{index:03d}-{route['id']}",
-                            "credential_id_hash": hashlib.sha256(unb64url(source_key["credentialId"])).hexdigest(),
-                            "feature_stratum": stratum, "route_id": route["id"], "seed": protocol["seed"],
-                            "provider_chain": chain, "hop_count": len(chain) - 1, "mutation_id": None,
-                            "failure_point": None, "retry_index": 0, "execution_status": "IMPORTED",
+                            **common, "execution_status": "IMPORTED",
                             "oracles": oracles, "declared_losses": sorted(declarations),
                             "semantic_class": semantic, "normative_class": "NOT_ASSESSED",
                             "basic_auth_pass": assertion_pass,
                             "false_reassurance": assertion_pass and functional_fail,
                             "exclusion_reason": None,
+                            "browser_evidence": _assertion_evidence(assertion, checks, authenticator),
                         }
                     )
             browser_version = browser.version
@@ -283,8 +368,7 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
     repeat_equivalent: bool | None = None
     if not calibration:
         per_rep = len(cases)
-        normalize = lambda row: _canonical({key: value for key, value in row.items() if key not in {"run_id", "attempt_id"}})
-        repeat_equivalent = all(normalize(rows[i]) == normalize(rows[i + per_rep]) for i in range(per_rep))
+        repeat_equivalent = all(_repeat_outcome(rows[i]) == _repeat_outcome(rows[i + per_rep]) for i in range(per_rep))
     summary = {
         "protocol_id": protocol["protocol_id"], "campaign_id": "C1", "mode": mode,
         "evidence_class": "browser-webauthn-reference-policy-control", "attempt_count": len(rows),
@@ -293,6 +377,7 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
         "semantic_classes": dict(Counter(row["semantic_class"] for row in rows)),
         "oracle_statuses": {name: dict(Counter(row["oracles"][name]["status"] for row in rows)) for name in ORACLES},
         "estimands": estimands,
+        "design_result_cells": _design_cell_summary(rows),
         "paired_route_comparisons": _paired_route_comparisons(rows, protocol),
         "repeat_equivalent": repeat_equivalent,
         "confirmatory_provider_claims_authorized": False,

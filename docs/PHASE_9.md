@@ -34,11 +34,16 @@ not left as editorial convention.
 ```
 
 The command selects the latest complete Phase 6, 7 and 8 runs, verifies their
-hashes, and regenerates `paper/current/`.
+hashes and source commit, and writes a timestamped, immutable candidate under
+`datasets/generated/analysis/`.
 
 ## Verified package
 
-The generated manuscript reports 6,144 browser-backed C1 attempts, 80 C2
+The historical generated manuscript reports 6,144 browser-backed C1 attempts, 80 C2
 robustness attempts, 960 C3 sequences/1,920 events, and the Phase 8 independent
 boundary. `analysis_manifest.json` records every selected input hash and every
 derived output hash, with `claim_boundary_enforced: true`.
+
+The historical `paper/current/` files predate the strict-profile change. A
+revision must be generated from new Phase 6–8 inputs into a new output
+directory, and its release must resolve every analysis input/output hash.

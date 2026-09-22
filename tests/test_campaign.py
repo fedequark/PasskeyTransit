@@ -6,7 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from passkeytransit.campaign import build_c1_corpus, run_c1_reference_control
+from passkeytransit.campaign import (
+    StrictPreservationError,
+    _apply_profile,
+    _bootstrap,
+    _canonical,
+    _oracle,
+    build_c1_corpus,
+    run_c1_reference_control,
+)
 
 
 PROJECT_ROOT = Path(__file__).parents[1]
@@ -31,7 +39,8 @@ def test_phase5_c1_control_campaign_matches_registered_design(tmp_path):
     assert summary["repeat_equivalent"] is True
     assert summary["confirmatory_provider_claims_authorized"] is False
     assert sum(summary["semantic_classes"].values()) == 6144
-    assert summary["oracle_statuses"]["webauthn_assertion"] == {"NOT_EVALUABLE": 6144}
+    assert summary["oracle_statuses"]["webauthn_assertion"] == {"NOT_EVALUABLE": 5120, "NOT_APPLICABLE": 1024}
+    assert summary["execution_statuses"]["REJECTED"] == 1024
     assert summary["estimands"]["false_reassurance_rate"]["denominator"] == 0
     assert len(summary["paired_route_comparisons"]) == 14
     assert all(item["paired_attempts"] == 512 for item in summary["paired_route_comparisons"])
@@ -49,3 +58,28 @@ def test_phase5_campaign_never_overwrites_raw_evidence(tmp_path):
     (tmp_path / "c1_phase5_attempts.jsonl").write_text("existing evidence\n", encoding="utf-8")
     with pytest.raises(FileExistsError, match="immutable"):
         run_c1_reference_control(PROTOCOL_PATH, tmp_path)
+
+
+def test_oracle_evidence_is_resolvable_and_hash_bound():
+    oracle = _oracle("PASS", {"check": True, "values": [1, 2]})
+    assert oracle["evidence_ref"] == "sha256:" + __import__("hashlib").sha256(_canonical(oracle["evidence"])).hexdigest()
+
+
+def test_cluster_bootstrap_is_independent_of_input_order():
+    rows = [
+        {"credential_id_hash": credential, "value": value}
+        for credential, value in (("z", True), ("a", False), ("m", True))
+        for _ in range(2)
+    ]
+    forward = _bootstrap(rows, lambda row: row["value"], lambda row: True, 42)
+    reverse = _bootstrap(list(reversed(rows)), lambda row: row["value"], lambda row: True, 42)
+    assert forward == reverse
+
+
+def test_strict_profile_rejects_required_loss():
+    protocol = json.loads(PROTOCOL_PATH.read_text(encoding="utf-8"))
+    source = next(document for _, stratum, document in build_c1_corpus(protocol) if stratum == "F1")
+    lossy, declared = _apply_profile(source, "compatible-lossy")
+    assert "prf_uv" in declared
+    with pytest.raises(StrictPreservationError, match="prf_uv"):
+        _apply_profile(lossy, "strict", source_document=source, required_properties={"prf_uv"})

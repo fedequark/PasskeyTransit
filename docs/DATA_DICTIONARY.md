@@ -31,9 +31,18 @@ record plus referenced event/evidence artifacts.
 
 ## Oracle outcomes
 
-Each oracle is an object with `status`, `evidence_ref`, and optional
-`requirement_ids`. `status` is `PASS`, `FAIL`, `NOT_APPLICABLE`, or
-`NOT_EVALUABLE`.
+Each oracle is an object with `status`, a canonical JSON `evidence` payload,
+its integrity commitment `evidence_ref`, and optional `requirement_ids`.
+`evidence_ref` is the SHA-256 digest of the retained payload; it is not a
+substitute for that payload. Browser-derived evidence contains only the
+minimum values or hashes needed to audit the decision. `status` is `PASS`,
+`FAIL`, `NOT_APPLICABLE`, or `NOT_EVALUABLE`.
+
+Browser rows additionally contain `browser_evidence`: Boolean verification
+checks plus SHA-256 digests of assertion components. Raw signatures, client
+data, handles, PRF outputs, and blobs are not copied into the analytical row.
+`prf_requested` and `prf_observed` distinguish an exercised PRF request from an
+unavailable positive-preservation result.
 
 Required oracle keys are `cxf_structure`, `credential_id`, `rp_id`,
 `user_handle`, `public_key`, `webauthn_assertion`, `uv`, `prf_uv`, `prf_no_uv`,

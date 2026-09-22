@@ -42,6 +42,11 @@ def _manuscript(results: dict[str, Any]) -> str:
     yield_result = estimands["preserving_migration_yield"]
     silent = estimands["silent_degradation_rate"]
     reassurance = estimands["false_reassurance_rate"]
+    imported = c1["execution_statuses"].get("IMPORTED", 0)
+    rejected = c1["execution_statuses"].get("REJECTED", 0)
+    assertion_pass = c1["oracle_statuses"]["webauthn_assertion"].get("PASS", 0)
+    large_blob_statuses = c1["oracle_statuses"].get("large_blob", {})
+    c2_rejected = sum(item["execution_statuses"].get("REJECTED", 0) for item in c2["mutation_families"].values())
     atomic_pass = c3["atomicity"]["PASS"]
     total_c3 = c3["failure_sequence_count"]
     external = results.get("external_cxf")
@@ -68,13 +73,17 @@ PasskeyTransit v0.2, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
 mutaciones y fallos transaccionales. La campaña principal ejecutó
 {c1['attempt_count']:,} intentos sobre {c1['credential_count']} credenciales,
 {c1['route_count']} rutas y dos repeticiones usando políticas de control y
-autenticadores virtuales Chromium. Las {c1['oracle_statuses']['webauthn_assertion']['PASS']:,}
-aserciones WebAuthn fueron aceptadas, pero {reassurance['numerator']:,} intentos
-({_percent(reassurance['estimate'])}; IC95% por bootstrap de credencial
+autenticadores virtuales Chromium. La unidad analítica primaria son
+{c1.get('design_result_cells', {}).get('cell_count', 96)} celdas diseñadas
+ruta×estrato; los intentos son ejecuciones repetidas dentro de esas celdas, no
+observaciones muestreadas de una población. Se importaron {imported:,} intentos
+y se rechazaron {rejected:,} antes de la ceremonia. Las {assertion_pass:,}
+aserciones WebAuthn ejecutadas fueron aceptadas; {reassurance['numerator']:,} intentos
+({_percent(reassurance['estimate'])}; intervalo descriptivo de sensibilidad por bootstrap de credencial
 {_percent(reassurance['ci95'][0])}–{_percent(reassurance['ci95'][1])}) combinaron
 login correcto con el fallo de otra propiedad aplicable. La preservación
 semántica completa observable fue {_percent(yield_result['estimate'])}
-({yield_result['numerator']:,}/{yield_result['denominator']:,}; IC95%
+({yield_result['numerator']:,}/{yield_result['denominator']:,}; intervalo descriptivo de sensibilidad
 {_percent(yield_result['ci95'][0])}–{_percent(yield_result['ci95'][1])}). Estos
 porcentajes caracterizan estímulos sintéticos diseñados, no productos ni
 prevalencia real. PRF y preservación positiva de `credBlob` permanecen no
@@ -82,7 +91,7 @@ evaluables por límites de la interfaz CDP.
 
 ## 1. Introducción
 
-CXF estandariza la representación de credenciales y CXP propone su transporte
+CXF estandariza la representación de credenciales [1] y CXP propone su transporte
 protegido. Sin embargo, aceptar un documento e incluso completar una aserción
 WebAuthn no demuestra por sí solo que sobrevivan todas las propiedades de una
 passkey. Modelamos la credencial como `C=(I,K,F,S)`: identidad, material
@@ -101,25 +110,26 @@ la implementación confirmatoria. El corpus contiene 256 credenciales ES256,
 futuro. Doce rutas cubren migración directa, round trip y multihop.
 
 Cada salto serializa un documento CXF validado y lo transporta mediante HPKE
-base X25519/HKDF-SHA256/AES-128-GCM. El navegador importa el resultado en un
+base X25519/HKDF-SHA256/AES-128-GCM [3]. El navegador importa el resultado en un
 autenticador virtual y ejecuta `navigator.credentials.get()`. Un verificador
 Python independiente de la ceremonia comprueba desafío, origen, RP-ID hash,
-flags UP/UV, firma ES256 y contador cero.
+flags UP/UV, firma ES256 y contador cero [4].
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
 Separadamente clasificamos estado de ejecución, preservación semántica y
-evaluación normativa. Los intervalos se obtienen con bootstrap agrupado por
-credencial; las comparaciones de rutas son pareadas por credencial y repetición.
+evaluación normativa. Los intervalos de bootstrap agrupado por credencial son
+análisis descriptivos de sensibilidad del diseño y no intervalos de confianza
+poblacionales; las comparaciones de rutas son pareadas por credencial y repetición.
 
 ## 3. Implementación del transporte
 
-La implementación HPKE reproduce el vector oficial de RFC 9180. El Working
-Draft CXP no define campos para la encapsulación HPKE ni para el challenge
+La implementación HPKE reproduce el vector oficial de RFC 9180 [3]. El Working
+Draft CXP [2] no define campos para la encapsulación HPKE ni para el challenge
 firmado que describe su narrativa, y no concreta completamente el ZIP/JWE.
 Usamos una extensión experimental autenticada como AAD y no reclamamos
 interoperabilidad CXP normativa completa.
 
-Una segunda implementación, `cryptography 50.0.1`, intercambió ciphertexts
+Una segunda implementación, `cryptography 50.0.1` [5], intercambió ciphertexts
 HPKE en ambas direcciones con PasskeyTransit. Un consumidor Node.js independiente
 validó el envelope CXF, PKCS#8, SPKI, credential ID y `largeBlob` DEFLATE. El
 ensayo híbrido ML-KEM-768+X25519 fue exitoso, pero permanece fuera del perfil
@@ -130,33 +140,33 @@ CXP y de los estimandos.
 
 ### 4.1. Campaña C1 con navegador
 
-Todos los {c1['attempt_count']:,} intentos fueron importados; identidad,
-correspondencia de clave pública, aserción WebAuthn y UV pasaron en todos ellos.
-Las dos repeticiones produjeron resultados determinísticos equivalentes.
+De {c1['attempt_count']:,} intentos, {imported:,} fueron importados y {rejected:,}
+rechazados por el control `strict`. Identidad, correspondencia de clave pública,
+aserción WebAuthn y UV pasaron en los intentos importados. Las dos repeticiones
+produjeron resultados semánticos equivalentes.
 
 | Clase semántica | N | Proporción |
 |---|---:|---:|
-| PASS | {c1['semantic_classes']['PASS']:,} | {_percent(c1['semantic_classes']['PASS']/c1['attempt_count'])} |
-| Degradación visible | {c1['semantic_classes']['DEGRADED_VISIBLE']:,} | {_percent(c1['semantic_classes']['DEGRADED_VISIBLE']/c1['attempt_count'])} |
-| Degradación silenciosa | {c1['semantic_classes']['DEGRADED_SILENT']:,} | {_percent(c1['semantic_classes']['DEGRADED_SILENT']/c1['attempt_count'])} |
-| No evaluable | {c1['semantic_classes']['NOT_EVALUABLE']:,} | {_percent(c1['semantic_classes']['NOT_EVALUABLE']/c1['attempt_count'])} |
+| PASS | {c1['semantic_classes'].get('PASS', 0):,} | {_percent(c1['semantic_classes'].get('PASS', 0)/c1['attempt_count'])} |
+| Degradación visible | {c1['semantic_classes'].get('DEGRADED_VISIBLE', 0):,} | {_percent(c1['semantic_classes'].get('DEGRADED_VISIBLE', 0)/c1['attempt_count'])} |
+| Degradación silenciosa | {c1['semantic_classes'].get('DEGRADED_SILENT', 0):,} | {_percent(c1['semantic_classes'].get('DEGRADED_SILENT', 0)/c1['attempt_count'])} |
+| No evaluable | {c1['semantic_classes'].get('NOT_EVALUABLE', 0):,} | {_percent(c1['semantic_classes'].get('NOT_EVALUABLE', 0)/c1['attempt_count'])} |
+| Rechazo previo a ceremonia | {c1['semantic_classes'].get('NOT_APPLICABLE', 0):,} | {_percent(c1['semantic_classes'].get('NOT_APPLICABLE', 0)/c1['attempt_count'])} |
 
 La tasa de degradación silenciosa fue {_percent(silent['estimate'])}
-({silent['numerator']:,}/{silent['denominator']:,}; IC95%
+({silent['numerator']:,}/{silent['denominator']:,}; intervalo descriptivo de sensibilidad
 {_percent(silent['ci95'][0])}–{_percent(silent['ci95'][1])}). `largeBlob` fue
-observable en 1.536 casos aplicables: 768 pasaron y 768 fallaron según la ruta
+observable en {large_blob_statuses.get('PASS', 0) + large_blob_statuses.get('FAIL', 0):,} casos aplicables: {large_blob_statuses.get('PASS', 0):,} pasaron y {large_blob_statuses.get('FAIL', 0):,} fallaron según la ruta
 de control. La pérdida en un intermediario persistió al volver a un destino
 capaz, produciendo discordancias en comparaciones pareadas con el mismo destino.
 
 ### 4.2. Robustez C2
 
 C2 ejecutó {c2['attempt_count']} casos: diez familias sobre ocho estratos. Se
-rechazaron 48 documentos inválidos o colisiones. Los 16 casos de key mismatch o
-cambio de RP ID fueron importados por el control sintáctico, pero los oráculos
-los clasificaron como degradación silenciosa y violación. Los 16 casos con
-miembro opcional desconocido o versión menor futura fueron importados sin error
-estructural. Las familias se informan separadamente y no se calcula un porcentaje
-agrupado.
+rechazaron {c2_rejected} casos por validación estructural, política de duplicados
+o preservación estricta. Las familias se informan por separado; la clase normativa
+se deriva del requisito aplicable y del resultado observado. No se calcula un
+porcentaje agrupado.
 
 ### 4.3. Fallos y recuperación C3
 
@@ -168,10 +178,11 @@ y el retry creó un duplicado, haciendo fallar atomicidad e idempotencia.
 
 ## 5. Discusión
 
-El experimento demuestra una capacidad del método, no una incidencia del mundo
-real: la autenticación funcionó en el 100% de los intentos, incluidos aquellos
-en los que los controles descartaron otras propiedades. Por tanto, un test de
-login aislado no es un oráculo suficiente para migración semántica.
+El experimento demuestra una capacidad del método: la autenticación funcionó
+en los {imported:,} intentos importados, incluidos aquellos en los que los
+controles descartaron otras propiedades. Los {rejected:,} rechazos `strict`
+detuvieron la importación antes de la ceremonia. Por tanto, un test de login
+aislado no es un oráculo suficiente para migración semántica.
 
 También observamos dependencia de ruta: un destino final sin pérdidas propias
 no puede reconstruir material descartado por un intermediario. La declaración
@@ -194,7 +205,7 @@ visible, aun cuando el estado final de la credencial sea idéntico.
 
 Los artefactos raw son JSONL inmutables; los derivados y manifiestos incluyen
 hashes SHA-256 del protocolo, resultados, navegador y commit. La campaña C1 se
-ejecutó con Edge {results['environment']['browser_version']} y Playwright
+ejecutó con Chromium {results['environment']['browser_version']} y Playwright
 {results['environment']['playwright_version']} desde un árbol Git limpio. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
@@ -211,7 +222,7 @@ los mismos oráculos y límites de afirmación.
 ## Referencias
 
 1. FIDO Alliance, Credential Exchange Format v1.0 Proposed Standard Errata, 2026,
-   https://fidoalliance.org/specifications/.
+   https://fidoalliance.org/specs/cx/cxf-v1.0-ps-errata-20260309.html.
 2. FIDO Alliance, Credential Exchange Protocol v1.0 Working Draft, 2024-10-03,
    https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html.
 3. Barnes et al., Hybrid Public Key Encryption, RFC 9180, 2022,
@@ -219,7 +230,7 @@ los mismos oráculos y límites de afirmación.
 4. W3C, Web Authentication Level 3 Candidate Recommendation, 2026-05-26,
    https://www.w3.org/TR/webauthn-3/.
 5. PyCA, `cryptography` HPKE API documentation,
-   https://cryptography.io/en/49.0.0/hazmat/primitives/hpke/.
+   https://cryptography.io/en/latest/hazmat/primitives/hpke/.
 6. Bitwarden, `credential-exchange` v0.4.0,
    https://github.com/bitwarden/credential-exchange/tree/v0.4.0.
 7. Jannett et al., The State of Passkeys, USENIX Security 2026,
@@ -266,6 +277,9 @@ def run_analysis(
         raise ValueError("Phase 8 interoperability checks did not pass")
     if interop.get("git", {}).get("source_dirty") is not False:
         raise ValueError("Phase 8 interoperability evidence was not generated from a clean source tree")
+    commits = {c1_manifest["source_commit"], c2_manifest["source_commit"], c3_manifest["source_commit"]}
+    if len(commits) != 1 or interop.get("git", {}).get("source_commit") not in commits:
+        raise ValueError("campaign and interoperability inputs were generated from different source commits")
     if external is not None and external.get("semantic_json_equal") is not True:
         raise ValueError("Phase 11 external CXF round trip did not preserve normalized JSON")
     results = {
@@ -279,7 +293,7 @@ def run_analysis(
         "environment": {
             "browser_version": c1_manifest["browser"]["version"],
             "playwright_version": c1_manifest["playwright_version"],
-            "source_commits": sorted({c1_manifest["source_commit"], c2_manifest["source_commit"], c3_manifest["source_commit"]}),
+            "source_commits": sorted(commits),
         },
         "supported_claims": [
             "browser assertion alone is insufficient in the designed lossy controls",

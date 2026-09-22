@@ -16,7 +16,7 @@ def _write_evidence(root: Path, name: str, summary: dict):
             {
                 "summary_sha256": hashlib.sha256(summary_path.read_bytes()).hexdigest(),
                 "source_dirty": False,
-                "source_commit": name,
+                "source_commit": "test-commit",
                 "browser": {"version": "test-browser"},
                 "playwright_version": "test-playwright",
             }
@@ -31,6 +31,7 @@ def test_phase9_generates_hash_verified_claim_bounded_manuscript(tmp_path):
     c1 = {
         "mode": "full", "attempt_count": 6144, "credential_count": 256, "route_count": 12,
         "repeat_equivalent": True,
+        "execution_statuses": {"IMPORTED": 6144, "REJECTED": 0},
         "semantic_classes": {"PASS": 2304, "DEGRADED_VISIBLE": 1408, "DEGRADED_SILENT": 1920, "NOT_EVALUABLE": 512},
         "oracle_statuses": {"webauthn_assertion": {"PASS": 6144}},
         "estimands": {"preserving_migration_yield": estimand, "conditional_semantic_preservation": estimand, "silent_degradation_rate": estimand, "false_reassurance_rate": estimand},
@@ -41,7 +42,7 @@ def test_phase9_generates_hash_verified_claim_bounded_manuscript(tmp_path):
     c2_paths = _write_evidence(tmp_path, "c2", c2)
     c3_paths = _write_evidence(tmp_path, "c3", c3)
     interop = tmp_path / "interop.json"
-    interop.write_text(json.dumps({"all_applicable_checks_pass": True, "git": {"source_dirty": False}}), encoding="utf-8")
+    interop.write_text(json.dumps({"all_applicable_checks_pass": True, "git": {"source_dirty": False, "source_commit": "test-commit"}}), encoding="utf-8")
     output = tmp_path / "paper"
     result = run_analysis(*c1_paths, *c2_paths, *c3_paths, interop, output)
     manuscript = (output / "MANUSCRIPT.md").read_text(encoding="utf-8")
