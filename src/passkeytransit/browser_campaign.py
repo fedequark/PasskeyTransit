@@ -210,10 +210,30 @@ def _browser_oracles(
     return {name: oracles[name] for name in ORACLES}
 
 
-def _assertion_evidence(assertion: dict[str, Any], checks: dict[str, bool], authenticator: str) -> dict[str, Any]:
+def _assertion_evidence(
+    assertion: dict[str, Any], checks: dict[str, bool], authenticator: str,
+    source_key: dict[str, Any], origin: str,
+) -> dict[str, Any]:
     fields = ("rawId", "authenticatorData", "clientDataJSON", "signature", "userHandle", "largeBlob", "prfFirst")
+    public_spki = serialization.load_der_private_key(
+        unb64url(source_key["key"]), password=None
+    ).public_key().public_bytes(
+        serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    transcript = {
+        "rawId": assertion["rawId"],
+        "authenticatorData": assertion["authenticatorData"],
+        "clientDataJSON": assertion["clientDataJSON"],
+        "signature": assertion["signature"],
+        "userHandle": assertion["userHandle"],
+        "source_public_key_spki": b64url(public_spki),
+        "source_rp_id": source_key["rpId"],
+        "expected_origin": origin,
+    }
     return {
         "checks": checks,
+        "transcript": transcript,
+        "transcript_ref": "sha256:" + hashlib.sha256(_canonical(transcript)).hexdigest(),
         "artifact_sha256": {
             name: hashlib.sha256(unb64url(assertion[name])).hexdigest() if assertion.get(name) else None
             for name in fields
@@ -344,7 +364,9 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                             "basic_auth_pass": assertion_pass,
                             "false_reassurance": assertion_pass and functional_fail,
                             "exclusion_reason": None,
-                            "browser_evidence": _assertion_evidence(assertion, checks, authenticator),
+                            "browser_evidence": _assertion_evidence(
+                                assertion, checks, authenticator, source_key, origins[rp_id]
+                            ),
                         }
                     )
             browser_version = browser.version

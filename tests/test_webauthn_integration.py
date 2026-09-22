@@ -61,3 +61,15 @@ def test_phase7_browser_calibration(tmp_path):
     assert result["manifest"]["cdp"]["protocol_version"]
     assert len(result["manifest"]["cdp"]["schema_sha256"]) == 64
     assert len(result["manifest"]["dependency_lock_sha256"]) == 64
+    rows = [json.loads(line) for line in (tmp_path / "c1_phase7_calibration_attempts.jsonl").read_text().splitlines()]
+    imported = next(row for row in rows if row["execution_status"] == "IMPORTED")
+    evidence = imported["browser_evidence"]
+    transcript = evidence["transcript"]
+    canonical = json.dumps(transcript, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    assert evidence["transcript_ref"] == "sha256:" + hashlib.sha256(canonical).hexdigest()
+    public_key = serialization.load_der_public_key(unb64url(transcript["source_public_key_spki"]))
+    public_key.verify(
+        unb64url(transcript["signature"]),
+        unb64url(transcript["authenticatorData"]) + hashlib.sha256(unb64url(transcript["clientDataJSON"])).digest(),
+        ec.ECDSA(hashes.SHA256()),
+    )

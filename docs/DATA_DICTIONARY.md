@@ -39,8 +39,11 @@ minimum values or hashes needed to audit the decision. `status` is `PASS`,
 `FAIL`, `NOT_APPLICABLE`, or `NOT_EVALUABLE`.
 
 Browser rows additionally contain `browser_evidence`: Boolean verification
-checks plus SHA-256 digests of assertion components. Raw signatures, client
-data, handles, PRF outputs, and blobs are not copied into the analytical row.
+checks, SHA-256 digests of assertion components, and a public WebAuthn
+transcript (authenticator data, client data, signature, synthetic identifiers,
+source public key and expected origin) bound to `transcript_ref`. This permits
+independent re-verification of assertion checks. Private keys, PRF outputs and
+blob plaintext are not copied into the analytical row.
 `prf_requested` and `prf_observed` distinguish an exercised PRF request from an
 unavailable positive-preservation result.
 
