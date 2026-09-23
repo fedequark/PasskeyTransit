@@ -121,6 +121,20 @@ def _set_cell_margins(cell, value: int = 100) -> None:
         node.set(qn("w:type"), "dxa")
 
 
+def _set_repeat_table_header(row) -> None:
+    tr_pr = row._tr.get_or_add_trPr()
+    header = OxmlElement("w:tblHeader")
+    header.set(qn("w:val"), "true")
+    tr_pr.append(header)
+
+
+def _keep_table_together(table) -> None:
+    for row_index, row in enumerate(table.rows[:-1]):
+        for cell in row.cells:
+            for paragraph in cell.paragraphs:
+                paragraph.paragraph_format.keep_with_next = True
+
+
 def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
     doc = Document()
     section = doc.sections[0]
@@ -142,8 +156,12 @@ def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
     styles["Normal"].paragraph_format.line_spacing = 1.08
     styles["Heading 1"].paragraph_format.space_before = Pt(14)
     styles["Heading 1"].paragraph_format.space_after = Pt(6)
+    styles["Heading 1"].paragraph_format.line_spacing = Pt(20)
+    styles["Heading 1"].paragraph_format.keep_with_next = True
     styles["Heading 2"].paragraph_format.space_before = Pt(10)
     styles["Heading 2"].paragraph_format.space_after = Pt(4)
+    styles["Heading 2"].paragraph_format.line_spacing = Pt(15)
+    styles["Heading 2"].paragraph_format.keep_with_next = True
     styles["List Bullet"].font.name = "Arial"
     styles["List Bullet"].font.size = Pt(10.8)
     styles["List Bullet"].paragraph_format.left_indent = Inches(0.25)
@@ -183,6 +201,7 @@ def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
             rows = content
             table = doc.add_table(rows=len(rows), cols=len(rows[0]))
             table.autofit = True
+            _set_repeat_table_header(table.rows[0])
             for row_index, row in enumerate(rows):
                 for col_index, value in enumerate(row):
                     cell = table.cell(row_index, col_index)
@@ -198,6 +217,7 @@ def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
                         _set_cell_shading(cell, "EEF3F8")
                     if col_index > 0:
                         cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            _keep_table_together(table)
             doc.add_paragraph().paragraph_format.space_after = Pt(2)
 
     footer = section.footer.paragraphs[0]
@@ -223,14 +243,17 @@ def build_pdf(blocks: list[tuple[str, object]], output: Path) -> None:
     styles["Heading1"].textColor = colors.black
     styles["Heading1"].spaceBefore = 12
     styles["Heading1"].spaceAfter = 6
+    styles["Heading1"].keepWithNext = 1
     styles["Heading2"].fontName = "Helvetica-Bold"
     styles["Heading2"].fontSize = 11.5
     styles["Heading2"].leading = 14
     styles["Heading2"].textColor = colors.black
     styles["Heading2"].spaceBefore = 8
     styles["Heading2"].spaceAfter = 4
+    styles["Heading2"].keepWithNext = 1
     styles.add(ParagraphStyle(name="PaperBullet", parent=styles["BodyText"], leftIndent=14, firstLineIndent=-9, spaceAfter=4))
     styles.add(ParagraphStyle(name="PaperReference", parent=styles["BodyText"], leftIndent=18, firstLineIndent=-18, spaceAfter=4))
+    styles.add(ParagraphStyle(name="TableHeader", parent=styles["BodyText"], fontName="Helvetica-Bold", textColor=colors.white))
 
     story = [Paragraph(TITLE, styles["PaperTitle"]), Paragraph(SUBTITLE, styles["PaperSubtitle"])]
     for kind, content in blocks:
@@ -245,7 +268,13 @@ def build_pdf(blocks: list[tuple[str, object]], output: Path) -> None:
         elif kind == "numbered":
             story.append(Paragraph(_plain(str(content)), styles["PaperReference"]))
         elif kind == "table":
-            rows = [[Paragraph(cell, styles["BodyText"]) for cell in row] for row in content]
+            rows = [
+                [
+                    Paragraph(cell, styles["TableHeader"] if row_index == 0 else styles["BodyText"])
+                    for cell in row
+                ]
+                for row_index, row in enumerate(content)
+            ]
             table = Table(rows, colWidths=[2.35 * inch, 0.85 * inch, 1.25 * inch], repeatRows=1)
             table.setStyle(TableStyle([
                 ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#23395D")),
