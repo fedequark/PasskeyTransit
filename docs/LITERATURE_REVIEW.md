@@ -26,7 +26,7 @@ coverage of every authentication paper.
 | FIDO Multi-Device FIDO Credentials 2022 | Architecture | Locates availability and recovery in provider synchronization. |
 | Ramat et al. 2026 | Empirical study | Shows cross-site passkey UX varies across 111 sites and 28 factors. |
 | Jannett et al. 2026 | Empirical security study | Measures deployment and RP behavior, but not provider-to-provider migration. |
-| Nawrath et al. 2025 | Comparative study | Contrasts device-bound and synced credentials and concentrates synced trust in the provider. |
+| Büttner and Gruschka 2025 | Comparative study | Contrasts device-bound and synced credentials and concentrates synced trust in the provider. |
 | Bitwarden credential-exchange v0.4.0 | Open-source implementation | Supplies an independent CXF parser and serializer for Phase 11. |
 
 ## Synthesis and gap

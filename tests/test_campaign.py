@@ -9,7 +9,7 @@ import pytest
 from passkeytransit.campaign import (
     StrictPreservationError,
     _apply_profile,
-    _bootstrap,
+    _exact_estimand,
     _canonical,
     _oracle,
     build_c1_corpus,
@@ -18,7 +18,7 @@ from passkeytransit.campaign import (
 
 
 PROJECT_ROOT = Path(__file__).parents[1]
-PROTOCOL_PATH = PROJECT_ROOT / "experiments" / "protocol_v1.3.json"
+PROTOCOL_PATH = PROJECT_ROOT / "experiments" / "protocol_v1.4.json"
 
 
 def test_c1_corpus_matches_frozen_strata():
@@ -65,15 +65,21 @@ def test_oracle_evidence_is_resolvable_and_hash_bound():
     assert oracle["evidence_ref"] == "sha256:" + __import__("hashlib").sha256(_canonical(oracle["evidence"])).hexdigest()
 
 
-def test_cluster_bootstrap_is_independent_of_input_order():
+def test_exact_estimand_is_independent_of_input_order():
     rows = [
         {"credential_id_hash": credential, "value": value}
         for credential, value in (("z", True), ("a", False), ("m", True))
         for _ in range(2)
     ]
-    forward = _bootstrap(rows, lambda row: row["value"], lambda row: True, 42)
-    reverse = _bootstrap(list(reversed(rows)), lambda row: row["value"], lambda row: True, 42)
+    forward = _exact_estimand(rows, lambda row: row["value"], lambda row: True)
+    reverse = _exact_estimand(list(reversed(rows)), lambda row: row["value"], lambda row: True)
     assert forward == reverse
+    assert forward == {
+        "numerator": 4,
+        "denominator": 6,
+        "estimate": 4 / 6,
+        "uncertainty": "none-designed-census",
+    }
 
 
 def test_strict_profile_rejects_required_loss():

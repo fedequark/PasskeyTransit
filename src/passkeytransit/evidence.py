@@ -11,8 +11,9 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 
 
-CHALLENGE_DOMAIN = b"passkeytransit-webauthn-attempt-binding-v1\x00"
-ATTEMPT_BINDING_FIELDS = (
+CHALLENGE_DOMAIN_V1 = b"passkeytransit-webauthn-attempt-binding-v1\x00"
+CHALLENGE_DOMAIN_V2 = b"passkeytransit-webauthn-attempt-binding-v2\x00"
+ATTEMPT_BINDING_FIELDS_V1 = (
     "protocol_id",
     "campaign_id",
     "run_id",
@@ -22,6 +23,12 @@ ATTEMPT_BINDING_FIELDS = (
     "route_id",
     "repetition",
     "provider_chain",
+)
+ATTEMPT_BINDING_FIELDS_V2 = ATTEMPT_BINDING_FIELDS_V1 + (
+    "source_public_key_spki_sha256",
+    "source_user_handle_sha256",
+    "source_rp_id",
+    "expected_origin",
 )
 
 
@@ -34,16 +41,26 @@ def _canonical(value: object) -> bytes:
 
 
 def browser_attempt_binding(row: dict[str, Any]) -> dict[str, Any]:
-    missing = [name for name in ATTEMPT_BINDING_FIELDS if name not in row]
+    fields = (
+        ATTEMPT_BINDING_FIELDS_V2
+        if str(row.get("protocol_id", "")).endswith("v1.4")
+        else ATTEMPT_BINDING_FIELDS_V1
+    )
+    missing = [name for name in fields if name not in row]
     if missing:
         raise ValueError(f"browser attempt binding is missing fields: {missing}")
-    return {name: row[name] for name in ATTEMPT_BINDING_FIELDS}
+    return {name: row[name] for name in fields}
 
 
 def derive_browser_challenge(nonce: bytes, binding: dict[str, Any]) -> bytes:
     if len(nonce) != 32:
         raise ValueError("browser challenge nonce must contain 32 bytes")
-    return hashlib.sha256(CHALLENGE_DOMAIN + nonce + _canonical(binding)).digest()
+    domain = (
+        CHALLENGE_DOMAIN_V2
+        if str(binding.get("protocol_id", "")).endswith("v1.4")
+        else CHALLENGE_DOMAIN_V1
+    )
+    return hashlib.sha256(domain + nonce + _canonical(binding)).digest()
 
 
 def verify_browser_evidence(
@@ -68,9 +85,18 @@ def verify_browser_evidence(
     client_json = _unb64url(transcript["clientDataJSON"])
     client = json.loads(client_json)
     signature = _unb64url(transcript["signature"])
-    public_key = serialization.load_der_public_key(
-        _unb64url(transcript["source_public_key_spki"])
-    )
+    public_spki = _unb64url(transcript["source_public_key_spki"])
+    expected_user_handle = _unb64url(transcript["expected_user_handle"])
+    if str(binding.get("protocol_id", "")).endswith("v1.4"):
+        if hashlib.sha256(public_spki).hexdigest() != binding["source_public_key_spki_sha256"]:
+            raise ValueError("browser transcript public key is not bound to the source credential")
+        if hashlib.sha256(expected_user_handle).hexdigest() != binding["source_user_handle_sha256"]:
+            raise ValueError("browser transcript user handle is not bound to the source credential")
+        if transcript["source_rp_id"] != binding["source_rp_id"]:
+            raise ValueError("browser transcript RP ID is not bound to its attempt context")
+        if transcript["expected_origin"] != binding["expected_origin"]:
+            raise ValueError("browser transcript origin is not bound to its attempt context")
+    public_key = serialization.load_der_public_key(public_spki)
     signature_valid = True
     try:
         public_key.verify(
@@ -85,7 +111,7 @@ def verify_browser_evidence(
     checks = {
         "credential_id": raw_id == _unb64url(transcript["expected_credential_id"]),
         "credential_row_binding": hashlib.sha256(raw_id).hexdigest() == binding["credential_id_hash"],
-        "user_handle": _unb64url(transcript["userHandle"]) == _unb64url(transcript["expected_user_handle"]),
+        "user_handle": _unb64url(transcript["userHandle"]) == expected_user_handle,
         "challenge": _unb64url(client["challenge"]) == _unb64url(transcript["expected_challenge"]),
         "origin": client["origin"] == transcript["expected_origin"],
         "type": client["type"] == "webauthn.get",
@@ -97,6 +123,28 @@ def verify_browser_evidence(
     }
     if checks != evidence.get("checks"):
         raise ValueError("retained browser transcript does not reproduce recorded checks")
+    extensions = evidence.get("extensions")
+    if not isinstance(extensions, dict):
+        raise ValueError("browser evidence has no retained extensions")
+    artifacts = evidence.get("artifact_sha256")
+    if not isinstance(artifacts, dict):
+        raise ValueError("browser evidence has no artifact hashes")
+    large_blob = extensions.get("large_blob")
+    artifact_values = {
+        "rawId": transcript.get("rawId"),
+        "authenticatorData": transcript.get("authenticatorData"),
+        "clientDataJSON": transcript.get("clientDataJSON"),
+        "signature": transcript.get("signature"),
+        "userHandle": transcript.get("userHandle"),
+        "largeBlob": large_blob.get("observed") if isinstance(large_blob, dict) else None,
+        "prfFirst": extensions.get("prf_first"),
+    }
+    reproduced_artifacts = {
+        name: hashlib.sha256(_unb64url(value)).hexdigest() if value is not None else None
+        for name, value in artifact_values.items()
+    }
+    if artifacts != reproduced_artifacts:
+        raise ValueError("browser artifact hashes do not reproduce retained evidence")
     return checks
 
 
@@ -121,7 +169,13 @@ def _verify_large_blob_evidence(row: dict[str, Any], evidence: dict[str, Any]) -
         ]
         if oracle.get("evidence") != hashes_observed:
             raise ValueError("retained largeBlob observation does not reproduce oracle evidence")
-    extension_ref = "sha256:" + hashlib.sha256(_canonical(extension)).hexdigest()
+    extensions = evidence.get("extensions")
+    committed_extension = (
+        extensions
+        if str(row.get("protocol_id", "")).endswith("v1.4")
+        else extension
+    )
+    extension_ref = "sha256:" + hashlib.sha256(_canonical(committed_extension)).hexdigest()
     if evidence.get("extension_ref") != extension_ref:
         raise ValueError("browser extension evidence commitment mismatch")
 
@@ -135,6 +189,8 @@ def _audit_browser_sources(
     challenges: set[bytes] = set()
     attempt_bindings = 0
     large_blob_oracles = 0
+    source_bound_contexts = 0
+    artifact_hash_sets = 0
     for label, lines in sources:
         name = Path(label).name
         if not name.startswith("c1_phase7_") or not name.endswith("_attempts.jsonl"):
@@ -156,6 +212,9 @@ def _audit_browser_sources(
                 _verify_large_blob_evidence(row, evidence)
                 attempt_bindings += 1
                 large_blob_oracles += 1
+                artifact_hash_sets += 1
+                if str(row.get("protocol_id", "")).endswith("v1.4"):
+                    source_bound_contexts += 1
                 challenge = _unb64url(evidence["transcript"]["expected_challenge"])
                 if len(challenge) < 16:
                     raise ValueError(f"browser challenge has insufficient entropy length: {label}:{line_number}")
@@ -174,6 +233,8 @@ def _audit_browser_sources(
         "imported_transcripts_verified": imported,
         "unique_challenges_verified": len(challenges),
         "attempt_bindings_verified": attempt_bindings,
+        "source_bound_contexts_verified": source_bound_contexts,
+        "artifact_hash_sets_reproduced": artifact_hash_sets,
         "large_blob_oracles_recomputed": large_blob_oracles,
         "rejected_without_ceremony": rejected,
         "passed": True,

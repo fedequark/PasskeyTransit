@@ -9,7 +9,7 @@ from typing import Any
 from . import __version__
 
 
-RESULTS_FILENAME = "results_v0.5.json"
+RESULTS_FILENAME = "results_v0.6.json"
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -62,7 +62,7 @@ def _manuscript(results: dict[str, Any]) -> str:
     if external:
         external_text = f"""
 
-### 4.1. Implementación CXF externa
+### 5.1. Implementación CXF externa
 
 La librería Rust `credential-exchange-format` {external['adapter']['version']} de
 Bitwarden, fijada al commit `{external['adapter']['source_revision']}`, parseó y
@@ -89,8 +89,7 @@ ruta×estrato. Ninguna de estas unidades fue muestreada de una población real.
 Se importaron {imported:,} intentos
 y se rechazaron {rejected:,} antes de la ceremonia. Las {assertion_pass:,}
 aserciones WebAuthn ejecutadas fueron aceptadas; {reassurance['numerator']:,} intentos
-({_percent(reassurance['estimate'])}; intervalo descriptivo de sensibilidad por bootstrap de credencial
-{_percent(reassurance['ci95'][0])}–{_percent(reassurance['ci95'][1])}) combinaron
+({_percent(reassurance['estimate'])}) combinaron
 login correcto con el fallo de un oráculo conductual realmente ejecutado en el
 navegador (`uv` o `largeBlob`). Las pérdidas de representación no ejecutables de
 PRF o `credBlob` aparecieron en {representation_loss['numerator']:,} intentos
@@ -102,8 +101,7 @@ añadir el marcador de pagos, que es sólo una comprobación de formato sin
 ceremonia SPC, la sensibilidad total fue {_percent(observed_failure['estimate'])}
 ({observed_failure['numerator']:,}/{observed_failure['denominator']:,}). La preservación
 semántica completa observable fue {_percent(yield_result['estimate'])}
-({yield_result['numerator']:,}/{yield_result['denominator']:,}; intervalo descriptivo de sensibilidad
-{_percent(yield_result['ci95'][0])}–{_percent(yield_result['ci95'][1])}). Estos
+({yield_result['numerator']:,}/{yield_result['denominator']:,}). Estos
 porcentajes caracterizan estímulos sintéticos diseñados, no productos ni
 prevalencia real. PRF y preservación positiva de `credBlob` permanecen no
 evaluables por límites de la interfaz CDP.
@@ -120,7 +118,19 @@ La proposición falsable es que una importación aceptada y un login correcto so
 insuficientes para establecer preservación semántica completa. No formulamos
 afirmaciones de novedad ni sobre implementaciones comerciales no examinadas.
 
-## 2. Método
+## 2. Trabajo relacionado
+
+La arquitectura de credenciales FIDO multidispositivo sitúa disponibilidad y
+recuperación en la sincronización del proveedor [7]. Los estudios empíricos
+recientes se concentran en experiencia de usuario y comportamiento de relying
+parties [8], despliegue y seguridad de sitios WebAuthn [9], o diferencias de
+confianza entre credenciales ligadas al dispositivo y sincronizadas [10]. Estas
+líneas no miden conjuntamente identidad, correspondencia de clave, extensiones,
+dependencia de ruta, atomicidad e idempotencia durante intercambio CXF/CXP. El
+presente trabajo cubre esa brecha como método de medición sobre controles
+sintéticos; no estima comportamiento ni prevalencia de proveedores reales.
+
+## 3. Método
 
 El protocolo `{c1['protocol_id']}` fue congelado antes de
 esta replicación correctiva posterior a la inspección de v1.2. No la presentamos
@@ -134,16 +144,17 @@ base X25519/HKDF-SHA256/AES-128-GCM [3]. El navegador importa el resultado en un
 autenticador virtual y ejecuta `navigator.credentials.get()`. Un verificador
 Python independiente de la ceremonia recompone un desafío derivado de un nonce
 aleatorio y de un contexto canónico que incluye intento, credencial, ruta,
-repetición y ejecución. También comprueba origen, RP-ID hash, flags UP/UV, firma
-ES256, contador cero y la observación retenida de `largeBlob` [4].
+repetición, ejecución, hash de SPKI, hash de user handle, RP ID y origen. También
+cruza esos valores con la fila, reproduce hashes de artefactos y comprueba flags
+UP/UV, firma ES256, contador cero y la observación retenida de `largeBlob` [4].
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
 Separadamente clasificamos estado de ejecución, preservación semántica y
-evaluación normativa. Los intervalos de bootstrap agrupado por credencial son
-análisis descriptivos de sensibilidad del diseño y no intervalos de confianza
-poblacionales; las comparaciones de rutas son pareadas por credencial y repetición.
+evaluación normativa. Las 96 celdas ruta×estrato son un censo exacto del diseño
+registrado: informamos numeradores, denominadores y proporciones sin intervalos
+de muestreo. Las comparaciones de rutas son pareadas por credencial y repetición.
 
-## 3. Modelo de amenazas
+## 4. Modelo de amenazas
 
 El experimento protege la confidencialidad e integridad del payload frente a un
 observador o modificador del canal que no posee la clave privada del importador.
@@ -155,7 +166,7 @@ local de la ejecución. HPKE base no autentica la identidad del exportador y el
 ensayo no demuestra autorización del usuario, attestation del proveedor ni
 persistencia global del estado antireplay.
 
-## 4. Implementación del transporte
+## 5. Implementación del transporte
 
 La implementación HPKE reproduce el vector oficial de RFC 9180 [3]. El Working
 Draft CXP [2] define parámetros HPKE, pero no un miembro para la clave
@@ -171,9 +182,9 @@ ensayo híbrido ML-KEM-768+X25519 fue exitoso, pero permanece fuera del perfil
 CXP y de los estimandos.
 {external_text}
 
-## 5. Resultados
+## 6. Resultados
 
-### 5.1. Campaña C1 con navegador
+### 6.1. Campaña C1 con navegador
 
 De {c1['attempt_count']:,} intentos, {imported:,} fueron importados y {rejected:,}
 rechazados por el control `strict`. Identidad, correspondencia de clave pública,
@@ -188,14 +199,13 @@ produjeron resultados semánticos equivalentes.
 | No evaluable | {c1['semantic_classes'].get('NOT_EVALUABLE', 0):,} | {_percent(c1['semantic_classes'].get('NOT_EVALUABLE', 0)/c1['attempt_count'])} |
 | Rechazo previo a ceremonia | {c1['semantic_classes'].get('NOT_APPLICABLE', 0):,} | {_percent(c1['semantic_classes'].get('NOT_APPLICABLE', 0)/c1['attempt_count'])} |
 
-La tasa de degradación silenciosa fue {_percent(silent['estimate'])}
-({silent['numerator']:,}/{silent['denominator']:,}; intervalo descriptivo de sensibilidad
-{_percent(silent['ci95'][0])}–{_percent(silent['ci95'][1])}). `largeBlob` fue
+La tasa exacta de degradación silenciosa dentro del diseño fue {_percent(silent['estimate'])}
+({silent['numerator']:,}/{silent['denominator']:,}). `largeBlob` fue
 observable en {large_blob_statuses.get('PASS', 0) + large_blob_statuses.get('FAIL', 0):,} casos aplicables: {large_blob_statuses.get('PASS', 0):,} pasaron y {large_blob_statuses.get('FAIL', 0):,} fallaron según la ruta
 de control. La pérdida en un intermediario persistió al volver a un destino
 capaz, produciendo discordancias en comparaciones pareadas con el mismo destino.
 
-### 5.2. Robustez C2
+### 6.2. Robustez C2
 
 C2 ejecutó {c2['attempt_count']} casos: diez familias sobre ocho estratos. Se
 rechazaron {c2_rejected} casos por validación estructural, política de duplicados
@@ -203,7 +213,7 @@ o preservación estricta. Las familias se informan por separado; la clase normat
 se deriva del requisito aplicable y del resultado observado. No se calcula un
 porcentaje agrupado.
 
-### 5.3. Fallos y recuperación C3
+### 6.3. Fallos y recuperación C3
 
 C3 ejecutó {total_c3} secuencias y {c3['event_count']} eventos. En
 {atomic_pass} secuencias ({_percent(atomic_pass/total_c3)}) hubo rollback completo
@@ -211,7 +221,7 @@ y el retry convergió a una copia. Las 128 fallas restantes fueron el control
 positivo deliberado: `legacy` conservó un provisional en los dos puntos tardíos
 y el retry creó un duplicado, haciendo fallar atomicidad e idempotencia.
 
-## 6. Discusión
+## 7. Discusión
 
 El experimento demuestra una capacidad del método: la autenticación funcionó
 en los {imported:,} intentos importados, incluidos aquellos en los que los
@@ -224,7 +234,7 @@ no puede reconstruir material descartado por un intermediario. La declaración
 pre-commit cambia además la clasificación de una misma pérdida de silenciosa a
 visible, aun cuando el estado final de la credencial sea idéntico.
 
-## 7. Limitaciones
+## 8. Limitaciones
 
 - Los cuatro perfiles son controles sintéticos, no proveedores comerciales.
 - CDP no permite inyectar HMAC/PRF ni `credBlob`; los casos positivos son
@@ -236,19 +246,20 @@ visible, aun cuando el estado final de la credencial sea idéntico.
 - No se permite inferir vulnerabilidades, prevalencia de fallos ni superioridad
   de productos a partir de estos controles.
 
-## 8. Reproducibilidad
+## 9. Reproducibilidad
 
 Los artefactos raw son JSONL inmutables; los derivados y manifiestos incluyen
 hashes SHA-256 del protocolo, resultados, navegador y commit. La campaña C1 se
 ejecutó con Chromium {results['environment']['browser_version']} y Playwright
 {results['environment']['playwright_version']} desde un árbol Git limpio. El
 auditor de release recompone cada challenge a partir de un nonce aleatorio y del
-contexto de la fila, rechaza transcripciones reasignadas y reproduce el oráculo
-`largeBlob` desde los valores esperado y observado retenidos. El
+contexto de la fila, liga la firma a la clave pública fuente, verifica RP ID,
+user handle, origen y hashes de artefactos, rechaza transcripciones reasignadas y
+reproduce el oráculo `largeBlob` desde los valores retenidos. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
-## 9. Conclusión
+## 10. Conclusión
 
 PasskeyTransit distingue compatibilidad sintáctica, autenticación básica,
 preservación funcional y recuperación operacional. En los controles diseñados,
@@ -271,8 +282,16 @@ los mismos oráculos y límites de afirmación.
    https://cryptography.io/en/latest/hazmat/primitives/hpke/.
 6. Bitwarden, `credential-exchange` v0.4.0,
    https://github.com/bitwarden/credential-exchange/tree/v0.4.0.
-7. Jannett et al., The State of Passkeys, USENIX Security 2026,
+7. FIDO Alliance, Multi-Device FIDO Credentials, 2022,
+   https://fidoalliance.org/white-paper-multi-device-fido-credentials/.
+8. Ramat et al., Passkeys in the Wild: A Systematic Study of FIDO2 User
+   Experience Consistency Across Websites, SOUPS 2026,
+   https://www.usenix.org/conference/soups2026/presentation/ramat.
+9. Jannett et al., The State of Passkeys, USENIX Security 2026,
    https://www.usenix.org/conference/usenixsecurity26/presentation/jannett.
+10. Büttner and Gruschka, Device-Bound vs. Synced Credentials: A Comparative
+    Evaluation of Passkey Authentication, ICISSP 2025,
+    https://arxiv.org/abs/2501.07380.
 """
 
 
@@ -309,14 +328,16 @@ def run_analysis(
     oracle_report = _load(oracle_report_path) if oracle_report_path is not None else None
     if c1.get("mode") != "full" or c1.get("attempt_count") != 6144 or c1.get("repeat_equivalent") is not True:
         raise ValueError("Phase 7 input is not the complete equivalent-repeat C1 run")
+    if len(c1.get("route_stratum_results", [])) != 96:
+        raise ValueError("Phase 7 input does not contain all 96 route-by-stratum groups")
     if c3.get("failure_sequence_count") != 960:
         raise ValueError("Phase 6 C3 input is incomplete")
     protocols = {c1.get("protocol_id"), c2.get("protocol_id"), c3.get("protocol_id")}
     if len(protocols) != 1 or None in protocols:
         raise ValueError("C1, C2 and C3 must use one protocol identifier")
     protocol_id = next(iter(protocols))
-    if not str(protocol_id).endswith("v1.3"):
-        raise ValueError("corrected analysis requires protocol v1.3 evidence")
+    if not str(protocol_id).endswith("v1.4"):
+        raise ValueError("corrected analysis requires protocol v1.4 evidence")
     if interop.get("all_applicable_checks_pass") is not True:
         raise ValueError("Phase 8 interoperability checks did not pass")
     if interop.get("git", {}).get("source_dirty") is not False:
@@ -327,7 +348,7 @@ def run_analysis(
     if external is not None and external.get("semantic_json_equal") is not True:
         raise ValueError("Phase 11 external CXF round trip did not preserve normalized JSON")
     results = {
-        "evidence_class": "corrective-v1.3-reference-control-analysis",
+        "evidence_class": "corrective-v1.4-source-bound-reference-control-analysis",
         "c1": c1,
         "c2": c2,
         "c3": c3,
@@ -360,10 +381,11 @@ def run_analysis(
     _write_csv(
         output_dir / "table_c1_estimands.csv",
         [
-            {"estimand": name, "numerator": value["numerator"], "denominator": value["denominator"], "estimate": value["estimate"], "ci95_low": value["ci95"][0] if value["ci95"] else None, "ci95_high": value["ci95"][1] if value["ci95"] else None}
+            {"estimand": name, "numerator": value["numerator"], "denominator": value["denominator"], "estimate": value["estimate"], "uncertainty": value["uncertainty"]}
             for name, value in c1["estimands"].items()
         ],
     )
+    _write_csv(output_dir / "table_c1_route_strata.csv", c1["route_stratum_results"])
     _write_csv(
         output_dir / "table_c1_oracles.csv",
         [{"oracle": name, "pass": statuses.get("PASS", 0), "fail": statuses.get("FAIL", 0), "not_applicable": statuses.get("NOT_APPLICABLE", 0), "not_evaluable": statuses.get("NOT_EVALUABLE", 0)} for name, statuses in c1["oracle_statuses"].items()],
@@ -381,6 +403,7 @@ def run_analysis(
         RESULTS_FILENAME,
         "MANUSCRIPT.md",
         "table_c1_estimands.csv",
+        "table_c1_route_strata.csv",
         "table_c1_oracles.csv",
         "table_c2_mutations.csv",
         "table_c3_faults.csv",

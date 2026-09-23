@@ -1,19 +1,23 @@
-# Submission checklist for PasskeyTransit v0.5
+# Submission checklist for PasskeyTransit v0.6
 
 - [x] Research questions and protocol are frozen and versioned.
 - [x] Corrective, exploratory, executed-behavior and representation-only evidence are labeled separately.
-- [x] Exact denominators and descriptive cluster-bootstrap sensitivity intervals are reported.
-- [x] Protocol v1.3 records all post-inspection corrections and labels the run as a corrective replication.
-- [x] Every WebAuthn ceremony derives its signed challenge from a fresh nonce and canonical row context.
+- [x] Exact denominators and the complete route-by-stratum matrix are reported without sampling intervals.
+- [x] Protocol v1.4 records all post-inspection corrections and labels the run as a corrective replication.
+- [x] Every WebAuthn ceremony derives its signed challenge from a fresh nonce and source-bound canonical context.
 - [x] Adversarial transcript reassignment is rejected even after unkeyed hashes are recomputed.
 - [x] Browser-executed, nonexecuted representation, non-payment union and payment-inclusive estimands are separate.
 - [x] Retained `largeBlob` values reproduce the published browser oracle.
 - [x] Imported browser attempts retain independently verifiable public transcripts.
+- [x] The auditor binds signing SPKI, user handle, RP ID and origin to the signed row context.
+- [x] Retained browser artifact hashes are independently reproduced.
 - [x] Source commits, dependency lock, browser binary and CDP schema are hashed.
 - [x] Raw evidence contains synthetic identifiers and hashes, with no private keys.
 - [x] Independent HPKE, Node CXF and Bitwarden CXF checks are identified.
 - [x] PRF, `credBlob`, SPC and CXP-PQC limitations are explicit.
 - [x] Literature search method and included sources are recorded.
+- [x] Related work is integrated into the manuscript.
+- [x] Source and release archive include an MIT license and citation metadata.
 - [x] Tables are generated from verified summaries.
 - [ ] Add author names, affiliations, venue template and conflict declarations.
 - [ ] Complete venue-specific ethics and artifact-availability forms.

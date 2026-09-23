@@ -33,7 +33,7 @@ from .campaign import (
     ORACLES,
     StrictPreservationError,
     _apply_profile,
-    _bootstrap,
+    _exact_estimand,
     _canonical,
     _classify,
     _evaluate,
@@ -42,6 +42,7 @@ from .campaign import (
     _oracle,
     _paired_route_comparisons,
     _passkey,
+    _route_stratum_results,
     _transport,
     build_c1_corpus,
 )
@@ -244,17 +245,21 @@ def _assertion_evidence(
         "source_rp_id": source_key["rpId"],
         "expected_origin": origin,
     }
-    extension = {
+    large_blob_extension = {
         "applicable": large_blob_applicable,
         "expected": b64url(expected_large_blob) if expected_large_blob is not None else None,
         "observed": assertion.get("largeBlob"),
+    }
+    extensions = {
+        "large_blob": large_blob_extension,
+        "prf_first": assertion.get("prfFirst"),
     }
     return {
         "checks": checks,
         "transcript": transcript,
         "transcript_ref": "sha256:" + hashlib.sha256(_canonical(transcript)).hexdigest(),
-        "extensions": {"large_blob": extension},
-        "extension_ref": "sha256:" + hashlib.sha256(_canonical(extension)).hexdigest(),
+        "extensions": extensions,
+        "extension_ref": "sha256:" + hashlib.sha256(_canonical(extensions)).hexdigest(),
         "artifact_sha256": {
             name: hashlib.sha256(unb64url(assertion[name])).hexdigest() if assertion.get(name) else None
             for name in fields
@@ -349,6 +354,19 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                         "repetition": repetition + 1,
                         "provider_chain": chain, "hop_count": len(chain) - 1, "mutation_id": None,
                         "failure_point": None, "retry_index": 0, "normative_class": "NOT_ASSESSED",
+                        "source_public_key_spki_sha256": hashlib.sha256(
+                            serialization.load_der_private_key(
+                                unb64url(source_key["key"]), password=None
+                            ).public_key().public_bytes(
+                                serialization.Encoding.DER,
+                                serialization.PublicFormat.SubjectPublicKeyInfo,
+                            )
+                        ).hexdigest(),
+                        "source_user_handle_sha256": hashlib.sha256(
+                            unb64url(source_key["userHandle"])
+                        ).hexdigest(),
+                        "source_rp_id": source_key["rpId"],
+                        "expected_origin": origins[source_key["rpId"]],
                     }
                     try:
                         migrated, declarations = _migrate(source, route, properties)
@@ -432,29 +450,25 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
     with raw_path.open("x", encoding="utf-8") as handle:
         for row in rows:
             handle.write(json.dumps(row, sort_keys=True) + "\n")
-    seed = int(protocol["seed"])
     estimands = {
-        "preserving_migration_yield": _bootstrap(rows, lambda row: row["semantic_class"] == "PASS", lambda row: True, seed + 21),
-        "conditional_semantic_preservation": _bootstrap(rows, lambda row: row["semantic_class"] == "PASS", lambda row: row["execution_status"] == "IMPORTED", seed + 22),
-        "silent_degradation_rate": _bootstrap(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED", seed + 23),
-        "false_reassurance_rate": _bootstrap(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True, seed + 24),
-        "login_with_nonexecuted_representation_loss_rate": _bootstrap(
+        "preserving_migration_yield": _exact_estimand(rows, lambda row: row["semantic_class"] == "PASS", lambda row: True),
+        "conditional_semantic_preservation": _exact_estimand(rows, lambda row: row["semantic_class"] == "PASS", lambda row: row["execution_status"] == "IMPORTED"),
+        "silent_degradation_rate": _exact_estimand(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED"),
+        "false_reassurance_rate": _exact_estimand(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True),
+        "login_with_nonexecuted_representation_loss_rate": _exact_estimand(
             rows,
             lambda row: row.get("login_with_nonexecuted_representation_loss") is True,
             lambda row: row["basic_auth_pass"] is True,
-            seed + 25,
         ),
-        "login_with_any_nonpayment_property_failure_rate": _bootstrap(
+        "login_with_any_nonpayment_property_failure_rate": _exact_estimand(
             rows,
             lambda row: row.get("login_with_any_nonpayment_property_failure") is True,
             lambda row: row["basic_auth_pass"] is True,
-            seed + 26,
         ),
-        "login_with_any_observed_property_failure_rate": _bootstrap(
+        "login_with_any_observed_property_failure_rate": _exact_estimand(
             rows,
             lambda row: row.get("login_with_any_observed_property_failure") is True,
             lambda row: row["basic_auth_pass"] is True,
-            seed + 27,
         ),
     }
     repeat_equivalent: bool | None = None
@@ -470,10 +484,11 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
         "oracle_statuses": {name: dict(Counter(row["oracles"][name]["status"] for row in rows)) for name in ORACLES},
         "estimands": estimands,
         "design_result_cells": _design_cell_summary(rows),
+        "route_stratum_results": _route_stratum_results(rows),
         "paired_route_comparisons": _paired_route_comparisons(rows, protocol),
         "repeat_equivalent": repeat_equivalent,
         "confirmatory_provider_claims_authorized": False,
-        "challenge_policy": "fresh-32-byte-nonce-derived-domain-separated-attempt-bound-challenge",
+        "challenge_policy": protocol["campaigns"]["C1"]["challenge_policy"],
     }
     with summary_path.open("x", encoding="utf-8") as handle:
         handle.write(json.dumps(summary, indent=2) + "\n")

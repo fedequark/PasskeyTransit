@@ -298,29 +298,18 @@ def _attempt(
     }
 
 
-def _bootstrap(rows: list[dict[str, Any]], numerator: Any, denominator: Any, seed: int) -> dict[str, Any]:
-    clusters: dict[str, tuple[int, int]] = {}
-    # Stable ordering is part of the seeded procedure. Iterating a set here made
-    # the same seed produce different intervals across fresh Python processes.
-    for credential in sorted({str(row["credential_id_hash"]) for row in rows}):
-        selected = [row for row in rows if row["credential_id_hash"] == credential]
-        clusters[credential] = (sum(bool(numerator(row)) for row in selected), sum(bool(denominator(row)) for row in selected))
+def _exact_estimand(rows: list[dict[str, Any]], numerator: Any, denominator: Any) -> dict[str, Any]:
     numerator_count = sum(bool(numerator(row)) for row in rows)
     denominator_count = sum(bool(denominator(row)) for row in rows)
-    result: dict[str, Any] = {"numerator": numerator_count, "denominator": denominator_count, "estimate": None, "ci95": None}
+    result: dict[str, Any] = {
+        "numerator": numerator_count,
+        "denominator": denominator_count,
+        "estimate": None,
+        "uncertainty": "none-designed-census",
+    }
     if denominator_count == 0:
         return result
     result["estimate"] = numerator_count / denominator_count
-    rng = random.Random(seed)
-    values = list(clusters.values())
-    samples: list[float] = []
-    for _ in range(2000):
-        drawn = [values[rng.randrange(len(values))] for _ in values]
-        den = sum(value[1] for value in drawn)
-        if den:
-            samples.append(sum(value[0] for value in drawn) / den)
-    samples.sort()
-    result["ci95"] = [samples[int(0.025 * (len(samples) - 1))], samples[int(0.975 * (len(samples) - 1))]]
     return result
 
 
@@ -397,6 +386,33 @@ def _design_cell_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _route_stratum_results(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    for row in rows:
+        grouped.setdefault((str(row["route_id"]), str(row["feature_stratum"])), []).append(row)
+    results: list[dict[str, Any]] = []
+    for (route_id, feature_stratum), selected in sorted(grouped.items()):
+        results.append(
+            {
+                "route_id": route_id,
+                "feature_stratum": feature_stratum,
+                "attempts": len(selected),
+                "imported": sum(row["execution_status"] == "IMPORTED" for row in selected),
+                "rejected": sum(row["execution_status"] == "REJECTED" for row in selected),
+                "semantic_pass": sum(row["semantic_class"] == "PASS" for row in selected),
+                "degraded_visible": sum(row["semantic_class"] == "DEGRADED_VISIBLE" for row in selected),
+                "degraded_silent": sum(row["semantic_class"] == "DEGRADED_SILENT" for row in selected),
+                "not_evaluable": sum(row["semantic_class"] == "NOT_EVALUABLE" for row in selected),
+                "false_reassurance": sum(row.get("false_reassurance") is True for row in selected),
+                "representation_loss": sum(
+                    row.get("login_with_nonexecuted_representation_loss") is True
+                    for row in selected
+                ),
+            }
+        )
+    return results
+
+
 def run_c1_reference_control(protocol_path: Path, output_dir: Path) -> dict[str, Any]:
     raw_path = output_dir / "c1_phase5_attempts.jsonl"
     csv_path = output_dir / "c1_phase5_derived.csv"
@@ -438,12 +454,11 @@ def run_c1_reference_control(protocol_path: Path, output_dir: Path) -> dict[str,
         writer = csv.DictWriter(handle, fieldnames=list(flat_rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(flat_rows)
-    seed = int(protocol["seed"])
     estimands = {
-        "preserving_migration_yield": _bootstrap(rows, lambda row: row["semantic_class"] == "PASS", lambda row: True, seed + 1),
-        "conditional_semantic_preservation": _bootstrap(rows, lambda row: row["semantic_class"] == "PASS", lambda row: row["execution_status"] == "IMPORTED", seed + 2),
-        "silent_degradation_rate": _bootstrap(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED", seed + 3),
-        "false_reassurance_rate": _bootstrap(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True, seed + 4),
+        "preserving_migration_yield": _exact_estimand(rows, lambda row: row["semantic_class"] == "PASS", lambda row: True),
+        "conditional_semantic_preservation": _exact_estimand(rows, lambda row: row["semantic_class"] == "PASS", lambda row: row["execution_status"] == "IMPORTED"),
+        "silent_degradation_rate": _exact_estimand(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED"),
+        "false_reassurance_rate": _exact_estimand(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True),
     }
     normalized = lambda row: _canonical(
         {
@@ -467,6 +482,7 @@ def run_c1_reference_control(protocol_path: Path, output_dir: Path) -> dict[str,
         "oracle_statuses": {name: dict(Counter(row["oracles"][name]["status"] for row in rows)) for name in ORACLES},
         "estimands": estimands,
         "design_result_cells": _design_cell_summary(rows),
+        "route_stratum_results": _route_stratum_results(rows),
         "paired_route_comparisons": _paired_route_comparisons(rows, protocol),
         "repeat_equivalent": repeat_equivalent,
         "confirmatory_provider_claims_authorized": False,

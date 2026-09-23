@@ -19,7 +19,7 @@ EDGE = Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
 
 
 def test_invalid_assertion_signature_is_recorded_as_failure():
-    protocol = json.loads((Path(__file__).parents[1] / "experiments" / "protocol_v1.3.json").read_text())
+    protocol = json.loads((Path(__file__).parents[1] / "experiments" / "protocol_v1.4.json").read_text())
     source = build_c1_corpus(protocol)[0][2]
     key = _passkey(source)
     origin = f"https://{key['rpId']}"
@@ -52,7 +52,7 @@ def test_real_webauthn_assertion_after_cxf_migration(tmp_path):
 
 @pytest.mark.skipif(not EDGE.is_file(), reason="Microsoft Edge/Chromium is unavailable")
 def test_phase7_browser_calibration(tmp_path):
-    protocol = Path(__file__).parents[1] / "experiments" / "protocol_v1.3.json"
+    protocol = Path(__file__).parents[1] / "experiments" / "protocol_v1.4.json"
     result = run_browser_c1(protocol, EDGE, tmp_path, calibration=True)
     summary = result["summary"]
     assert summary["attempt_count"] == 96

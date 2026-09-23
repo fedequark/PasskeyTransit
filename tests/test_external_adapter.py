@@ -16,7 +16,7 @@ def test_external_adapter_protocol_round_trip(tmp_path):
         "json.dump({'adapter_protocol_version':1,'status':'PASS','document':r['document']},sys.stdout)\n",
         encoding="utf-8",
     )
-    protocol = json.loads(Path("experiments/protocol_v1.3.json").read_text(encoding="utf-8"))
+    protocol = json.loads(Path("experiments/protocol_v1.4.json").read_text(encoding="utf-8"))
     document = build_c1_corpus(protocol)[0][2]
     result = run_external_adapter(
         [sys.executable, str(helper)],

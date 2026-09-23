@@ -1,5 +1,35 @@
 # Protocol deviations
 
+## 2026-09-23 source-key binding and exact-design correction
+
+Date: 2026-09-23
+
+Commit: recorded by SHA-256 in each v0.6 campaign manifest
+
+Data inspected before decision: yes
+
+Reason: the v1.3 public verifier checked an ES256 signature against an SPKI
+stored inside the same transcript but did not bind that SPKI to the source-key
+oracle. A replacement key and freshly generated signature could therefore pass
+after recomputing unkeyed commitments. Its credential-cluster bootstrap also
+randomly reweighted deliberately balanced feature strata despite zero outcome
+variation inside every route-by-stratum cell.
+
+Affected RQs: RQ1, RQ2 and RQ3
+
+Affected estimands: evidentiary strength of key continuity and presentation of
+all C1 proportions
+
+Change: protocol v1.4 signs source SPKI hash, source user-handle hash, RP ID and
+origin as part of the attempt binding; reproduces all retained artifact hashes;
+adds key-substitution regression tests; and reports exact designed-census
+proportions plus the complete 96-cell route-by-stratum matrix without sampling
+intervals.
+
+Impact on interpretation: v1.3 arithmetic remains reproducible, but v1.4
+supersedes its claim of independently source-bound public browser transcripts.
+The v1.4 campaign is another post-inspection corrective replication.
+
 ## 2026-09-23 capability classification and signed row binding correction
 
 Date: 2026-09-23

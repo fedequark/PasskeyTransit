@@ -37,7 +37,7 @@ encapsulation and underspecifies its ZIP/JWE payload, the missing pieces use a
 clearly named experimental binding and normative interoperability is not
 claimed. Phase 5 operationalizes the complete registered C1 shape as a
 6,144-attempt synthetic reference-policy control campaign with structured
-oracle states, cluster-bootstrap intervals, and hashed artifacts. It is harness
+oracle states, exact designed-census summaries, and hashed artifacts. It is harness
 qualification, not commercial-provider evidence. Phase 6 adds the frozen C2
 robustness matrix and all 960 C3 fault/retry
 sequences, including deliberate positive controls for atomicity and
@@ -54,7 +54,10 @@ Phase 10 adds a clean-tree, privacy-audited replication archive with two-level
 hash verification. Phase 11 runs the pinned Bitwarden CXF Rust crate through a
 stable external adapter. Phase 12 records an executable disposition for every
 remaining oracle, and Phase 13 adds the focused literature review and
-publication package. None of these additions converts parser interop or
+publication package. Protocol v1.4 additionally binds the source SPKI, user
+handle, RP ID and origin into every signed browser challenge, verifies retained
+artifact hashes and publishes all 96 exact route-by-stratum groups. None of
+these additions converts parser interop or
 synthetic controls into commercial-provider evidence.
 
 ## Quick start
@@ -97,9 +100,9 @@ and a recorded seed.
 - `docs/`: research state, provenance, and decision records.
 
 The historical Phase 1 design is in `docs/EXPERIMENT_PROTOCOL.md`. The current
-corrective design is in `docs/EXPERIMENT_PROTOCOL_V1_3.md`, with its
-machine-readable counterpart in `experiments/protocol_v1.3.json`. It records
-that prior data and reviews were inspected before the v1.3 corrections.
+corrective design is in `docs/EXPERIMENT_PROTOCOL_V1_4.md`, with its
+machine-readable counterpart in `experiments/protocol_v1.4.json`. It records
+that prior data and reviews were inspected before the v1.4 corrections.
 
 ## Evidence policy
 

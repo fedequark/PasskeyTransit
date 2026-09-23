@@ -24,11 +24,12 @@ The runner verifies independently in Python:
 - CXF-required zero signature-counter behavior;
 - browser-returned `largeBlob` bytes.
 
-Protocol v1.3 generates a fresh operating-system 32-byte nonce for every
+Protocol v1.4 generates a fresh operating-system 32-byte nonce for every
 ceremony and derives the signed challenge from a domain-separated canonical
-context containing the attempt, credential hash, route, repetition and run.
-The release gate reconstructs the challenge, compares the context with the row,
-checks the credential hash and rejects reassignment or challenge reuse.
+context containing the attempt, credential hash, route, repetition, run,
+source SPKI hash, source user-handle hash, RP ID and origin. The release gate
+reconstructs the challenge, compares the context with the row, reproduces the
+artifact hashes and rejects key substitution, reassignment or challenge reuse.
 
 PRF/HMAC and `credBlob` positive preservation remain `NOT_EVALUABLE` because
 the Chromium CDP credential-import operation cannot inject their CXF state.
@@ -60,12 +61,16 @@ real browser evidence but does not authorize claims about commercial providers.
 
 ## Historical runs
 
+Protocol v1.3 bound the row context but left the source SPKI and RP expectations
+self-declared inside the retained transcript. Its arithmetic remains historical,
+but v1.4 supersedes its independent key-continuity evidence.
+
 Protocol v1.2 introduced unique challenges but did not cryptographically bind
 the row context into the signed challenge and mixed nonexecuted representation
-checks into its behavioral estimand. Its evidence is superseded by v1.3.
+checks into its behavioral estimand. Its evidence is superseded by v1.3 and v1.4.
 
 Protocol v1.1 corrected strict-profile behavior but reused one deterministic
-challenge across C1 ceremonies. Its evidence is superseded by v1.2 and v1.3 and must not
+challenge across C1 ceremonies. Its evidence is superseded by v1.2, v1.3 and v1.4 and must not
 be presented as a standards-conforming relying-party ceremony campaign.
 
 ### v1.0 full run superseded by protocol v1.1

@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 
 from docx import Document
@@ -20,9 +21,12 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
+from passkeytransit import __version__
+
 
 TITLE = "Preservación semántica en migraciones de passkeys con CXF y CXP"
-SUBTITLE = "PasskeyTransit v0.5 Informe reproducible de controles e interoperabilidad"
+DISPLAY_VERSION = "v" + __version__.rsplit(".", 1)[0]
+SUBTITLE = f"PasskeyTransit {DISPLAY_VERSION} Informe reproducible de controles e interoperabilidad"
 
 
 def _plain(text: str) -> str:
@@ -137,6 +141,13 @@ def _keep_table_together(table) -> None:
 
 def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
     doc = Document()
+    doc.core_properties.title = TITLE
+    doc.core_properties.subject = "Informe reproducible de controles sintéticos e interoperabilidad para migración de passkeys"
+    doc.core_properties.author = "PasskeyTransit research team"
+    doc.core_properties.keywords = "passkeys, WebAuthn, CXF, CXP, semantic preservation"
+    doc.core_properties.comments = "Generated from the versioned PasskeyTransit manuscript"
+    doc.core_properties.created = datetime.now(timezone.utc)
+    doc.core_properties.modified = datetime.now(timezone.utc)
     section = doc.sections[0]
     section.page_width, section.page_height = Inches(8.5), Inches(11)
     section.top_margin = section.bottom_margin = Inches(0.8)
@@ -222,7 +233,7 @@ def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
 
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    footer_run = footer.add_run("PasskeyTransit v0.5")
+    footer_run = footer.add_run(f"PasskeyTransit {DISPLAY_VERSION}")
     footer_run.font.size = Pt(8)
     footer_run.font.color.rgb = RGBColor(90, 90, 90)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -261,6 +272,7 @@ def build_pdf(blocks: list[tuple[str, object]], output: Path) -> None:
             story.append(Paragraph(str(content), styles["Heading1"]))
         elif kind == "heading2":
             story.append(Paragraph(str(content), styles["Heading2"]))
+            story.append(Spacer(1, 3))
         elif kind == "paragraph":
             story.append(Paragraph(_plain(str(content)), styles["BodyText"]))
         elif kind == "bullet":
@@ -295,7 +307,7 @@ def build_pdf(blocks: list[tuple[str, object]], output: Path) -> None:
         canvas.saveState()
         canvas.setFont("Helvetica", 8)
         canvas.setFillColor(colors.HexColor("#666666"))
-        canvas.drawCentredString(LETTER[0] / 2, 0.45 * inch, f"PasskeyTransit v0.5  |  {doc.page}")
+        canvas.drawCentredString(LETTER[0] / 2, 0.45 * inch, f"PasskeyTransit {DISPLAY_VERSION}  |  {doc.page}")
         canvas.restoreState()
 
     output.parent.mkdir(parents=True, exist_ok=True)

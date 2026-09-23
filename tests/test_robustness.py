@@ -6,7 +6,7 @@ from passkeytransit.robustness import _normative_class, run_c2_robustness, run_c
 
 
 PROJECT_ROOT = Path(__file__).parents[1]
-PROTOCOL_PATH = PROJECT_ROOT / "experiments" / "protocol_v1.3.json"
+PROTOCOL_PATH = PROJECT_ROOT / "experiments" / "protocol_v1.4.json"
 
 
 def test_c2_executes_every_frozen_mutation_for_every_stratum(tmp_path):
