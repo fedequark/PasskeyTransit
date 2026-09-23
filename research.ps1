@@ -16,6 +16,19 @@ function Require-Venv {
     }
 }
 
+function Resolve-CargoPath {
+    if ($env:PASSKEYTRANSIT_CARGO -and (Test-Path -LiteralPath $env:PASSKEYTRANSIT_CARGO)) {
+        return (Resolve-Path -LiteralPath $env:PASSKEYTRANSIT_CARGO).Path
+    }
+    $CargoCommand = Get-Command cargo -ErrorAction SilentlyContinue
+    if ($CargoCommand) { return $CargoCommand.Source }
+    if ($env:CARGO_HOME) {
+        $CargoHomeCandidate = Join-Path $env:CARGO_HOME "bin\cargo.exe"
+        if (Test-Path -LiteralPath $CargoHomeCandidate) { return $CargoHomeCandidate }
+    }
+    throw "Cargo was not found. Set PASSKEYTRANSIT_CARGO to the cargo executable."
+}
+
 switch ($Action) {
     "setup" {
         if (-not (Test-Path -LiteralPath $VenvPython)) {
@@ -157,15 +170,16 @@ switch ($Action) {
     "phase11" {
         Require-Venv
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
-        $CargoPath = (Get-Command cargo -ErrorAction Stop).Source
+        $CargoPath = Resolve-CargoPath
         $NodePath = (Get-Command node -ErrorAction Stop).Source
+        $CargoToolchain = if ($env:PASSKEYTRANSIT_CARGO_TOOLCHAIN) { $env:PASSKEYTRANSIT_CARGO_TOOLCHAIN } elseif ($IsWindows) { "stable-x86_64-pc-windows-gnu" } else { "stable" }
         & $VenvPython -m passkeytransit bitwarden-interop `
             --protocol $ProtocolPath `
             --cargo $CargoPath `
             --manifest (Join-Path $ProjectRoot "interop\bitwarden-cxf-adapter\Cargo.toml") `
             --node $NodePath `
             --wasi-runner (Join-Path $ProjectRoot "interop\wasi_runner.mjs") `
-            --cargo-toolchain $(if ($IsWindows) { "stable-x86_64-pc-windows-gnu" } else { "stable" }) `
+            --cargo-toolchain $CargoToolchain `
             --output (Join-Path $ProjectRoot "datasets\generated\phase11\$RunStamp\bitwarden_cxf_interop.json")
     }
     "phase12" {

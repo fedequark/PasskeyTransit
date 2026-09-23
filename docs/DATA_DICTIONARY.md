@@ -41,8 +41,9 @@ minimum values or hashes needed to audit the decision. `status` is `PASS`,
 Browser rows additionally contain `browser_evidence`: Boolean verification
 checks, SHA-256 digests of assertion components, and a public WebAuthn
 transcript (authenticator data, client data, signature, synthetic identifiers,
-source public key and expected origin) bound to `transcript_ref`. This permits
-independent re-verification of assertion checks. Private keys, PRF outputs and
+source public key, expected challenge, RP ID and origin) bound to
+`transcript_ref`. The release verifier independently recalculates the
+commitment, signature and every recorded assertion check. Private keys, PRF outputs and
 blob plaintext are not copied into the analytical row.
 `prf_requested` and `prf_observed` distinguish an exercised PRF request from an
 unavailable positive-preservation result.

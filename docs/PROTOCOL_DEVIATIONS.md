@@ -4,7 +4,7 @@
 
 Date: 2026-09-23
 
-Commit: pending corrected v0.3 evidence commit
+Commit: recorded by SHA-256 in each corrected v0.3 campaign manifest
 
 Data inspected before decision: yes
 
