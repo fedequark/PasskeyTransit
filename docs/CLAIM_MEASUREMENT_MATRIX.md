@@ -11,7 +11,7 @@ stable across protocol-compatible revisions.
 | CLM-04 | `largeBlob` behavior and `credBlob` representation are preserved or changed | Retained browser `largeBlob` observation; CXF `credBlob` equality | Completed applicable blob imports | RQ2 | Mixed executed and representation evidence |
 | CLM-05 | Migration outcome depends on path | Matched credential/final-provider outcomes across direct and multihop routes | Registered matched route pairs | RQ3 | Corrective control evidence |
 | CLM-06 | Unknown/versioned data causes reject, preservation, or degradation | Execution and semantic axes by registered mutation family | All robustness cases | RQ4 | Corrective control evidence |
-| CLM-07 | Import is or is not idempotent | Final credential count and semantic state after repeated import | All registered retry sequences | RQ4 | Corrective control evidence |
+| CLM-07 | The in-memory control state machine exhibits or violates simulated retry idempotence | Final in-process credential count and semantic state after repeated import | All registered retry sequences | RQ4 | Simulation only; no durable-storage or crash-recovery claim |
 | CLM-08 | The in-memory control state machine exhibits or violates simulated atomicity and retry convergence | In-process state before failure, after failure, and after retry | All fault sequences | RQ4 | Simulation only; no durable-storage or crash-recovery claim |
 | CLM-09 | A behavior violates CXF/CXP | Minimal case plus applicable requirement-matrix ID | Cases assessed against that requirement | RQ1–RQ4 | Normative |
 | CLM-10 | Migration changes the instrumented clone set | Ground-truth provider copy-set delta | Synthetic instrumented cases only | Exploratory | Exploratory |

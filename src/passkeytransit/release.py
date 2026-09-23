@@ -272,7 +272,19 @@ def verify_release(archive_path: Path, manifest_path: Path) -> dict[str, Any]:
     archive_hash_ok = _sha(archive_path.read_bytes()) == manifest["archive_sha256"]
     mismatches: list[str] = []
     with zipfile.ZipFile(archive_path) as archive:
+        archive_names = archive.namelist()
+        duplicate_names = sorted({name for name in archive_names if archive_names.count(name) > 1})
+        mismatches.extend(f"duplicate-entry:{name}" for name in duplicate_names)
         internal = json.loads(archive.read("MANIFEST.json"))
+        expected_names = set(internal["entries"]) | {"MANIFEST.json"}
+        actual_names = set(archive_names)
+        mismatches.extend(f"undeclared-entry:{name}" for name in sorted(actual_names - expected_names))
+        mismatches.extend(f"missing-entry:{name}" for name in sorted(expected_names - actual_names))
+        for field in ("release", "source_commit"):
+            if field in manifest and manifest[field] != internal.get(field):
+                mismatches.append(f"manifest-{field}-mismatch")
+        if "archive" in manifest and manifest["archive"] != archive_path.name:
+            mismatches.append("manifest-archive-name-mismatch")
         for name, expected in internal["entries"].items():
             if _sha(archive.read(name)) != expected:
                 mismatches.append(name)
@@ -286,13 +298,13 @@ def verify_release(archive_path: Path, manifest_path: Path) -> dict[str, Any]:
             analysis = json.loads(archive.read(analysis_names[0]))
             missing = _analysis_lineage_missing(analysis, set(internal["entries"].values()))
             mismatches.extend(missing)
-        browser_audit: dict[str, Any] = {"passed": None, "reason": "not requested by manifest"}
-        if manifest.get("browser_transcript_audit") is not None:
-            browser_names = [
-                name for name in internal["entries"]
-                if Path(name).name.startswith("c1_phase7_")
-                and Path(name).name.endswith("_attempts.jsonl")
-            ]
+        browser_names = [
+            name for name in internal["entries"]
+            if Path(name).name.startswith("c1_phase7_")
+            and Path(name).name.endswith("_attempts.jsonl")
+        ]
+        browser_audit: dict[str, Any] = {"passed": None, "reason": "no browser evidence"}
+        if browser_names:
             try:
                 browser_audit = audit_browser_evidence_payloads(
                     (name, archive.read(name)) for name in browser_names
@@ -300,8 +312,11 @@ def verify_release(archive_path: Path, manifest_path: Path) -> dict[str, Any]:
             except (ValueError, KeyError, json.JSONDecodeError) as exc:
                 browser_audit = {"passed": False, "error": str(exc)}
                 mismatches.append("browser-transcript-audit")
-        derivation_audit: dict[str, Any] = {"passed": None, "reason": "legacy release"}
-        if manifest.get("derivation_audit") is not None:
+        requires_derivation_audit = any(
+            Path(name).name == "protocol_v1.5.json" for name in internal["entries"]
+        )
+        derivation_audit: dict[str, Any] = {"passed": None, "reason": "pre-v1.5 release"}
+        if requires_derivation_audit:
             try:
                 derivation_audit = _verify_release_derivations(archive, internal["entries"])
             except (ValueError, KeyError, json.JSONDecodeError) as exc:
