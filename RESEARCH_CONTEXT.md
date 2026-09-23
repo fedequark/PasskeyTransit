@@ -31,7 +31,7 @@ routes.
    imports, malformed data, and injected failures?
 
 The historical design is `docs/EXPERIMENT_PROTOCOL.md`; the current corrective
-machine-readable configuration is `experiments/protocol_v1.2.json`.
+machine-readable configuration is `experiments/protocol_v1.3.json`.
 
 ## Evidence boundaries
 
@@ -44,9 +44,10 @@ machine-readable configuration is `experiments/protocol_v1.2.json`.
 
 ## Current evidence frontier
 
-PasskeyTransit v0.4 includes the corrected strict profile, unique per-ceremony
-WebAuthn challenges, attempt-bound auditable transcripts, an explicit
-behavioral false-reassurance estimand and a format-marker sensitivity analysis.
+PasskeyTransit v0.5 includes the corrected strict profile, signed challenges
+derived from a fresh nonce and canonical row context, auditable `largeBlob`
+observations, a browser-executed false-reassurance estimand, and separate
+representation and format-marker sensitivities.
 It also includes the CXF profile, experimental CXP/HPKE
 transport, browser-backed C1 controls, C2 robustness cases, C3 transactional
 faults, an independent HPKE/Node.js boundary, and a hash-verified manuscript.

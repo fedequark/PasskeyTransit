@@ -97,9 +97,9 @@ and a recorded seed.
 - `docs/`: research state, provenance, and decision records.
 
 The historical Phase 1 design is in `docs/EXPERIMENT_PROTOCOL.md`. The current
-corrective design is in `docs/EXPERIMENT_PROTOCOL_V1_2.md`, with its
-machine-readable counterpart in `experiments/protocol_v1.2.json`. It records
-that prior data were inspected before the v1.2 corrections.
+corrective design is in `docs/EXPERIMENT_PROTOCOL_V1_3.md`, with its
+machine-readable counterpart in `experiments/protocol_v1.3.json`. It records
+that prior data and reviews were inspected before the v1.3 corrections.
 
 ## Evidence policy
 

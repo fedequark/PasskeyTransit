@@ -61,8 +61,11 @@ def write_oracle_capability_report(output_path: Path) -> dict[str, Any]:
         "schema_version": 1,
         "evidence_rule": "only EXECUTED capabilities can support positive behavioral claims",
         "capabilities": CAPABILITIES,
-        "open_behavioral_oracles": [
-            item["oracle"] for item in CAPABILITIES if item["status"] != "EXECUTED"
+        "executed_behavioral_oracles": [
+            item["oracle"] for item in CAPABILITIES if item["status"] == "EXECUTED"
+        ],
+        "blocked_behavioral_oracles": [
+            item["oracle"] for item in CAPABILITIES if item["status"] == "BLOCKED_BY_INTERFACE"
         ],
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)

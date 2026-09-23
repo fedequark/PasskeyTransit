@@ -1,5 +1,35 @@
 # Protocol deviations
 
+## 2026-09-23 capability classification and signed row binding correction
+
+Date: 2026-09-23
+
+Commit: recorded by SHA-256 in each v0.5 campaign manifest
+
+Data inspected before decision: yes
+
+Reason: v1.2 mislabeled PRF and `credBlob` representation checks as
+browser-executable behavioral oracles. Its retained challenge was unique and
+signed, but the attempt identifier was only a mutable transcript field. A valid
+transcript could therefore be reassigned to another row after recomputing the
+unkeyed transcript hash. The retained evidence also did not permit the release
+auditor to reproduce the `largeBlob` oracle.
+
+Affected RQs: RQ1, RQ2 and RQ3
+
+Affected estimands: behavioral false reassurance, representation-loss
+sensitivity and the evidentiary strength of C1 transcript-to-row attribution
+
+Change: protocol v1.3 limits the primary behavioral set to `uv` and
+`large_blob`; reports nonexecuted representation loss and payment-marker loss
+separately; derives the signed challenge from a fresh nonce and canonical row
+context; checks credential hash against the row; and retains expected and
+observed `largeBlob` values for independent oracle reconstruction.
+
+Impact on interpretation: v1.2 remains historical and its arithmetic remains
+reproducible, but its 40% value must not be described as fully browser-executed
+behavior. The v1.3 run is a post-inspection corrective replication.
+
 ## 2026-09-23 WebAuthn challenge and estimand correction
 
 Date: 2026-09-23

@@ -1,11 +1,13 @@
-# Submission checklist for PasskeyTransit v0.4
+# Submission checklist for PasskeyTransit v0.5
 
 - [x] Research questions and protocol are frozen and versioned.
-- [x] Confirmatory and exploratory evidence are labeled separately.
+- [x] Corrective, exploratory, executed-behavior and representation-only evidence are labeled separately.
 - [x] Exact denominators and descriptive cluster-bootstrap sensitivity intervals are reported.
-- [x] Protocol v1.2 records both post-inspection corrections and labels the run as a corrective replication.
-- [x] Every WebAuthn ceremony uses a fresh random challenge bound to its attempt identifier.
-- [x] False reassurance excludes the format-only payments marker and reports the inclusive sensitivity separately.
+- [x] Protocol v1.3 records all post-inspection corrections and labels the run as a corrective replication.
+- [x] Every WebAuthn ceremony derives its signed challenge from a fresh nonce and canonical row context.
+- [x] Adversarial transcript reassignment is rejected even after unkeyed hashes are recomputed.
+- [x] Browser-executed, nonexecuted representation, non-payment union and payment-inclusive estimands are separate.
+- [x] Retained `largeBlob` values reproduce the published browser oracle.
 - [x] Imported browser attempts retain independently verifiable public transcripts.
 - [x] Source commits, dependency lock, browser binary and CDP schema are hashed.
 - [x] Raw evidence contains synthetic identifiers and hashes, with no private keys.

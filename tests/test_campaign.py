@@ -18,7 +18,7 @@ from passkeytransit.campaign import (
 
 
 PROJECT_ROOT = Path(__file__).parents[1]
-PROTOCOL_PATH = PROJECT_ROOT / "experiments" / "protocol_v1.2.json"
+PROTOCOL_PATH = PROJECT_ROOT / "experiments" / "protocol_v1.3.json"
 
 
 def test_c1_corpus_matches_frozen_strata():

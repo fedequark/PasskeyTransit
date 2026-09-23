@@ -60,9 +60,16 @@ Required oracle keys are `cxf_structure`, `credential_id`, `rp_id`,
 | `semantic_class` | enum | Protocol semantic-preservation axis |
 | `normative_class` | enum | Protocol normative-assessment axis |
 | `basic_auth_pass` | boolean/null | Derived WebAuthn assertion result |
-| `false_reassurance` | boolean/null | Auth pass plus a failure among the registered browser-executable behavioral oracles (`uv`, PRF, `large_blob`, `cred_blob`); excludes the format-only payments marker |
-| `login_with_any_observed_property_failure` | boolean/null | Sensitivity flag adding `payments_marker` failure to the behavioral false-reassurance set |
+| `false_reassurance` | boolean/null | Auth pass plus failure of a browser-executed behavioral oracle (`uv` or `large_blob`) |
+| `login_with_nonexecuted_representation_loss` | boolean/null | Auth pass plus loss detected for PRF or `credBlob` without executing that feature through CDP |
+| `login_with_any_nonpayment_property_failure` | boolean/null | Union of executed behavior failure and nonexecuted representation loss, excluding payments |
+| `login_with_any_observed_property_failure` | boolean/null | Union of all observed failures, including the format-only payments marker |
 | `exclusion_reason` | string/null | Registered infrastructure-only exclusion code |
+
+Each imported browser row also contains a signed-challenge binding context with
+protocol, run, attempt, credential hash, stratum, route, repetition and provider
+chain. Its retained `largeBlob` evidence includes applicability plus expected
+and browser-observed synthetic values.
 
 ## C2 robustness additions
 
@@ -92,7 +99,8 @@ Raw records never contain private keys, PRF seeds, plaintext credential blobs,
 or account PII. Such synthetic secrets remain in access-controlled ephemeral
 ground-truth artifacts and are referenced by hash.
 
-For browser evidence, each imported row retains a fresh random challenge and
-the expected attempt identifier. The release auditor rejects a missing,
-too-short or reused challenge and rejects any transcript whose attempt binding
-does not match its enclosing row.
+For browser evidence, each imported row retains a fresh random 32-byte nonce,
+the canonical attempt-binding context and the challenge derived from both. The
+release auditor reconstructs the challenge, rejects a missing, too-short or
+reused challenge, and rejects any transcript whose signed binding does not
+match its enclosing row.

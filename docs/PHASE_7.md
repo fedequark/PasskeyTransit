@@ -24,14 +24,18 @@ The runner verifies independently in Python:
 - CXF-required zero signature-counter behavior;
 - browser-returned `largeBlob` bytes.
 
-Protocol v1.2 requires a fresh operating-system-generated 32-byte challenge for
-every ceremony. Each retained transcript binds that signed challenge to its
-`attempt_id`; the release gate rejects reused or undersized challenges.
+Protocol v1.3 generates a fresh operating-system 32-byte nonce for every
+ceremony and derives the signed challenge from a domain-separated canonical
+context containing the attempt, credential hash, route, repetition and run.
+The release gate reconstructs the challenge, compares the context with the row,
+checks the credential hash and rejects reassignment or challenge reuse.
 
 PRF/HMAC and `credBlob` positive preservation remain `NOT_EVALUABLE` because
 the Chromium CDP credential-import operation cannot inject their CXF state.
-Missing required material is still a definite `FAIL`. Secure Payment
-Confirmation behavior is not exercised.
+Missing required material is still a definite representation-level `FAIL`, but
+it is not counted as browser-executed behavior. Secure Payment Confirmation
+behavior is not exercised. Expected and observed `largeBlob` values are retained
+so the release auditor can reproduce that browser oracle.
 
 ## Execution gates
 
@@ -56,8 +60,12 @@ real browser evidence but does not authorize claims about commercial providers.
 
 ## Historical runs
 
+Protocol v1.2 introduced unique challenges but did not cryptographically bind
+the row context into the signed challenge and mixed nonexecuted representation
+checks into its behavioral estimand. Its evidence is superseded by v1.3.
+
 Protocol v1.1 corrected strict-profile behavior but reused one deterministic
-challenge across C1 ceremonies. Its evidence is superseded by v1.2 and must not
+challenge across C1 ceremonies. Its evidence is superseded by v1.2 and v1.3 and must not
 be presented as a standards-conforming relying-party ceremony campaign.
 
 ### v1.0 full run superseded by protocol v1.1

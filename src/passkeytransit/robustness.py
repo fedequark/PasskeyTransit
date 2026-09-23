@@ -207,6 +207,9 @@ def _c2_record(
         },
         "basic_auth_pass": None,
         "false_reassurance": None,
+        "login_with_nonexecuted_representation_loss": None,
+        "login_with_any_nonpayment_property_failure": None,
+        "login_with_any_observed_property_failure": None,
         "exclusion_reason": None,
         "minimal_reproducer_ref": _evidence({"stratum": stratum, "family": family, "document": mutated}),
     }
@@ -343,6 +346,9 @@ def _c3_sequence(
         "normative_class": "NOT_ASSESSED",
         "basic_auth_pass": None,
         "false_reassurance": None,
+        "login_with_nonexecuted_representation_loss": None,
+        "login_with_any_nonpayment_property_failure": None,
+        "login_with_any_observed_property_failure": None,
     }
     events = [
         {**common, "retry_index": 0, "execution_status": initial_status, "state": after_failure},

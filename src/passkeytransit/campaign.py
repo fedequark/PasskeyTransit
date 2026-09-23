@@ -41,10 +41,11 @@ ORACLES = (
     "custody_ground_truth",
 )
 
-# Only browser-executable behavioral properties belong to the primary
-# false-reassurance estimand. The payments member is a format marker until an
-# SPC ceremony is available and is reported separately as a sensitivity check.
-BEHAVIORAL_FAILURE_ORACLES = ("uv", "prf_uv", "prf_no_uv", "large_blob", "cred_blob")
+# The primary false-reassurance estimand contains only properties that this
+# browser harness actually executes. PRF and credBlob are inspectable at the
+# representation layer but cannot be injected/executed through CDP.
+EXECUTED_BEHAVIORAL_FAILURE_ORACLES = ("uv", "large_blob")
+NONEXECUTED_REPRESENTATION_FAILURE_ORACLES = ("prf_uv", "prf_no_uv", "cred_blob")
 FORMAT_ONLY_FAILURE_ORACLES = ("payments_marker",)
 
 
@@ -276,6 +277,7 @@ def _attempt(
         "credential_id_hash": credential_hash,
         "feature_stratum": stratum,
         "route_id": route["id"],
+        "repetition": repetition + 1,
         "seed": protocol["seed"],
         "provider_chain": chain,
         "hop_count": len(chain) - 1,
@@ -289,6 +291,9 @@ def _attempt(
         "normative_class": "NOT_ASSESSED",
         "basic_auth_pass": None,
         "false_reassurance": None,
+        "login_with_nonexecuted_representation_loss": None,
+        "login_with_any_nonpayment_property_failure": None,
+        "login_with_any_observed_property_failure": None,
         "exclusion_reason": "strict-preservation-rejection" if rejected_losses else None,
     }
 
@@ -430,7 +435,7 @@ def run_c1_reference_control(protocol_path: Path, output_dir: Path) -> dict[str,
         for row in rows
     ]
     with csv_path.open("x", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(flat_rows[0]))
+        writer = csv.DictWriter(handle, fieldnames=list(flat_rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(flat_rows)
     seed = int(protocol["seed"])
@@ -440,7 +445,13 @@ def run_c1_reference_control(protocol_path: Path, output_dir: Path) -> dict[str,
         "silent_degradation_rate": _bootstrap(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED", seed + 3),
         "false_reassurance_rate": _bootstrap(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True, seed + 4),
     }
-    normalized = lambda row: _canonical({key: value for key, value in row.items() if key not in {"run_id", "attempt_id"}})
+    normalized = lambda row: _canonical(
+        {
+            key: value
+            for key, value in row.items()
+            if key not in {"run_id", "attempt_id", "repetition"}
+        }
+    )
     per_rep = len(base_order)
     repeat_equivalent = all(normalized(rows[i]) == normalized(rows[i + per_rep]) for i in range(per_rep))
     summary = {

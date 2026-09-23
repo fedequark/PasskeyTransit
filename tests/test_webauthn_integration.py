@@ -11,6 +11,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 
 from passkeytransit.browser_campaign import _verify, run_browser_c1
 from passkeytransit.campaign import _passkey, build_c1_corpus
+from passkeytransit.evidence import audit_browser_evidence, browser_attempt_binding, derive_browser_challenge
 from passkeytransit.model import b64url, unb64url
 
 
@@ -18,7 +19,7 @@ EDGE = Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
 
 
 def test_invalid_assertion_signature_is_recorded_as_failure():
-    protocol = json.loads((Path(__file__).parents[1] / "experiments" / "protocol_v1.2.json").read_text())
+    protocol = json.loads((Path(__file__).parents[1] / "experiments" / "protocol_v1.3.json").read_text())
     source = build_c1_corpus(protocol)[0][2]
     key = _passkey(source)
     origin = f"https://{key['rpId']}"
@@ -51,7 +52,7 @@ def test_real_webauthn_assertion_after_cxf_migration(tmp_path):
 
 @pytest.mark.skipif(not EDGE.is_file(), reason="Microsoft Edge/Chromium is unavailable")
 def test_phase7_browser_calibration(tmp_path):
-    protocol = Path(__file__).parents[1] / "experiments" / "protocol_v1.2.json"
+    protocol = Path(__file__).parents[1] / "experiments" / "protocol_v1.3.json"
     result = run_browser_c1(protocol, EDGE, tmp_path, calibration=True)
     summary = result["summary"]
     assert summary["attempt_count"] == 96
@@ -59,6 +60,14 @@ def test_phase7_browser_calibration(tmp_path):
     assert summary["oracle_statuses"]["webauthn_assertion"] == {"PASS": 80, "NOT_APPLICABLE": 16}
     assert summary["oracle_statuses"]["uv"] == {"PASS": 80, "NOT_APPLICABLE": 16}
     assert summary["oracle_statuses"]["large_blob"] == {"PASS": 11, "FAIL": 8, "NOT_APPLICABLE": 77}
+    assert summary["estimands"]["false_reassurance_rate"]["numerator"] == 8
+    assert summary["estimands"]["false_reassurance_rate"]["denominator"] == 80
+    assert summary["estimands"]["login_with_nonexecuted_representation_loss_rate"]["numerator"] == 28
+    assert summary["estimands"]["login_with_nonexecuted_representation_loss_rate"]["denominator"] == 80
+    assert summary["estimands"]["login_with_any_nonpayment_property_failure_rate"]["numerator"] == 32
+    assert summary["estimands"]["login_with_any_nonpayment_property_failure_rate"]["denominator"] == 80
+    assert summary["estimands"]["login_with_any_observed_property_failure_rate"]["numerator"] == 36
+    assert summary["estimands"]["login_with_any_observed_property_failure_rate"]["denominator"] == 80
     assert result["manifest"]["cdp"]["protocol_version"]
     assert len(result["manifest"]["cdp"]["schema_sha256"]) == 64
     assert len(result["manifest"]["dependency_lock_sha256"]) == 64
@@ -66,7 +75,13 @@ def test_phase7_browser_calibration(tmp_path):
     imported = next(row for row in rows if row["execution_status"] == "IMPORTED")
     evidence = imported["browser_evidence"]
     transcript = evidence["transcript"]
-    assert transcript["expected_attempt_id"] == imported["attempt_id"]
+    assert transcript["attempt_binding"] == browser_attempt_binding(imported)
+    assert unb64url(transcript["expected_challenge"]) == derive_browser_challenge(
+        unb64url(transcript["challenge_nonce"]), transcript["attempt_binding"]
+    )
+    assert evidence["extensions"]["large_blob"]["applicable"] == (
+        imported["feature_stratum"] in {"F3", "F6"}
+    )
     challenges = {
         row["browser_evidence"]["transcript"]["expected_challenge"]
         for row in rows if row["execution_status"] == "IMPORTED"
@@ -80,3 +95,6 @@ def test_phase7_browser_calibration(tmp_path):
         unb64url(transcript["authenticatorData"]) + hashlib.sha256(unb64url(transcript["clientDataJSON"])).digest(),
         ec.ECDSA(hashes.SHA256()),
     )
+    audit = audit_browser_evidence([tmp_path / "c1_phase7_calibration_attempts.jsonl"])
+    assert audit["attempt_bindings_verified"] == 80
+    assert audit["large_blob_oracles_recomputed"] == 80

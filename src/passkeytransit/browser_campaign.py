@@ -27,8 +27,9 @@ from playwright.sync_api import sync_playwright
 
 from . import __version__
 from .campaign import (
-    BEHAVIORAL_FAILURE_ORACLES,
+    EXECUTED_BEHAVIORAL_FAILURE_ORACLES,
     FORMAT_ONLY_FAILURE_ORACLES,
+    NONEXECUTED_REPRESENTATION_FAILURE_ORACLES,
     ORACLES,
     StrictPreservationError,
     _apply_profile,
@@ -45,6 +46,7 @@ from .campaign import (
     build_c1_corpus,
 )
 from .cxf import inflate_large_blob
+from .evidence import browser_attempt_binding, derive_browser_challenge
 from .model import b64url, unb64url
 from .protocol import validate_protocol
 
@@ -162,6 +164,8 @@ def _verify(
     flags = authenticator_data[32]
     return {
         "credential_id": unb64url(assertion["rawId"]) == credential_id,
+        "credential_row_binding": hashlib.sha256(unb64url(assertion["rawId"])).hexdigest()
+        == hashlib.sha256(credential_id).hexdigest(),
         "user_handle": unb64url(assertion["userHandle"]) == user_handle,
         "challenge": unb64url(client["challenge"]) == challenge,
         "origin": client["origin"] == origin,
@@ -216,7 +220,8 @@ def _browser_oracles(
 
 def _assertion_evidence(
     assertion: dict[str, Any], checks: dict[str, bool], authenticator: str,
-    source_key: dict[str, Any], origin: str, challenge: bytes, attempt_id: str,
+    source_key: dict[str, Any], origin: str, challenge: bytes, challenge_nonce: bytes,
+    attempt_binding: dict[str, Any], large_blob_applicable: bool, expected_large_blob: bytes | None,
 ) -> dict[str, Any]:
     fields = ("rawId", "authenticatorData", "clientDataJSON", "signature", "userHandle", "largeBlob", "prfFirst")
     public_spki = serialization.load_der_private_key(
@@ -234,14 +239,22 @@ def _assertion_evidence(
         "expected_credential_id": source_key["credentialId"],
         "expected_user_handle": source_key["userHandle"],
         "expected_challenge": b64url(challenge),
-        "expected_attempt_id": attempt_id,
+        "challenge_nonce": b64url(challenge_nonce),
+        "attempt_binding": attempt_binding,
         "source_rp_id": source_key["rpId"],
         "expected_origin": origin,
+    }
+    extension = {
+        "applicable": large_blob_applicable,
+        "expected": b64url(expected_large_blob) if expected_large_blob is not None else None,
+        "observed": assertion.get("largeBlob"),
     }
     return {
         "checks": checks,
         "transcript": transcript,
         "transcript_ref": "sha256:" + hashlib.sha256(_canonical(transcript)).hexdigest(),
+        "extensions": {"large_blob": extension},
+        "extension_ref": "sha256:" + hashlib.sha256(_canonical(extension)).hexdigest(),
         "artifact_sha256": {
             name: hashlib.sha256(unb64url(assertion[name])).hexdigest() if assertion.get(name) else None
             for name in fields
@@ -263,6 +276,12 @@ def _repeat_outcome(row: dict[str, Any]) -> bytes:
         "oracle_statuses": {name: row["oracles"][name]["status"] for name in ORACLES},
         "basic_auth_pass": row["basic_auth_pass"],
         "false_reassurance": row["false_reassurance"],
+        "login_with_nonexecuted_representation_loss": row.get(
+            "login_with_nonexecuted_representation_loss"
+        ),
+        "login_with_any_nonpayment_property_failure": row.get(
+            "login_with_any_nonpayment_property_failure"
+        ),
         "login_with_any_observed_property_failure": row.get(
             "login_with_any_observed_property_failure"
         ),
@@ -327,6 +346,7 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                         "attempt_id": f"C1-browser-{mode}-r{repetition + 1}-c{index:03d}-{route['id']}",
                         "credential_id_hash": hashlib.sha256(unb64url(source_key["credentialId"])).hexdigest(),
                         "feature_stratum": stratum, "route_id": route["id"], "seed": protocol["seed"],
+                        "repetition": repetition + 1,
                         "provider_chain": chain, "hop_count": len(chain) - 1, "mutation_id": None,
                         "failure_point": None, "retry_index": 0, "normative_class": "NOT_ASSESSED",
                     }
@@ -340,6 +360,8 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                             **common, "execution_status": "REJECTED", "oracles": oracles,
                             "declared_losses": [], "semantic_class": "NOT_APPLICABLE",
                             "basic_auth_pass": None, "false_reassurance": None,
+                            "login_with_nonexecuted_representation_loss": None,
+                            "login_with_any_nonpayment_property_failure": None,
                             "login_with_any_observed_property_failure": None,
                             "exclusion_reason": "strict-preservation-rejection", "browser_evidence": None,
                         })
@@ -359,17 +381,24 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                         credential["largeBlob"] = _standard_b64(imported_blob)
                     cdp.send("WebAuthn.addCredential", {"authenticatorId": authenticator, "credential": credential})
                     try:
-                        challenge = secrets.token_bytes(32)
+                        challenge_nonce = secrets.token_bytes(32)
+                        attempt_binding = browser_attempt_binding(common)
+                        challenge = derive_browser_challenge(challenge_nonce, attempt_binding)
                         assertion = _authenticate(page, rp_id, credential_id, challenge)
                         checks = _verify(assertion, source_key, origins[rp_id], challenge)
                     finally:
                         cdp.send("WebAuthn.removeCredential", {"authenticatorId": authenticator, "credentialId": _standard_b64(credential_id)})
                     oracles = _browser_oracles(source, migrated, properties, assertion, checks)
                     semantic = _classify(oracles, declarations)
-                    behavioral_fail = any(
-                        oracles[name]["status"] == "FAIL" for name in BEHAVIORAL_FAILURE_ORACLES
+                    executed_behavioral_fail = any(
+                        oracles[name]["status"] == "FAIL" for name in EXECUTED_BEHAVIORAL_FAILURE_ORACLES
                     )
-                    observed_property_fail = behavioral_fail or any(
+                    nonexecuted_representation_fail = any(
+                        oracles[name]["status"] == "FAIL"
+                        for name in NONEXECUTED_REPRESENTATION_FAILURE_ORACLES
+                    )
+                    nonpayment_property_fail = executed_behavioral_fail or nonexecuted_representation_fail
+                    observed_property_fail = nonpayment_property_fail or any(
                         oracles[name]["status"] == "FAIL" for name in FORMAT_ONLY_FAILURE_ORACLES
                     )
                     assertion_pass = oracles["webauthn_assertion"]["status"] == "PASS"
@@ -380,12 +409,15 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                             "oracles": oracles, "declared_losses": sorted(declarations),
                             "semantic_class": semantic, "normative_class": "NOT_ASSESSED",
                             "basic_auth_pass": assertion_pass,
-                            "false_reassurance": assertion_pass and behavioral_fail,
+                            "false_reassurance": assertion_pass and executed_behavioral_fail,
+                            "login_with_nonexecuted_representation_loss": assertion_pass and nonexecuted_representation_fail,
+                            "login_with_any_nonpayment_property_failure": assertion_pass and nonpayment_property_fail,
                             "login_with_any_observed_property_failure": assertion_pass and observed_property_fail,
                             "exclusion_reason": None,
                             "browser_evidence": _assertion_evidence(
                                 assertion, checks, authenticator, source_key, origins[rp_id],
-                                challenge, common["attempt_id"],
+                                challenge, challenge_nonce, attempt_binding,
+                                "large_blob" in properties, inflate_large_blob(source_key),
                             ),
                         }
                     )
@@ -406,11 +438,23 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
         "conditional_semantic_preservation": _bootstrap(rows, lambda row: row["semantic_class"] == "PASS", lambda row: row["execution_status"] == "IMPORTED", seed + 22),
         "silent_degradation_rate": _bootstrap(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED", seed + 23),
         "false_reassurance_rate": _bootstrap(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True, seed + 24),
+        "login_with_nonexecuted_representation_loss_rate": _bootstrap(
+            rows,
+            lambda row: row.get("login_with_nonexecuted_representation_loss") is True,
+            lambda row: row["basic_auth_pass"] is True,
+            seed + 25,
+        ),
+        "login_with_any_nonpayment_property_failure_rate": _bootstrap(
+            rows,
+            lambda row: row.get("login_with_any_nonpayment_property_failure") is True,
+            lambda row: row["basic_auth_pass"] is True,
+            seed + 26,
+        ),
         "login_with_any_observed_property_failure_rate": _bootstrap(
             rows,
             lambda row: row.get("login_with_any_observed_property_failure") is True,
             lambda row: row["basic_auth_pass"] is True,
-            seed + 25,
+            seed + 27,
         ),
     }
     repeat_equivalent: bool | None = None
@@ -429,7 +473,7 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
         "paired_route_comparisons": _paired_route_comparisons(rows, protocol),
         "repeat_equivalent": repeat_equivalent,
         "confirmatory_provider_claims_authorized": False,
-        "challenge_policy": "fresh-32-byte-cryptographic-random-per-ceremony",
+        "challenge_policy": "fresh-32-byte-nonce-derived-domain-separated-attempt-bound-challenge",
     }
     with summary_path.open("x", encoding="utf-8") as handle:
         handle.write(json.dumps(summary, indent=2) + "\n")

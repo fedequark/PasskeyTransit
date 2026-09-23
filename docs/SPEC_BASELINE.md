@@ -1,7 +1,7 @@
 # Normative specification baseline
 
 Originally frozen for protocol `passkeytransit-semantic-preservation-v1.0` on
-2026-09-12 and retained unchanged for corrective protocol v1.2 on 2026-09-23.
+2026-09-12 and retained unchanged for corrective protocols v1.2 and v1.3 on 2026-09-23.
 
 | Component | Frozen revision | Status | Canonical URL |
 |---|---|---|---|

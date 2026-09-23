@@ -10,7 +10,7 @@ must contain 960 sequences; all applicable Phase 8 checks must pass.
 
 The analysis emits:
 
-- `results_v0.4.json`, preserving the complete evidence and claim boundary;
+- `results_v0.5.json`, preserving the complete evidence and claim boundary;
 - four CSV tables for C1 estimands/oracles, C2 mutations and C3 faults;
 - `MANUSCRIPT.md`, a non-simulated Spanish research manuscript;
 - `analysis_manifest.json`, hashing every input and output.

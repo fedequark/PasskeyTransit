@@ -9,7 +9,7 @@ from typing import Any
 from . import __version__
 
 
-RESULTS_FILENAME = "results_v0.4.json"
+RESULTS_FILENAME = "results_v0.5.json"
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -36,7 +36,7 @@ def _percent(value: float | None) -> str:
 
 def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -47,6 +47,8 @@ def _manuscript(results: dict[str, Any]) -> str:
     yield_result = estimands["preserving_migration_yield"]
     silent = estimands["silent_degradation_rate"]
     reassurance = estimands["false_reassurance_rate"]
+    representation_loss = estimands["login_with_nonexecuted_representation_loss_rate"]
+    nonpayment_failure = estimands["login_with_any_nonpayment_property_failure_rate"]
     observed_failure = estimands["login_with_any_observed_property_failure_rate"]
     imported = c1["execution_statuses"].get("IMPORTED", 0)
     rejected = c1["execution_statuses"].get("REJECTED", 0)
@@ -89,9 +91,15 @@ y se rechazaron {rejected:,} antes de la ceremonia. Las {assertion_pass:,}
 aserciones WebAuthn ejecutadas fueron aceptadas; {reassurance['numerator']:,} intentos
 ({_percent(reassurance['estimate'])}; intervalo descriptivo de sensibilidad por bootstrap de credencial
 {_percent(reassurance['ci95'][0])}–{_percent(reassurance['ci95'][1])}) combinaron
-login correcto con el fallo de un oráculo conductual ejecutable. Al añadir el
-marcador de pagos, que es sólo una comprobación de formato sin ceremonia SPC,
-la sensibilidad fue {_percent(observed_failure['estimate'])}
+login correcto con el fallo de un oráculo conductual realmente ejecutado en el
+navegador (`uv` o `largeBlob`). Las pérdidas de representación no ejecutables de
+PRF o `credBlob` aparecieron en {representation_loss['numerator']:,} intentos
+({_percent(representation_loss['estimate'])}); esta categoría se solapa con la
+anterior. La unión de fallos no relacionados con pagos fue
+{_percent(nonpayment_failure['estimate'])}
+({nonpayment_failure['numerator']:,}/{nonpayment_failure['denominator']:,}). Al
+añadir el marcador de pagos, que es sólo una comprobación de formato sin
+ceremonia SPC, la sensibilidad total fue {_percent(observed_failure['estimate'])}
 ({observed_failure['numerator']:,}/{observed_failure['denominator']:,}). La preservación
 semántica completa observable fue {_percent(yield_result['estimate'])}
 ({yield_result['numerator']:,}/{yield_result['denominator']:,}; intervalo descriptivo de sensibilidad
@@ -115,7 +123,7 @@ afirmaciones de novedad ni sobre implementaciones comerciales no examinadas.
 ## 2. Método
 
 El protocolo `{c1['protocol_id']}` fue congelado antes de
-esta replicación correctiva posterior a la inspección de v1.1. No la presentamos
+esta replicación correctiva posterior a la inspección de v1.2. No la presentamos
 como confirmación preregistrada independiente. El corpus contiene 256 credenciales ES256,
 32 en cada uno de ocho estratos: básica, PRF con UV, PRF sin UV, `largeBlob`,
 `credBlob`, marcador de pagos, combinación de extensiones y miembro opcional
@@ -124,9 +132,10 @@ futuro. Doce rutas cubren migración directa, round trip y multihop.
 Cada salto serializa un documento CXF validado y lo transporta mediante HPKE
 base X25519/HKDF-SHA256/AES-128-GCM [3]. El navegador importa el resultado en un
 autenticador virtual y ejecuta `navigator.credentials.get()`. Un verificador
-Python independiente de la ceremonia comprueba desafío único, vínculo con el
-identificador del intento, origen, RP-ID hash,
-flags UP/UV, firma ES256 y contador cero [4].
+Python independiente de la ceremonia recompone un desafío derivado de un nonce
+aleatorio y de un contexto canónico que incluye intento, credencial, ruta,
+repetición y ejecución. También comprueba origen, RP-ID hash, flags UP/UV, firma
+ES256, contador cero y la observación retenida de `largeBlob` [4].
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
 Separadamente clasificamos estado de ejecución, preservación semántica y
@@ -233,8 +242,9 @@ Los artefactos raw son JSONL inmutables; los derivados y manifiestos incluyen
 hashes SHA-256 del protocolo, resultados, navegador y commit. La campaña C1 se
 ejecutó con Chromium {results['environment']['browser_version']} y Playwright
 {results['environment']['playwright_version']} desde un árbol Git limpio. El
-auditor de release exige un challenge criptográficamente aleatorio y único por
-ceremonia y verifica su vínculo con el intento. El
+auditor de release recompone cada challenge a partir de un nonce aleatorio y del
+contexto de la fila, rechaza transcripciones reasignadas y reproduce el oráculo
+`largeBlob` desde los valores esperado y observado retenidos. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
@@ -305,8 +315,8 @@ def run_analysis(
     if len(protocols) != 1 or None in protocols:
         raise ValueError("C1, C2 and C3 must use one protocol identifier")
     protocol_id = next(iter(protocols))
-    if not str(protocol_id).endswith("v1.2"):
-        raise ValueError("corrected analysis requires protocol v1.2 evidence")
+    if not str(protocol_id).endswith("v1.3"):
+        raise ValueError("corrected analysis requires protocol v1.3 evidence")
     if interop.get("all_applicable_checks_pass") is not True:
         raise ValueError("Phase 8 interoperability checks did not pass")
     if interop.get("git", {}).get("source_dirty") is not False:
@@ -317,7 +327,7 @@ def run_analysis(
     if external is not None and external.get("semantic_json_equal") is not True:
         raise ValueError("Phase 11 external CXF round trip did not preserve normalized JSON")
     results = {
-        "evidence_class": "corrective-v1.2-reference-control-analysis",
+        "evidence_class": "corrective-v1.3-reference-control-analysis",
         "c1": c1,
         "c2": c2,
         "c3": c3,
