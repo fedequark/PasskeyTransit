@@ -24,12 +24,15 @@ The runner verifies independently in Python:
 - CXF-required zero signature-counter behavior;
 - browser-returned `largeBlob` bytes.
 
-Protocol v1.4 generates a fresh operating-system 32-byte nonce for every
-ceremony and derives the signed challenge from a domain-separated canonical
+Protocol v1.5 generates a fresh operating-system 32-byte nonce for every
+ceremony and derives the primary signed challenge from a domain-separated canonical
 context containing the attempt, credential hash, route, repetition, run,
 source SPKI hash, source user-handle hash, RP ID and origin. The release gate
 reconstructs the challenge, compares the context with the row, reproduces the
 artifact hashes and rejects key substitution, reassignment or challenge reuse.
+A second assertion uses another fresh nonce and signs a challenge committing to
+the primary challenge plus the canonical retained extension observations. This
+prevents coordinated rewriting of `largeBlob`, oracle status and unkeyed hashes.
 
 PRF/HMAC and `credBlob` positive preservation remain `NOT_EVALUABLE` because
 the Chromium CDP credential-import operation cannot inject their CXF state.
@@ -63,7 +66,8 @@ real browser evidence but does not authorize claims about commercial providers.
 
 Protocol v1.3 bound the row context but left the source SPKI and RP expectations
 self-declared inside the retained transcript. Its arithmetic remains historical,
-but v1.4 supersedes its independent key-continuity evidence.
+but v1.4 supersedes its independent key-continuity evidence. Protocol v1.5
+supersedes v1.4 for extension-observation integrity.
 
 Protocol v1.2 introduced unique challenges but did not cryptographically bind
 the row context into the signed challenge and mixed nonexecuted representation

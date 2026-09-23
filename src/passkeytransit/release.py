@@ -3,17 +3,21 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+import tempfile
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
 from . import __version__
+from .analysis import RESULTS_FILENAME, run_analysis
+from .browser_campaign import summarize_browser_c1
 from .evidence import audit_browser_evidence, audit_browser_evidence_payloads
+from .robustness import summarize_c2_rows, summarize_c3_rows
 
 
 SENSITIVE_NAMES = {"private_key", "privatekey", "secret", "token", "password", "key"}
-STALE_GENERATED_PREFIXES = ("paper/current/", "releases/")
+STALE_GENERATED_PREFIXES = ("paper/current/", "paper/legacy/", "releases/", "reviews/")
 RELEASE_ID = f"v{__version__}"
 ARCHIVE_NAME = f"passkeytransit-{RELEASE_ID}-replication.zip"
 
@@ -99,6 +103,90 @@ def _zip_write(archive: zipfile.ZipFile, arcname: str, data: bytes) -> str:
     return _sha(data)
 
 
+def _entry_by_basename(names: Iterable[str], basename: str) -> str:
+    matches = [name for name in names if Path(name).name == basename]
+    if len(matches) != 1:
+        raise ValueError(f"release requires exactly one {basename}; found {len(matches)}")
+    return matches[0]
+
+
+def _jsonl(payload: bytes) -> list[dict[str, Any]]:
+    return [json.loads(line) for line in payload.decode("utf-8").splitlines() if line.strip()]
+
+
+def _verify_release_derivations(archive: zipfile.ZipFile, names: Iterable[str]) -> dict[str, Any]:
+    entries = list(names)
+    protocol_name = _entry_by_basename(entries, "protocol_v1.5.json")
+    protocol = json.loads(archive.read(protocol_name))
+    if not str(protocol.get("protocol_id", "")).endswith("v1.5"):
+        raise ValueError("release derivation audit requires protocol v1.5")
+
+    summary_pairs: list[tuple[str, dict[str, Any]]] = []
+    for mode in ("calibration", "full"):
+        raw_name = _entry_by_basename(entries, f"c1_phase7_{mode}_attempts.jsonl")
+        summary_pairs.append((
+            f"c1-{mode}",
+            summarize_browser_c1(_jsonl(archive.read(raw_name)), protocol, mode),
+        ))
+    c2_rows = _jsonl(archive.read(_entry_by_basename(entries, "c2_phase6_attempts.jsonl")))
+    summary_pairs.append(("c2", summarize_c2_rows(c2_rows, protocol)))
+    c3_sequences = _jsonl(archive.read(_entry_by_basename(entries, "c3_phase6_sequences.jsonl")))
+    c3_events = _jsonl(archive.read(_entry_by_basename(entries, "c3_phase6_events.jsonl")))
+    summary_pairs.append(("c3", summarize_c3_rows(c3_sequences, c3_events, protocol)))
+
+    summary_files = {
+        "c1-calibration": "c1_phase7_calibration_summary.json",
+        "c1-full": "c1_phase7_full_summary.json",
+        "c2": "c2_phase6_summary.json",
+        "c3": "c3_phase6_summary.json",
+    }
+    for label, reproduced in summary_pairs:
+        recorded = json.loads(archive.read(_entry_by_basename(entries, summary_files[label])))
+        if reproduced != recorded:
+            raise ValueError(f"raw evidence does not reproduce {summary_files[label]}")
+
+    required_inputs = {
+        "phase7_summary": "c1_phase7_full_summary.json",
+        "phase7_manifest": "c1_phase7_full_manifest.json",
+        "c2_summary": "c2_phase6_summary.json",
+        "c2_manifest": "c2_phase6_manifest.json",
+        "c3_summary": "c3_phase6_summary.json",
+        "c3_manifest": "c3_phase6_manifest.json",
+        "interop_path": "interop_result.json",
+        "external_path": "bitwarden_cxf_interop.json",
+        "oracle_report_path": "oracle_capabilities.json",
+    }
+    with tempfile.TemporaryDirectory(prefix="passkeytransit-release-audit-") as temporary:
+        root = Path(temporary)
+        paths: dict[str, Path] = {}
+        for key, basename in required_inputs.items():
+            path = root / basename
+            path.write_bytes(archive.read(_entry_by_basename(entries, basename)))
+            paths[key] = path
+        output = root / "analysis"
+        run_analysis(output_dir=output, **paths)
+        reproduced_outputs = (
+            RESULTS_FILENAME,
+            "MANUSCRIPT.md",
+            "table_c1_estimands.csv",
+            "table_c1_route_strata.csv",
+            "table_c1_oracles.csv",
+            "table_c2_mutations.csv",
+            "table_c3_faults.csv",
+        )
+        for basename in reproduced_outputs:
+            if output.joinpath(basename).read_bytes() != archive.read(
+                _entry_by_basename(entries, basename)
+            ):
+                raise ValueError(f"summaries do not reproduce published output {basename}")
+    return {
+        "protocol_id": protocol["protocol_id"],
+        "raw_summaries_recomputed": [label for label, _ in summary_pairs],
+        "published_outputs_reproduced": list(reproduced_outputs),
+        "passed": True,
+    }
+
+
 def build_release(
     project_root: Path,
     evidence_roots: list[Path],
@@ -159,6 +247,9 @@ def build_release(
         }
         _zip_write(archive, "MANIFEST.json", (json.dumps(internal, indent=2) + "\n").encode())
 
+    with zipfile.ZipFile(archive_path) as archive:
+        derivation_audit = _verify_release_derivations(archive, entry_hashes)
+
     manifest = {
         "release": RELEASE_ID,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -170,6 +261,7 @@ def build_release(
         "entry_count": len(entry_hashes) + 1,
         "privacy_audit": audit,
         "browser_transcript_audit": browser_audit,
+        "derivation_audit": derivation_audit,
     }
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return manifest
@@ -208,9 +300,17 @@ def verify_release(archive_path: Path, manifest_path: Path) -> dict[str, Any]:
             except (ValueError, KeyError, json.JSONDecodeError) as exc:
                 browser_audit = {"passed": False, "error": str(exc)}
                 mismatches.append("browser-transcript-audit")
+        derivation_audit: dict[str, Any] = {"passed": None, "reason": "legacy release"}
+        if manifest.get("derivation_audit") is not None:
+            try:
+                derivation_audit = _verify_release_derivations(archive, internal["entries"])
+            except (ValueError, KeyError, json.JSONDecodeError) as exc:
+                derivation_audit = {"passed": False, "error": str(exc)}
+                mismatches.append("derivation-audit")
     return {
         "archive_sha256_ok": archive_hash_ok,
         "entry_hash_mismatches": mismatches,
         "browser_transcript_audit": browser_audit,
+        "derivation_audit": derivation_audit,
         "verified": archive_hash_ok and not mismatches,
     }

@@ -22,7 +22,7 @@ def validate_protocol(path: Path) -> dict[str, object]:
     if data.get("schema_version") != 1:
         raise ProtocolValidationError("unsupported protocol schema_version")
     protocol_id = str(data.get("protocol_id", ""))
-    if not protocol_id.endswith(("v1.0", "v1.1", "v1.2", "v1.3", "v1.4")):
+    if not protocol_id.endswith(("v1.0", "v1.1", "v1.2", "v1.3", "v1.4", "v1.5")):
         raise ProtocolValidationError("protocol_id must identify a supported frozen protocol")
 
     rqs = set(map(str, data.get("research_questions", [])))
@@ -67,7 +67,7 @@ def validate_protocol(path: Path) -> dict[str, object]:
             raise ProtocolValidationError("v1.2 format-only oracles must be valid and disjoint")
         if data.get("campaigns", {}).get("C1", {}).get("challenge_policy") != "fresh-32-byte-cryptographic-random-per-ceremony":
             raise ProtocolValidationError("v1.2 must require fresh random WebAuthn challenges")
-    if protocol_id.endswith(("v1.3", "v1.4")):
+    if protocol_id.endswith(("v1.3", "v1.4", "v1.5")):
         behavioral = set(map(str, analysis_policy.get("browser_executed_behavioral_oracles", [])))
         representation = set(map(str, analysis_policy.get("nonexecuted_representation_oracles", [])))
         format_only = set(map(str, analysis_policy.get("format_only_oracles", [])))
@@ -81,19 +81,34 @@ def validate_protocol(path: Path) -> dict[str, object]:
             raise ProtocolValidationError("corrective protocol oracle capability classes must be disjoint")
         challenge_policy = data.get("campaigns", {}).get("C1", {}).get("challenge_policy")
         expected_policy = (
+            "fresh-32-byte-nonce-derived-domain-separated-source-bound-challenge-plus-signed-extension-witness"
+            if protocol_id.endswith("v1.5")
+            else
             "fresh-32-byte-nonce-derived-domain-separated-source-bound-challenge"
             if protocol_id.endswith("v1.4")
             else "fresh-32-byte-nonce-derived-domain-separated-attempt-bound-challenge"
         )
         if challenge_policy != expected_policy:
             raise ProtocolValidationError("corrective protocol must require the registered WebAuthn challenge binding")
-        if protocol_id.endswith("v1.4"):
-            if analysis_policy.get("uncertainty_interpretation") != "exact-designed-census-no-sampling-interval":
-                raise ProtocolValidationError("v1.4 must report exact designed-census results")
+        if protocol_id.endswith(("v1.4", "v1.5")):
+            expected_uncertainty = (
+                "exact-designed-census-no-sampling-interval-design-weighted-aggregates"
+                if protocol_id.endswith("v1.5")
+                else "exact-designed-census-no-sampling-interval"
+            )
+            if analysis_policy.get("uncertainty_interpretation") != expected_uncertainty:
+                raise ProtocolValidationError("corrective protocol has an invalid uncertainty interpretation")
             binding = str(data.get("campaigns", {}).get("C1", {}).get("transcript_binding", ""))
             for required in ("source-public-key", "user-handle", "rp-id", "origin"):
-                if required not in binding:
+                if protocol_id.endswith("v1.4") and required not in binding:
                     raise ProtocolValidationError(f"v1.4 transcript binding is missing {required}")
+            if protocol_id.endswith("v1.5"):
+                for required in ("primary challenge", "extension observation"):
+                    if required not in binding:
+                        raise ProtocolValidationError(f"v1.5 transcript binding is missing {required}")
+                storage_model = str(data.get("campaigns", {}).get("C3", {}).get("storage_model", ""))
+                if "in-memory" not in storage_model or "not-durable" not in storage_model:
+                    raise ProtocolValidationError("v1.5 must classify C3 as a non-durable in-memory simulation")
 
     campaigns = data.get("campaigns", {})
     if not isinstance(campaigns, dict):

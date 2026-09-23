@@ -9,7 +9,7 @@ from typing import Any
 from . import __version__
 
 
-RESULTS_FILENAME = "results_v0.6.json"
+RESULTS_FILENAME = "results_v0.7.json"
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -78,14 +78,18 @@ producto ni autoriza afirmaciones sobre Bitwarden como proveedor.
 Estudiamos si una passkey que continúa autenticando después de un intercambio
 conserva además su identidad, extensiones y garantías operacionales. Presentamos
 PasskeyTransit v{__version__.rsplit('.', 1)[0]}, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
-mutaciones y fallos transaccionales. La campaña principal ejecutó
+mutaciones y una simulación transaccional en memoria. La unidad descriptiva
+principal es la matriz completa de
+{c1.get('design_result_cells', {}).get('route_stratum_group_count', 96)} celdas
+ruta×estrato. Para comprobar estabilidad y evidencia técnica, la campaña ejecutó
 {c1['attempt_count']:,} intentos sobre {c1['credential_count']} credenciales,
-{c1['route_count']} rutas y dos repeticiones usando políticas de control y
-autenticadores virtuales Chromium. El diseño contiene
+{c1['route_count']} rutas y dos repeticiones con controles y autenticadores
+virtuales Chromium. El diseño contiene
 {c1.get('design_result_cells', {}).get('credential_route_cell_count', 3072):,}
 celdas credencial×ruta, ejecutadas dos veces y resumidas en
-{c1.get('design_result_cells', {}).get('route_stratum_group_count', 96)} grupos
-ruta×estrato. Ninguna de estas unidades fue muestreada de una población real.
+{c1.get('design_result_cells', {}).get('route_stratum_group_count', 96)} grupos.
+Ninguna unidad fue muestreada de una población real y los porcentajes agregados
+son proporciones ponderadas por este diseño balanceado.
 Se importaron {imported:,} intentos
 y se rechazaron {rejected:,} antes de la ceremonia. Las {assertion_pass:,}
 aserciones WebAuthn ejecutadas fueron aceptadas; {reassurance['numerator']:,} intentos
@@ -99,10 +103,10 @@ anterior. La unión de fallos no relacionados con pagos fue
 ({nonpayment_failure['numerator']:,}/{nonpayment_failure['denominator']:,}). Al
 añadir el marcador de pagos, que es sólo una comprobación de formato sin
 ceremonia SPC, la sensibilidad total fue {_percent(observed_failure['estimate'])}
-({observed_failure['numerator']:,}/{observed_failure['denominator']:,}). La preservación
-semántica completa observable fue {_percent(yield_result['estimate'])}
+({observed_failure['numerator']:,}/{observed_failure['denominator']:,}). El rendimiento
+de intentos con `PASS` completo observable fue {_percent(yield_result['estimate'])}
 ({yield_result['numerator']:,}/{yield_result['denominator']:,}). Estos
-porcentajes caracterizan estímulos sintéticos diseñados, no productos ni
+porcentajes son ponderaciones del diseño sintético, no tasas de productos ni
 prevalencia real. PRF y preservación positiva de `credBlob` permanecen no
 evaluables por límites de la interfaz CDP.
 
@@ -144,15 +148,18 @@ base X25519/HKDF-SHA256/AES-128-GCM [3]. El navegador importa el resultado en un
 autenticador virtual y ejecuta `navigator.credentials.get()`. Un verificador
 Python independiente de la ceremonia recompone un desafío derivado de un nonce
 aleatorio y de un contexto canónico que incluye intento, credencial, ruta,
-repetición, ejecución, hash de SPKI, hash de user handle, RP ID y origen. También
-cruza esos valores con la fila, reproduce hashes de artefactos y comprueba flags
-UP/UV, firma ES256, contador cero y la observación retenida de `largeBlob` [4].
+repetición, ejecución, hash de SPKI, hash de user handle, RP ID y origen. Una
+segunda ceremonia firma otro desafío que compromete el primer challenge y el
+hash canónico de las observaciones de extensión, incluida `largeBlob`. El
+verificador cruza esos valores con la fila, reproduce hashes de artefactos y
+comprueba flags UP/UV, ambas firmas ES256 y contador cero [4].
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
 Separadamente clasificamos estado de ejecución, preservación semántica y
 evaluación normativa. Las 96 celdas ruta×estrato son un censo exacto del diseño
-registrado: informamos numeradores, denominadores y proporciones sin intervalos
-de muestreo. Las comparaciones de rutas son pareadas por credencial y repetición.
+registrado: la matriz es el resultado principal. Los porcentajes son agregados
+ponderados por el diseño y se informan sin intervalos de muestreo. Las
+comparaciones de rutas son pareadas por credencial y repetición.
 
 ## 4. Modelo de amenazas
 
@@ -199,7 +206,7 @@ produjeron resultados semánticos equivalentes.
 | No evaluable | {c1['semantic_classes'].get('NOT_EVALUABLE', 0):,} | {_percent(c1['semantic_classes'].get('NOT_EVALUABLE', 0)/c1['attempt_count'])} |
 | Rechazo previo a ceremonia | {c1['semantic_classes'].get('NOT_APPLICABLE', 0):,} | {_percent(c1['semantic_classes'].get('NOT_APPLICABLE', 0)/c1['attempt_count'])} |
 
-La tasa exacta de degradación silenciosa dentro del diseño fue {_percent(silent['estimate'])}
+La proporción ponderada de degradación silenciosa dentro del diseño fue {_percent(silent['estimate'])}
 ({silent['numerator']:,}/{silent['denominator']:,}). `largeBlob` fue
 observable en {large_blob_statuses.get('PASS', 0) + large_blob_statuses.get('FAIL', 0):,} casos aplicables: {large_blob_statuses.get('PASS', 0):,} pasaron y {large_blob_statuses.get('FAIL', 0):,} fallaron según la ruta
 de control. La pérdida en un intermediario persistió al volver a un destino
@@ -213,9 +220,11 @@ o preservación estricta. Las familias se informan por separado; la clase normat
 se deriva del requisito aplicable y del resultado observado. No se calcula un
 porcentaje agrupado.
 
-### 6.3. Fallos y recuperación C3
+### 6.3. Simulación de fallos C3
 
-C3 ejecutó {total_c3} secuencias y {c3['event_count']} eventos. En
+C3 ejecutó {total_c3} secuencias y {c3['event_count']} eventos sobre una máquina
+de estados Python en memoria; no prueba almacenamiento durable ni recuperación
+ante caída de proceso. En
 {atomic_pass} secuencias ({_percent(atomic_pass/total_c3)}) hubo rollback completo
 y el retry convergió a una copia. Las 128 fallas restantes fueron el control
 positivo deliberado: `legacy` conservó un provisional en los dos puntos tardíos
@@ -243,6 +252,8 @@ visible, aun cuando el estado final de la credencial sea idéntico.
 - El binding adicional de CXP es experimental y no resuelve autenticación de
   identidad del exportador en modo HPKE base.
 - El ensayo PQC prueba disponibilidad criptográfica, no un perfil CXP-PQC.
+- C3 es una simulación determinista en memoria, no una prueba de durabilidad.
+- Los porcentajes agregados dependen de los pesos elegidos para rutas y estratos.
 - No se permite inferir vulnerabilidades, prevalencia de fallos ni superioridad
   de productos a partir de estos controles.
 
@@ -254,15 +265,16 @@ ejecutó con Chromium {results['environment']['browser_version']} y Playwright
 {results['environment']['playwright_version']} desde un árbol Git limpio. El
 auditor de release recompone cada challenge a partir de un nonce aleatorio y del
 contexto de la fila, liga la firma a la clave pública fuente, verifica RP ID,
-user handle, origen y hashes de artefactos, rechaza transcripciones reasignadas y
-reproduce el oráculo `largeBlob` desde los valores retenidos. El
+user handle y origen, y verifica una segunda firma que compromete las
+observaciones de extensión. Además recalcula resúmenes C1/C2/C3 desde los JSONL
+y regenera resultados, tablas y manuscrito para compararlos con la release. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
 ## 10. Conclusión
 
-PasskeyTransit distingue compatibilidad sintáctica, autenticación básica,
-preservación funcional y recuperación operacional. En los controles diseñados,
+PasskeyTransit distingue compatibilidad sintáctica, autenticación básica y
+preservación funcional, y simula garantías transaccionales. En los controles diseñados,
 una aserción válida no basta para afirmar
 que una passkey migrada conserva todas sus garantías. El paso necesario para
 generalizar es ejecutar adaptadores identificados e independientes, manteniendo
@@ -336,8 +348,8 @@ def run_analysis(
     if len(protocols) != 1 or None in protocols:
         raise ValueError("C1, C2 and C3 must use one protocol identifier")
     protocol_id = next(iter(protocols))
-    if not str(protocol_id).endswith("v1.4"):
-        raise ValueError("corrected analysis requires protocol v1.4 evidence")
+    if not str(protocol_id).endswith("v1.5"):
+        raise ValueError("corrected analysis requires protocol v1.5 evidence")
     if interop.get("all_applicable_checks_pass") is not True:
         raise ValueError("Phase 8 interoperability checks did not pass")
     if interop.get("git", {}).get("source_dirty") is not False:
@@ -348,7 +360,7 @@ def run_analysis(
     if external is not None and external.get("semantic_json_equal") is not True:
         raise ValueError("Phase 11 external CXF round trip did not preserve normalized JSON")
     results = {
-        "evidence_class": "corrective-v1.4-source-bound-reference-control-analysis",
+        "evidence_class": "corrective-v1.5-signed-extension-witness-reference-control-analysis",
         "c1": c1,
         "c2": c2,
         "c3": c3,
@@ -362,7 +374,7 @@ def run_analysis(
         },
         "supported_claims": [
             "browser assertion alone is insufficient in the designed lossy controls",
-            "the harness detects route-dependent, atomicity, and idempotence losses",
+            "the harness detects route-dependent losses and simulates atomicity and idempotence controls",
             "the RFC 9180 base suite interoperates with cryptography's native implementation",
             "a pinned independent open-source CXF parser preserves the normalized test document",
         ],
@@ -370,6 +382,7 @@ def run_analysis(
             "commercial provider behavior or prevalence",
             "complete normative CXP interoperability",
             "positive PRF or credBlob preservation",
+            "durable-storage or crash-recovery behavior",
             "a vulnerability or novelty claim",
         ],
     }

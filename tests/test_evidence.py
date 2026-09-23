@@ -21,7 +21,11 @@ def _b64url(value: bytes) -> str:
     return base64.urlsafe_b64encode(value).decode().rstrip("=")
 
 
-def _row(attempt_id: str, credential_id: bytes = b"credential") -> dict:
+def _row(
+    attempt_id: str,
+    credential_id: bytes = b"credential",
+    protocol_id: str = "passkeytransit-semantic-preservation-v1.4",
+) -> dict:
     blob_hash = hashlib.sha256(b"blob").hexdigest()
     private_key = ec.generate_private_key(ec.SECP256R1())
     public_spki = private_key.public_key().public_bytes(
@@ -31,7 +35,7 @@ def _row(attempt_id: str, credential_id: bytes = b"credential") -> dict:
     rp_id = "rp.example.test"
     origin = "https://rp.example.test"
     return {
-        "protocol_id": "passkeytransit-semantic-preservation-v1.4",
+        "protocol_id": protocol_id,
         "campaign_id": "C1",
         "run_id": "phase7-browser-test-r1",
         "attempt_id": attempt_id,
@@ -57,11 +61,17 @@ def _public_row(row: dict) -> dict:
     return {key: value for key, value in row.items() if not key.startswith("_")}
 
 
-def _evidence(row: dict, *, nonce: bytes = b"n" * 32) -> dict:
+def _evidence(
+    row: dict,
+    *,
+    nonce: bytes = b"n" * 32,
+    binding_override: dict | None = None,
+    include_witness: bool = True,
+) -> dict:
     private_key = row["_private_key"]
     public_spki = row["_public_spki"]
     public_row = _public_row(row)
-    binding = browser_attempt_binding(public_row)
+    binding = binding_override or browser_attempt_binding(public_row)
     challenge = derive_browser_challenge(nonce, binding)
     rp_id = row["source_rp_id"]
     origin = row["expected_origin"]
@@ -105,7 +115,7 @@ def _evidence(row: dict, *, nonce: bytes = b"n" * 32) -> dict:
         "largeBlob": extension["observed"],
         "prfFirst": None,
     }
-    return {
+    result = {
         "checks": checks,
         "transcript": transcript,
         "transcript_ref": "sha256:" + hashlib.sha256(
@@ -121,6 +131,21 @@ def _evidence(row: dict, *, nonce: bytes = b"n" * 32) -> dict:
             for name, value in artifact_values.items()
         },
     }
+    if row["protocol_id"].endswith("v1.5") and include_witness:
+        witness_binding = {
+            **browser_attempt_binding(public_row),
+            "witness_for_challenge_sha256": hashlib.sha256(challenge).hexdigest(),
+            "extension_observation_sha256": hashlib.sha256(
+                json.dumps(extensions, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest(),
+        }
+        result["extension_witness"] = _evidence(
+            row,
+            nonce=b"w" * 32,
+            binding_override=witness_binding,
+            include_witness=False,
+        )
+    return result
 
 
 def test_retained_browser_transcript_is_independently_verifiable():
@@ -226,4 +251,39 @@ def test_browser_evidence_audit_recomputes_large_blob_applicability(tmp_path):
     path = tmp_path / "c1_phase7_full_attempts.jsonl"
     path.write_text(json.dumps(_public_row(row)) + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="applicability"):
+        audit_browser_evidence([path])
+
+
+def test_v15_rejects_coordinated_extension_oracle_and_hash_rewrite(tmp_path):
+    row = _row("attempt-1", protocol_id="passkeytransit-semantic-preservation-v1.5")
+    row["browser_evidence"] = _evidence(row)
+    forged = copy.deepcopy(row)
+    encoded = _b64url(b"rewritten")
+    extension = forged["browser_evidence"]["extensions"]["large_blob"]
+    extension["expected"] = encoded
+    extension["observed"] = encoded
+    forged["oracles"]["large_blob"] = {
+        "status": "PASS",
+        "evidence": [hashlib.sha256(b"rewritten").hexdigest()] * 2,
+    }
+    extensions = forged["browser_evidence"]["extensions"]
+    forged["browser_evidence"]["extension_ref"] = "sha256:" + hashlib.sha256(
+        json.dumps(extensions, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    forged["browser_evidence"]["artifact_sha256"]["largeBlob"] = hashlib.sha256(
+        b"rewritten"
+    ).hexdigest()
+    path = tmp_path / "c1_phase7_full_attempts.jsonl"
+    path.write_text(json.dumps(_public_row(forged)) + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="attempt context"):
+        audit_browser_evidence([path])
+
+
+def test_v15_requires_signed_extension_witness(tmp_path):
+    row = _row("attempt-1", protocol_id="passkeytransit-semantic-preservation-v1.5")
+    row["browser_evidence"] = _evidence(row)
+    del row["browser_evidence"]["extension_witness"]
+    path = tmp_path / "c1_phase7_full_attempts.jsonl"
+    path.write_text(json.dumps(_public_row(row)) + "\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="signed extension witness"):
         audit_browser_evidence([path])

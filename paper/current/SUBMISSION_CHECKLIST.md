@@ -1,9 +1,9 @@
-# Submission checklist for PasskeyTransit v0.6
+# Submission checklist for PasskeyTransit v0.7
 
 - [x] Research questions and protocol are frozen and versioned.
 - [x] Corrective, exploratory, executed-behavior and representation-only evidence are labeled separately.
 - [x] Exact denominators and the complete route-by-stratum matrix are reported without sampling intervals.
-- [x] Protocol v1.4 records all post-inspection corrections and labels the run as a corrective replication.
+- [x] Protocol v1.5 records all post-inspection corrections and labels the run as a corrective replication.
 - [x] Every WebAuthn ceremony derives its signed challenge from a fresh nonce and source-bound canonical context.
 - [x] Adversarial transcript reassignment is rejected even after unkeyed hashes are recomputed.
 - [x] Browser-executed, nonexecuted representation, non-payment union and payment-inclusive estimands are separate.
@@ -11,6 +11,9 @@
 - [x] Imported browser attempts retain independently verifiable public transcripts.
 - [x] The auditor binds signing SPKI, user handle, RP ID and origin to the signed row context.
 - [x] Retained browser artifact hashes are independently reproduced.
+- [x] A second signed WebAuthn ceremony commits to the primary challenge and retained extension observations.
+- [x] The release verifier recomputes raw C1/C2/C3 summaries and all text/CSV publication outputs.
+- [x] C3 is labeled as an in-memory simulation and does not support durable-storage or crash-recovery claims.
 - [x] Source commits, dependency lock, browser binary and CDP schema are hashed.
 - [x] Raw evidence contains synthetic identifiers and hashes, with no private keys.
 - [x] Independent HPKE, Node CXF and Bitwarden CXF checks are identified.

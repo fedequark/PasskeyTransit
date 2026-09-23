@@ -31,7 +31,7 @@ routes.
    imports, malformed data, and injected failures?
 
 The historical design is `docs/EXPERIMENT_PROTOCOL.md`; the current corrective
-machine-readable configuration is `experiments/protocol_v1.3.json`.
+machine-readable configuration is `experiments/protocol_v1.5.json`.
 
 ## Evidence boundaries
 
@@ -44,13 +44,16 @@ machine-readable configuration is `experiments/protocol_v1.3.json`.
 
 ## Current evidence frontier
 
-PasskeyTransit v0.5 includes the corrected strict profile, signed challenges
-derived from a fresh nonce and canonical row context, auditable `largeBlob`
-observations, a browser-executed false-reassurance estimand, and separate
+PasskeyTransit v0.7 includes the corrected strict profile, source-bound signed
+challenges, and a second signed ceremony that commits to auditable `largeBlob`
+and PRF observations. Its release verifier recomputes raw evidence into
+summaries and publication outputs. It reports aggregate proportions as
+design-weighted descriptions, a browser-executed false-reassurance estimand, and separate
 representation and format-marker sensitivities.
 It also includes the CXF profile, experimental CXP/HPKE
-transport, browser-backed C1 controls, C2 robustness cases, C3 transactional
-faults, an independent HPKE/Node.js boundary, and a hash-verified manuscript.
+transport, browser-backed C1 controls, C2 robustness cases, a C3 in-memory
+transactional simulation, an independent HPKE/Node.js boundary, and a
+reproducible manuscript. C3 does not establish durable-storage or process-crash recovery.
 The next evidence frontier is an identified external provider or independent
 CXP implementation; until then, no result may be generalized beyond the
 versioned reference controls.

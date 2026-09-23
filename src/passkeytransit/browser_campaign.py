@@ -293,6 +293,58 @@ def _repeat_outcome(row: dict[str, Any]) -> bytes:
     })
 
 
+def summarize_browser_c1(
+    rows: list[dict[str, Any]], protocol: dict[str, Any], mode: str
+) -> dict[str, Any]:
+    estimands = {
+        "preserving_migration_yield": _exact_estimand(rows, lambda row: row["semantic_class"] == "PASS", lambda row: True),
+        "conditional_semantic_preservation": _exact_estimand(rows, lambda row: row["semantic_class"] == "PASS", lambda row: row["execution_status"] == "IMPORTED"),
+        "silent_degradation_rate": _exact_estimand(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED"),
+        "false_reassurance_rate": _exact_estimand(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True),
+        "login_with_nonexecuted_representation_loss_rate": _exact_estimand(
+            rows, lambda row: row.get("login_with_nonexecuted_representation_loss") is True,
+            lambda row: row["basic_auth_pass"] is True,
+        ),
+        "login_with_any_nonpayment_property_failure_rate": _exact_estimand(
+            rows, lambda row: row.get("login_with_any_nonpayment_property_failure") is True,
+            lambda row: row["basic_auth_pass"] is True,
+        ),
+        "login_with_any_observed_property_failure_rate": _exact_estimand(
+            rows, lambda row: row.get("login_with_any_observed_property_failure") is True,
+            lambda row: row["basic_auth_pass"] is True,
+        ),
+    }
+    repetitions = 1 if mode == "calibration" else int(protocol["campaigns"]["C1"]["repetitions"])
+    repeat_equivalent: bool | None = None
+    if repetitions > 1:
+        per_rep = len(rows) // repetitions
+        repeat_equivalent = all(
+            _repeat_outcome(rows[i]) == _repeat_outcome(rows[i + per_rep])
+            for i in range(per_rep)
+        )
+    return {
+        "protocol_id": protocol["protocol_id"], "campaign_id": "C1", "mode": mode,
+        "evidence_class": "browser-webauthn-signed-extension-witness-reference-policy-control",
+        "attempt_count": len(rows),
+        "credential_count": len({row["credential_id_hash"] for row in rows}),
+        "route_count": len(protocol["campaigns"]["C1"]["route_ids"]),
+        "repetitions": repetitions,
+        "execution_statuses": dict(Counter(row["execution_status"] for row in rows)),
+        "semantic_classes": dict(Counter(row["semantic_class"] for row in rows)),
+        "oracle_statuses": {
+            name: dict(Counter(row["oracles"][name]["status"] for row in rows))
+            for name in ORACLES
+        },
+        "estimands": estimands,
+        "design_result_cells": _design_cell_summary(rows),
+        "route_stratum_results": _route_stratum_results(rows),
+        "paired_route_comparisons": _paired_route_comparisons(rows, protocol),
+        "repeat_equivalent": repeat_equivalent,
+        "confirmatory_provider_claims_authorized": False,
+        "challenge_policy": protocol["campaigns"]["C1"]["challenge_policy"],
+    }
+
+
 def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *, calibration: bool) -> dict[str, Any]:
     mode = "calibration" if calibration else "full"
     prefix = f"c1_phase7_{mode}"
@@ -404,6 +456,29 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                         challenge = derive_browser_challenge(challenge_nonce, attempt_binding)
                         assertion = _authenticate(page, rp_id, credential_id, challenge)
                         checks = _verify(assertion, source_key, origins[rp_id], challenge)
+                        browser_evidence = _assertion_evidence(
+                            assertion, checks, authenticator, source_key, origins[rp_id],
+                            challenge, challenge_nonce, attempt_binding,
+                            "large_blob" in properties, inflate_large_blob(source_key),
+                        )
+                        witness_binding = {
+                            **attempt_binding,
+                            "witness_for_challenge_sha256": hashlib.sha256(challenge).hexdigest(),
+                            "extension_observation_sha256": hashlib.sha256(
+                                _canonical(browser_evidence["extensions"])
+                            ).hexdigest(),
+                        }
+                        witness_nonce = secrets.token_bytes(32)
+                        witness_challenge = derive_browser_challenge(witness_nonce, witness_binding)
+                        witness_assertion = _authenticate(page, rp_id, credential_id, witness_challenge)
+                        witness_checks = _verify(
+                            witness_assertion, source_key, origins[rp_id], witness_challenge
+                        )
+                        browser_evidence["extension_witness"] = _assertion_evidence(
+                            witness_assertion, witness_checks, authenticator, source_key,
+                            origins[rp_id], witness_challenge, witness_nonce, witness_binding,
+                            "large_blob" in properties, inflate_large_blob(source_key),
+                        )
                     finally:
                         cdp.send("WebAuthn.removeCredential", {"authenticatorId": authenticator, "credentialId": _standard_b64(credential_id)})
                     oracles = _browser_oracles(source, migrated, properties, assertion, checks)
@@ -432,11 +507,7 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                             "login_with_any_nonpayment_property_failure": assertion_pass and nonpayment_property_fail,
                             "login_with_any_observed_property_failure": assertion_pass and observed_property_fail,
                             "exclusion_reason": None,
-                            "browser_evidence": _assertion_evidence(
-                                assertion, checks, authenticator, source_key, origins[rp_id],
-                                challenge, challenge_nonce, attempt_binding,
-                                "large_blob" in properties, inflate_large_blob(source_key),
-                            ),
+                            "browser_evidence": browser_evidence,
                         }
                     )
             browser_version = browser.version
@@ -445,51 +516,12 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
     commit, dirty = _git_state(protocol_path.resolve().parent.parent)
     for row in rows:
         row["source_commit"] = commit
-        row["environment_id"] = f"phase7-edge-browser-{mode}-v2"
+        row["environment_id"] = f"phase7-edge-browser-{mode}-v3"
     output_dir.mkdir(parents=True, exist_ok=True)
     with raw_path.open("x", encoding="utf-8") as handle:
         for row in rows:
             handle.write(json.dumps(row, sort_keys=True) + "\n")
-    estimands = {
-        "preserving_migration_yield": _exact_estimand(rows, lambda row: row["semantic_class"] == "PASS", lambda row: True),
-        "conditional_semantic_preservation": _exact_estimand(rows, lambda row: row["semantic_class"] == "PASS", lambda row: row["execution_status"] == "IMPORTED"),
-        "silent_degradation_rate": _exact_estimand(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED"),
-        "false_reassurance_rate": _exact_estimand(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True),
-        "login_with_nonexecuted_representation_loss_rate": _exact_estimand(
-            rows,
-            lambda row: row.get("login_with_nonexecuted_representation_loss") is True,
-            lambda row: row["basic_auth_pass"] is True,
-        ),
-        "login_with_any_nonpayment_property_failure_rate": _exact_estimand(
-            rows,
-            lambda row: row.get("login_with_any_nonpayment_property_failure") is True,
-            lambda row: row["basic_auth_pass"] is True,
-        ),
-        "login_with_any_observed_property_failure_rate": _exact_estimand(
-            rows,
-            lambda row: row.get("login_with_any_observed_property_failure") is True,
-            lambda row: row["basic_auth_pass"] is True,
-        ),
-    }
-    repeat_equivalent: bool | None = None
-    if not calibration:
-        per_rep = len(cases)
-        repeat_equivalent = all(_repeat_outcome(rows[i]) == _repeat_outcome(rows[i + per_rep]) for i in range(per_rep))
-    summary = {
-        "protocol_id": protocol["protocol_id"], "campaign_id": "C1", "mode": mode,
-        "evidence_class": "browser-webauthn-reference-policy-control", "attempt_count": len(rows),
-        "credential_count": len({row["credential_id_hash"] for row in rows}), "route_count": 12,
-        "repetitions": repetitions, "execution_statuses": dict(Counter(row["execution_status"] for row in rows)),
-        "semantic_classes": dict(Counter(row["semantic_class"] for row in rows)),
-        "oracle_statuses": {name: dict(Counter(row["oracles"][name]["status"] for row in rows)) for name in ORACLES},
-        "estimands": estimands,
-        "design_result_cells": _design_cell_summary(rows),
-        "route_stratum_results": _route_stratum_results(rows),
-        "paired_route_comparisons": _paired_route_comparisons(rows, protocol),
-        "repeat_equivalent": repeat_equivalent,
-        "confirmatory_provider_claims_authorized": False,
-        "challenge_policy": protocol["campaigns"]["C1"]["challenge_policy"],
-    }
+    summary = summarize_browser_c1(rows, protocol, mode)
     with summary_path.open("x", encoding="utf-8") as handle:
         handle.write(json.dumps(summary, indent=2) + "\n")
     project_root = protocol_path.resolve().parent.parent

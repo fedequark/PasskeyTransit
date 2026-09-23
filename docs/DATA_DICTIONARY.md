@@ -43,7 +43,10 @@ checks, SHA-256 digests of assertion components, and a public WebAuthn
 transcript (authenticator data, client data, signature, synthetic identifiers,
 source public key, expected challenge, expected attempt ID, RP ID and origin) bound to
 `transcript_ref`. The release verifier independently recalculates the
-commitment, signature and every recorded assertion check. Private keys, PRF outputs and
+commitment, signature and every recorded assertion check. Under protocol v1.5,
+`extension_witness` contains a second public signed transcript whose challenge
+commits to the primary challenge and the canonical retained extension observations.
+Private keys, PRF outputs and
 blob plaintext are not copied into the analytical row.
 `prf_requested` and `prf_observed` distinguish an exercised PRF request from an
 unavailable positive-preservation result.
@@ -88,7 +91,8 @@ The C3 sequence JSONL contains one record per registered failure sequence. Its
 top-level `execution_status` describes the injected initial attempt and
 `final_execution_status` describes the retry. `state_before`,
 `state_after_failure`, and `state_after_retry` contain only copy counts,
-committed counts, and state digests.
+committed counts, and state digests. These are observations of an in-process
+Python state machine, not durable storage or process-crash recovery evidence.
 
 The separate C3 event JSONL contains two records per sequence. `retry_index=0`
 is the injected attempt and `retry_index=1` is the provider-level retry. This
@@ -103,4 +107,6 @@ For browser evidence, each imported row retains a fresh random 32-byte nonce,
 the canonical attempt-binding context and the challenge derived from both. The
 release auditor reconstructs the challenge, rejects a missing, too-short or
 reused challenge, and rejects any transcript whose signed binding does not
-match its enclosing row.
+match its enclosing row. For v1.5 it also verifies the second challenge and
+signature, then recomputes the C1/C2/C3 summaries and all managed text/CSV
+publication outputs from the archived raw records.

@@ -1,5 +1,36 @@
 # Protocol deviations
 
+## 2026-09-23 signed-extension, derivation, and scope correction
+
+Date: 2026-09-23
+
+Commit: recorded by SHA-256 in each v0.7 campaign manifest
+
+Data inspected before decision: yes
+
+Reason: the v1.4 signature bound the primary assertion to source context, but
+the retained extension response and its oracle were protected only by unkeyed
+hashes. A coordinated rewrite could therefore preserve a valid primary
+signature. The release verifier also checked stored hashes without deriving
+summaries and publication outputs from raw records. Finally, C3 used a Python
+list but its claim matrix described durable state.
+
+Affected RQs: RQ1, RQ2, RQ3 and RQ4
+
+Affected estimands: evidentiary integrity of browser extension outcomes,
+reproducibility of all reported results, interpretation of aggregate C1
+percentages, and scope of the C3 fault controls
+
+Change: protocol v1.5 adds a second signed WebAuthn challenge committing to the
+primary challenge and canonical extension observations; recomputes C1/C2/C3
+summaries and managed publication outputs during release verification; labels
+aggregate percentages as design-weighted; and reclassifies C3 as an in-memory,
+non-durable simulation.
+
+Impact on interpretation: v1.4 arithmetic remains historical, but v1.5
+supersedes its extension-integrity and release-reproducibility claims. No C3
+result supports durable-storage or process-crash recovery behavior.
+
 ## 2026-09-23 source-key binding and exact-design correction
 
 Date: 2026-09-23

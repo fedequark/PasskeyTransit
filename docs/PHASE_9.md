@@ -10,7 +10,7 @@ must contain 960 sequences; all applicable Phase 8 checks must pass.
 
 The analysis emits:
 
-- `results_v0.6.json`, preserving the complete evidence and claim boundary;
+- `results_v0.7.json`, preserving the complete evidence and claim boundary;
 - five CSV tables for C1 estimands/oracles/route-stratum cells, C2 mutations and C3 faults;
 - `MANUSCRIPT.md`, a non-simulated Spanish research manuscript;
 - `analysis_manifest.json`, hashing every input and output.
@@ -18,13 +18,15 @@ The analysis emits:
 ## Claim boundary
 
 The manuscript may conclude that the harness detects deliberately introduced
-semantic, route, atomicity and idempotence losses, and that basic authentication
+semantic and route losses, and simulated atomicity and idempotence losses in
+the in-memory C3 control, and that basic authentication
 is insufficient in those controls. It may report bidirectional HPKE
 interoperability with the identified native implementation.
 
 It may not infer commercial-provider behavior, full normative CXP
 interoperability, positive PRF/`credBlob` preservation, vulnerability,
-prevalence, or novelty. These prohibitions are stored in the results artifact,
+prevalence, novelty, durable-storage behavior, or crash recovery. These
+prohibitions are stored in the results artifact,
 not left as editorial convention.
 
 ## Reproduction

@@ -215,6 +215,28 @@ def _c2_record(
     }
 
 
+def summarize_c2_rows(rows: list[dict[str, Any]], protocol: dict[str, Any]) -> dict[str, Any]:
+    families = list(map(str, protocol["campaigns"]["C2"]["mutation_families"]))
+    return {
+        "protocol_id": protocol["protocol_id"],
+        "campaign_id": "C2",
+        "evidence_class": "synthetic-reference-robustness-control",
+        "attempt_count": len(rows),
+        "strata": len(protocol["feature_strata"]),
+        "mutation_families": {
+            family: {
+                "attempts": sum(row["mutation_id"] == family for row in rows),
+                "execution_statuses": dict(Counter(row["execution_status"] for row in rows if row["mutation_id"] == family)),
+                "semantic_classes": dict(Counter(row["semantic_class"] for row in rows if row["mutation_id"] == family)),
+                "normative_classes": dict(Counter(row["normative_class"] for row in rows if row["mutation_id"] == family)),
+            }
+            for family in families
+        },
+        "pooled_preservation_estimate": None,
+        "confirmatory_provider_claims_authorized": False,
+    }
+
+
 def run_c2_robustness(protocol_path: Path, output_dir: Path) -> dict[str, Any]:
     paths = _paths(output_dir, "c2_phase6", ["attempts"])
     validate_protocol(protocol_path)
@@ -237,25 +259,7 @@ def run_c2_robustness(protocol_path: Path, output_dir: Path) -> dict[str, Any]:
         row["environment_id"] = "phase6-robustness-control-v1"
     output_dir.mkdir(parents=True, exist_ok=True)
     _write_jsonl(paths["attempts"], rows)
-    by_family = {
-        family: {
-            "attempts": sum(row["mutation_id"] == family for row in rows),
-            "execution_statuses": dict(Counter(row["execution_status"] for row in rows if row["mutation_id"] == family)),
-            "semantic_classes": dict(Counter(row["semantic_class"] for row in rows if row["mutation_id"] == family)),
-            "normative_classes": dict(Counter(row["normative_class"] for row in rows if row["mutation_id"] == family)),
-        }
-        for family in families
-    }
-    summary = {
-        "protocol_id": protocol["protocol_id"],
-        "campaign_id": "C2",
-        "evidence_class": "synthetic-reference-robustness-control",
-        "attempt_count": len(rows),
-        "strata": 8,
-        "mutation_families": by_family,
-        "pooled_preservation_estimate": None,
-        "confirmatory_provider_claims_authorized": False,
-    }
+    summary = summarize_c2_rows(rows, protocol)
     with paths["summary"].open("x", encoding="utf-8") as handle:
         handle.write(json.dumps(summary, indent=2) + "\n")
     manifest = _manifest(protocol_path, paths, commit, dirty, ["synthetic mutations and control importer", "C2 families are reported separately and not pooled"])
@@ -384,6 +388,37 @@ def _manifest(
     }
 
 
+def summarize_c3_rows(
+    sequences: list[dict[str, Any]], events: list[dict[str, Any]], protocol: dict[str, Any]
+) -> dict[str, Any]:
+    destinations = list(map(str, protocol["campaigns"]["C3"]["destination_profiles"]))
+    failure_points = list(map(str, protocol["campaigns"]["C3"]["failure_points"]))
+    return {
+        "protocol_id": protocol["protocol_id"],
+        "campaign_id": "C3",
+        "evidence_class": "simulated-in-memory-transaction-state-machine-control",
+        "credential_count": len({row["credential_id_hash"] for row in sequences}),
+        "failure_sequence_count": len(sequences),
+        "event_count": len(events),
+        "initial_execution_statuses": dict(Counter(row["execution_status"] for row in sequences)),
+        "final_execution_statuses": dict(Counter(row["final_execution_status"] for row in sequences)),
+        "atomicity": dict(Counter(row["oracles"]["atomicity"]["status"] for row in sequences)),
+        "idempotence": dict(Counter(row["oracles"]["idempotence"]["status"] for row in sequences)),
+        "semantic_classes": dict(Counter(row["semantic_class"] for row in sequences)),
+        "by_destination_and_failure_point": {
+            f"{destination}:{failure_point}": {
+                "sequences": sum(row["provider_chain"][-1] == destination and row["failure_point"] == failure_point for row in sequences),
+                "atomicity_failures": sum(row["provider_chain"][-1] == destination and row["failure_point"] == failure_point and row["oracles"]["atomicity"]["status"] == "FAIL" for row in sequences),
+                "idempotence_failures": sum(row["provider_chain"][-1] == destination and row["failure_point"] == failure_point and row["oracles"]["idempotence"]["status"] == "FAIL" for row in sequences),
+            }
+            for destination in destinations
+            for failure_point in failure_points
+        },
+        "confirmatory_provider_claims_authorized": False,
+        "durable_storage_claims_authorized": False,
+    }
+
+
 def run_c3_faults(protocol_path: Path, output_dir: Path) -> dict[str, Any]:
     paths = _paths(output_dir, "c3_phase6", ["sequences", "events"])
     validate_protocol(protocol_path)
@@ -408,29 +443,7 @@ def run_c3_faults(protocol_path: Path, output_dir: Path) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     _write_jsonl(paths["sequences"], sequences)
     _write_jsonl(paths["events"], events)
-    summary = {
-        "protocol_id": protocol["protocol_id"],
-        "campaign_id": "C3",
-        "evidence_class": "synthetic-transaction-fault-control",
-        "credential_count": len(selected),
-        "failure_sequence_count": len(sequences),
-        "event_count": len(events),
-        "initial_execution_statuses": dict(Counter(row["execution_status"] for row in sequences)),
-        "final_execution_statuses": dict(Counter(row["final_execution_status"] for row in sequences)),
-        "atomicity": dict(Counter(row["oracles"]["atomicity"]["status"] for row in sequences)),
-        "idempotence": dict(Counter(row["oracles"]["idempotence"]["status"] for row in sequences)),
-        "semantic_classes": dict(Counter(row["semantic_class"] for row in sequences)),
-        "by_destination_and_failure_point": {
-            f"{destination}:{failure_point}": {
-                "sequences": sum(row["provider_chain"][-1] == destination and row["failure_point"] == failure_point for row in sequences),
-                "atomicity_failures": sum(row["provider_chain"][-1] == destination and row["failure_point"] == failure_point and row["oracles"]["atomicity"]["status"] == "FAIL" for row in sequences),
-                "idempotence_failures": sum(row["provider_chain"][-1] == destination and row["failure_point"] == failure_point and row["oracles"]["idempotence"]["status"] == "FAIL" for row in sequences),
-            }
-            for destination in destinations
-            for failure_point in failure_points
-        },
-        "confirmatory_provider_claims_authorized": False,
-    }
+    summary = summarize_c3_rows(sequences, events, protocol)
     with paths["summary"].open("x", encoding="utf-8") as handle:
         handle.write(json.dumps(summary, indent=2) + "\n")
     manifest = _manifest(
@@ -438,7 +451,7 @@ def run_c3_faults(protocol_path: Path, output_dir: Path) -> dict[str, Any]:
         paths,
         commit,
         dirty,
-        ["failure behavior is deliberately injected into synthetic provider stores", "results qualify atomicity and retry oracles only"],
+        ["failure behavior is simulated in an in-memory state machine", "no durable-storage or crash-recovery claim is authorized"],
     )
     with paths["manifest"].open("x", encoding="utf-8") as handle:
         handle.write(json.dumps(manifest, indent=2) + "\n")

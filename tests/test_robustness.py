@@ -6,7 +6,7 @@ from passkeytransit.robustness import _normative_class, run_c2_robustness, run_c
 
 
 PROJECT_ROOT = Path(__file__).parents[1]
-PROTOCOL_PATH = PROJECT_ROOT / "experiments" / "protocol_v1.4.json"
+PROTOCOL_PATH = PROJECT_ROOT / "experiments" / "protocol_v1.5.json"
 
 
 def test_c2_executes_every_frozen_mutation_for_every_stratum(tmp_path):
@@ -34,6 +34,7 @@ def test_c3_executes_registered_fault_sequences_and_retries(tmp_path):
     assert summary["final_execution_statuses"] == {"IMPORTED": 960}
     assert summary["atomicity"] == {"PASS": 832, "FAIL": 128}
     assert summary["idempotence"] == {"PASS": 832, "FAIL": 128}
+    assert summary["durable_storage_claims_authorized"] is False
     assert summary["by_destination_and_failure_point"]["legacy:before-commit"]["atomicity_failures"] == 64
     assert summary["by_destination_and_failure_point"]["strict:before-commit"]["atomicity_failures"] == 0
     assert len((tmp_path / "c3_phase6_sequences.jsonl").read_text(encoding="utf-8").splitlines()) == 960

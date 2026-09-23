@@ -28,17 +28,19 @@ Valid but semantically changed documents exercise the independent identity and
 key oracles. Each record contains a deterministic mutation recipe and a digest
 of the minimal reproducer; secret key material is not written.
 
-## C3 — fault injection, rollback and retry
+## C3 — in-memory fault simulation, rollback and retry
 
 C3 selects the registered 64 credentials—eight per stratum—and crosses them
-with three destination controls and five failure points. The result is exactly
+with three destination controls and five simulated failure points. The result is exactly
 960 fault sequences and 1,920 event records covering initial failure and retry.
 
 The `strict` and `compatible-lossy` stores roll back provisional writes at all
 failure points. The deliberately defective `legacy` control retains an
 uncommitted copy after `after-provisional-persistence` and `before-commit`;
 retry then creates a second copy. This provides a known positive control for
-the atomicity and idempotence oracles.
+the simulated atomicity and idempotence oracles. Because the store is a Python
+object in one process, these observations do not establish durable persistence
+or recovery after a real process or machine crash.
 
 State snapshots contain counts and SHA-256 references only. Credential
 plaintext and private material remain ephemeral.

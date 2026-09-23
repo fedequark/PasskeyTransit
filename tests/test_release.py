@@ -41,3 +41,22 @@ def test_verify_release_checks_internal_and_external_hashes(tmp_path):
         encoding="utf-8",
     )
     assert verify_release(archive_path, manifest_path)["verified"] is True
+
+
+def test_verify_release_requires_declared_derivation_audit_to_pass(tmp_path):
+    archive_path = tmp_path / "release.zip"
+    internal = {"entries": {}}
+    with zipfile.ZipFile(archive_path, "w") as archive:
+        archive.writestr("MANIFEST.json", json.dumps(internal))
+    manifest_path = tmp_path / "release_manifest.json"
+    manifest_path.write_text(
+        json.dumps({
+            "archive_sha256": hashlib.sha256(archive_path.read_bytes()).hexdigest(),
+            "derivation_audit": {"passed": True},
+        }),
+        encoding="utf-8",
+    )
+    result = verify_release(archive_path, manifest_path)
+    assert result["verified"] is False
+    assert result["derivation_audit"]["passed"] is False
+    assert "derivation-audit" in result["entry_hash_mismatches"]
