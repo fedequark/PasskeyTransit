@@ -9,7 +9,7 @@ from typing import Any
 from . import __version__
 
 
-RESULTS_FILENAME = "results_v0.3.json"
+RESULTS_FILENAME = "results_v0.4.json"
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -47,6 +47,7 @@ def _manuscript(results: dict[str, Any]) -> str:
     yield_result = estimands["preserving_migration_yield"]
     silent = estimands["silent_degradation_rate"]
     reassurance = estimands["false_reassurance_rate"]
+    observed_failure = estimands["login_with_any_observed_property_failure_rate"]
     imported = c1["execution_statuses"].get("IMPORTED", 0)
     rejected = c1["execution_statuses"].get("REJECTED", 0)
     assertion_pass = c1["oracle_statuses"]["webauthn_assertion"].get("PASS", 0)
@@ -88,7 +89,10 @@ y se rechazaron {rejected:,} antes de la ceremonia. Las {assertion_pass:,}
 aserciones WebAuthn ejecutadas fueron aceptadas; {reassurance['numerator']:,} intentos
 ({_percent(reassurance['estimate'])}; intervalo descriptivo de sensibilidad por bootstrap de credencial
 {_percent(reassurance['ci95'][0])}–{_percent(reassurance['ci95'][1])}) combinaron
-login correcto con el fallo de otra propiedad aplicable. La preservación
+login correcto con el fallo de un oráculo conductual ejecutable. Al añadir el
+marcador de pagos, que es sólo una comprobación de formato sin ceremonia SPC,
+la sensibilidad fue {_percent(observed_failure['estimate'])}
+({observed_failure['numerator']:,}/{observed_failure['denominator']:,}). La preservación
 semántica completa observable fue {_percent(yield_result['estimate'])}
 ({yield_result['numerator']:,}/{yield_result['denominator']:,}; intervalo descriptivo de sensibilidad
 {_percent(yield_result['ci95'][0])}–{_percent(yield_result['ci95'][1])}). Estos
@@ -111,7 +115,8 @@ afirmaciones de novedad ni sobre implementaciones comerciales no examinadas.
 ## 2. Método
 
 El protocolo `{c1['protocol_id']}` fue congelado antes de
-esta campaña confirmatoria corregida. El corpus contiene 256 credenciales ES256,
+esta replicación correctiva posterior a la inspección de v1.1. No la presentamos
+como confirmación preregistrada independiente. El corpus contiene 256 credenciales ES256,
 32 en cada uno de ocho estratos: básica, PRF con UV, PRF sin UV, `largeBlob`,
 `credBlob`, marcador de pagos, combinación de extensiones y miembro opcional
 futuro. Doce rutas cubren migración directa, round trip y multihop.
@@ -119,7 +124,8 @@ futuro. Doce rutas cubren migración directa, round trip y multihop.
 Cada salto serializa un documento CXF validado y lo transporta mediante HPKE
 base X25519/HKDF-SHA256/AES-128-GCM [3]. El navegador importa el resultado en un
 autenticador virtual y ejecuta `navigator.credentials.get()`. Un verificador
-Python independiente de la ceremonia comprueba desafío, origen, RP-ID hash,
+Python independiente de la ceremonia comprueba desafío único, vínculo con el
+identificador del intento, origen, RP-ID hash,
 flags UP/UV, firma ES256 y contador cero [4].
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
@@ -143,8 +149,9 @@ persistencia global del estado antireplay.
 ## 4. Implementación del transporte
 
 La implementación HPKE reproduce el vector oficial de RFC 9180 [3]. El Working
-Draft CXP [2] no define campos para la encapsulación HPKE ni para el challenge
-firmado que describe su narrativa, y no concreta completamente el ZIP/JWE.
+Draft CXP [2] define parámetros HPKE, pero no un miembro para la clave
+encapsulada `enc` ni miembros de esquema para el challenge firmado que describe
+su narrativa, y no concreta completamente el mapeo HPKE a ZIP/JWE.
 Usamos una extensión experimental autenticada como AAD y no reclamamos
 interoperabilidad CXP normativa completa.
 
@@ -226,6 +233,8 @@ Los artefactos raw son JSONL inmutables; los derivados y manifiestos incluyen
 hashes SHA-256 del protocolo, resultados, navegador y commit. La campaña C1 se
 ejecutó con Chromium {results['environment']['browser_version']} y Playwright
 {results['environment']['playwright_version']} desde un árbol Git limpio. El
+auditor de release exige un challenge criptográficamente aleatorio y único por
+ceremonia y verifica su vínculo con el intento. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
@@ -296,8 +305,8 @@ def run_analysis(
     if len(protocols) != 1 or None in protocols:
         raise ValueError("C1, C2 and C3 must use one protocol identifier")
     protocol_id = next(iter(protocols))
-    if not str(protocol_id).endswith("v1.1"):
-        raise ValueError("corrected analysis requires protocol v1.1 evidence")
+    if not str(protocol_id).endswith("v1.2"):
+        raise ValueError("corrected analysis requires protocol v1.2 evidence")
     if interop.get("all_applicable_checks_pass") is not True:
         raise ValueError("Phase 8 interoperability checks did not pass")
     if interop.get("git", {}).get("source_dirty") is not False:
@@ -308,7 +317,7 @@ def run_analysis(
     if external is not None and external.get("semantic_json_equal") is not True:
         raise ValueError("Phase 11 external CXF round trip did not preserve normalized JSON")
     results = {
-        "evidence_class": "corrected-v1.1-reference-control-analysis",
+        "evidence_class": "corrective-v1.2-reference-control-analysis",
         "c1": c1,
         "c2": c2,
         "c3": c3,

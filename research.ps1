@@ -7,8 +7,8 @@ param(
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $VenvPython = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
-$ProtocolPath = Join-Path $ProjectRoot "experiments\protocol_v1.1.json"
-$PublicationStem = "PasskeyTransit_v0.3"
+$ProtocolPath = Join-Path $ProjectRoot "experiments\protocol_v1.2.json"
+$PublicationStem = "PasskeyTransit_v0.4"
 
 function Require-Venv {
     if (-not (Test-Path -LiteralPath $VenvPython)) {

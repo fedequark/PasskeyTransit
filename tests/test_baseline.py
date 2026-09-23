@@ -60,7 +60,7 @@ def test_pilot_is_reproducible(tmp_path):
 
 def test_frozen_protocol_is_internally_consistent():
     project_root = __import__("pathlib").Path(__file__).parents[1]
-    result = validate_protocol(project_root / "experiments" / "protocol_v1.1.json")
+    result = validate_protocol(project_root / "experiments" / "protocol_v1.2.json")
     assert result["valid"]
     assert result["routes"] == 12
     assert result["c1_attempts_per_repetition"] == 3072
@@ -68,7 +68,7 @@ def test_frozen_protocol_is_internally_consistent():
 
 def test_protocol_validator_rejects_unknown_claim_oracle(tmp_path):
     project_root = __import__("pathlib").Path(__file__).parents[1]
-    source = project_root / "experiments" / "protocol_v1.1.json"
+    source = project_root / "experiments" / "protocol_v1.2.json"
     protocol = json.loads(source.read_text(encoding="utf-8"))
     protocol["claims"][0]["required_oracles"].append("invented_oracle")
     altered = tmp_path / "invalid-protocol.json"

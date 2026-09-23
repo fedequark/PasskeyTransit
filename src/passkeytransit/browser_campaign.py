@@ -7,6 +7,7 @@ import json
 import os
 import platform
 import random
+import secrets
 import shutil
 import subprocess
 import sys
@@ -26,6 +27,8 @@ from playwright.sync_api import sync_playwright
 
 from . import __version__
 from .campaign import (
+    BEHAVIORAL_FAILURE_ORACLES,
+    FORMAT_ONLY_FAILURE_ORACLES,
     ORACLES,
     StrictPreservationError,
     _apply_profile,
@@ -47,7 +50,6 @@ from .protocol import validate_protocol
 
 
 HTML = b"<!doctype html><meta charset=utf-8><title>PasskeyTransit Phase 7 RP</title><p>ready</p>"
-ASSERT_CHALLENGE = hashlib.sha256(b"passkeytransit-phase7-browser-assertion-v1").digest()
 PRF_SALT = hashlib.sha256(b"passkeytransit-phase7-prf-first-v1").digest()
 
 
@@ -106,7 +108,7 @@ def _standard_b64(data: bytes) -> str:
     return base64.b64encode(data).decode("ascii")
 
 
-def _authenticate(page: Any, rp_id: str, credential_id: bytes) -> dict[str, Any]:
+def _authenticate(page: Any, rp_id: str, credential_id: bytes, challenge: bytes) -> dict[str, Any]:
     return page.evaluate(
         r"""async ({challenge, rpId, credentialId, prfSalt}) => {
           const decode = value => {
@@ -135,11 +137,13 @@ def _authenticate(page: Any, rp_id: str, credential_id: bytes) -> dict[str, Any]
             prfFirst: ext.prf && ext.prf.results && ext.prf.results.first ? encode(ext.prf.results.first) : null
           };
         }""",
-        {"challenge": b64url(ASSERT_CHALLENGE), "rpId": rp_id, "credentialId": b64url(credential_id), "prfSalt": b64url(PRF_SALT)},
+        {"challenge": b64url(challenge), "rpId": rp_id, "credentialId": b64url(credential_id), "prfSalt": b64url(PRF_SALT)},
     )
 
 
-def _verify(assertion: dict[str, Any], source_key: dict[str, Any], origin: str) -> dict[str, bool]:
+def _verify(
+    assertion: dict[str, Any], source_key: dict[str, Any], origin: str, challenge: bytes
+) -> dict[str, bool]:
     credential_id = unb64url(source_key["credentialId"])
     user_handle = unb64url(source_key["userHandle"])
     authenticator_data = unb64url(assertion["authenticatorData"])
@@ -159,7 +163,7 @@ def _verify(assertion: dict[str, Any], source_key: dict[str, Any], origin: str) 
     return {
         "credential_id": unb64url(assertion["rawId"]) == credential_id,
         "user_handle": unb64url(assertion["userHandle"]) == user_handle,
-        "challenge": unb64url(client["challenge"]) == ASSERT_CHALLENGE,
+        "challenge": unb64url(client["challenge"]) == challenge,
         "origin": client["origin"] == origin,
         "type": client["type"] == "webauthn.get",
         "rp_id_hash": authenticator_data[:32] == hashlib.sha256(source_key["rpId"].encode()).digest(),
@@ -212,7 +216,7 @@ def _browser_oracles(
 
 def _assertion_evidence(
     assertion: dict[str, Any], checks: dict[str, bool], authenticator: str,
-    source_key: dict[str, Any], origin: str,
+    source_key: dict[str, Any], origin: str, challenge: bytes, attempt_id: str,
 ) -> dict[str, Any]:
     fields = ("rawId", "authenticatorData", "clientDataJSON", "signature", "userHandle", "largeBlob", "prfFirst")
     public_spki = serialization.load_der_private_key(
@@ -229,7 +233,8 @@ def _assertion_evidence(
         "source_public_key_spki": b64url(public_spki),
         "expected_credential_id": source_key["credentialId"],
         "expected_user_handle": source_key["userHandle"],
-        "expected_challenge": b64url(ASSERT_CHALLENGE),
+        "expected_challenge": b64url(challenge),
+        "expected_attempt_id": attempt_id,
         "source_rp_id": source_key["rpId"],
         "expected_origin": origin,
     }
@@ -258,6 +263,9 @@ def _repeat_outcome(row: dict[str, Any]) -> bytes:
         "oracle_statuses": {name: row["oracles"][name]["status"] for name in ORACLES},
         "basic_auth_pass": row["basic_auth_pass"],
         "false_reassurance": row["false_reassurance"],
+        "login_with_any_observed_property_failure": row.get(
+            "login_with_any_observed_property_failure"
+        ),
     })
 
 
@@ -332,6 +340,7 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                             **common, "execution_status": "REJECTED", "oracles": oracles,
                             "declared_losses": [], "semantic_class": "NOT_APPLICABLE",
                             "basic_auth_pass": None, "false_reassurance": None,
+                            "login_with_any_observed_property_failure": None,
                             "exclusion_reason": "strict-preservation-rejection", "browser_evidence": None,
                         })
                         continue
@@ -350,13 +359,19 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                         credential["largeBlob"] = _standard_b64(imported_blob)
                     cdp.send("WebAuthn.addCredential", {"authenticatorId": authenticator, "credential": credential})
                     try:
-                        assertion = _authenticate(page, rp_id, credential_id)
-                        checks = _verify(assertion, source_key, origins[rp_id])
+                        challenge = secrets.token_bytes(32)
+                        assertion = _authenticate(page, rp_id, credential_id, challenge)
+                        checks = _verify(assertion, source_key, origins[rp_id], challenge)
                     finally:
                         cdp.send("WebAuthn.removeCredential", {"authenticatorId": authenticator, "credentialId": _standard_b64(credential_id)})
                     oracles = _browser_oracles(source, migrated, properties, assertion, checks)
                     semantic = _classify(oracles, declarations)
-                    functional_fail = any(oracles[name]["status"] == "FAIL" for name in ("uv", "prf_uv", "prf_no_uv", "large_blob", "cred_blob"))
+                    behavioral_fail = any(
+                        oracles[name]["status"] == "FAIL" for name in BEHAVIORAL_FAILURE_ORACLES
+                    )
+                    observed_property_fail = behavioral_fail or any(
+                        oracles[name]["status"] == "FAIL" for name in FORMAT_ONLY_FAILURE_ORACLES
+                    )
                     assertion_pass = oracles["webauthn_assertion"]["status"] == "PASS"
                     chain = list(map(str, route["chain"]))
                     rows.append(
@@ -365,10 +380,12 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
                             "oracles": oracles, "declared_losses": sorted(declarations),
                             "semantic_class": semantic, "normative_class": "NOT_ASSESSED",
                             "basic_auth_pass": assertion_pass,
-                            "false_reassurance": assertion_pass and functional_fail,
+                            "false_reassurance": assertion_pass and behavioral_fail,
+                            "login_with_any_observed_property_failure": assertion_pass and observed_property_fail,
                             "exclusion_reason": None,
                             "browser_evidence": _assertion_evidence(
-                                assertion, checks, authenticator, source_key, origins[rp_id]
+                                assertion, checks, authenticator, source_key, origins[rp_id],
+                                challenge, common["attempt_id"],
                             ),
                         }
                     )
@@ -378,7 +395,7 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
     commit, dirty = _git_state(protocol_path.resolve().parent.parent)
     for row in rows:
         row["source_commit"] = commit
-        row["environment_id"] = f"phase7-edge-browser-{mode}-v1"
+        row["environment_id"] = f"phase7-edge-browser-{mode}-v2"
     output_dir.mkdir(parents=True, exist_ok=True)
     with raw_path.open("x", encoding="utf-8") as handle:
         for row in rows:
@@ -389,6 +406,12 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
         "conditional_semantic_preservation": _bootstrap(rows, lambda row: row["semantic_class"] == "PASS", lambda row: row["execution_status"] == "IMPORTED", seed + 22),
         "silent_degradation_rate": _bootstrap(rows, lambda row: row["semantic_class"] == "DEGRADED_SILENT", lambda row: row["execution_status"] == "IMPORTED", seed + 23),
         "false_reassurance_rate": _bootstrap(rows, lambda row: row["false_reassurance"] is True, lambda row: row["basic_auth_pass"] is True, seed + 24),
+        "login_with_any_observed_property_failure_rate": _bootstrap(
+            rows,
+            lambda row: row.get("login_with_any_observed_property_failure") is True,
+            lambda row: row["basic_auth_pass"] is True,
+            seed + 25,
+        ),
     }
     repeat_equivalent: bool | None = None
     if not calibration:
@@ -406,6 +429,7 @@ def run_browser_c1(protocol_path: Path, browser_path: Path, output_dir: Path, *,
         "paired_route_comparisons": _paired_route_comparisons(rows, protocol),
         "repeat_equivalent": repeat_equivalent,
         "confirmatory_provider_claims_authorized": False,
+        "challenge_policy": "fresh-32-byte-cryptographic-random-per-ceremony",
     }
     with summary_path.open("x", encoding="utf-8") as handle:
         handle.write(json.dumps(summary, indent=2) + "\n")

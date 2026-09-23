@@ -22,7 +22,7 @@ def validate_protocol(path: Path) -> dict[str, object]:
     if data.get("schema_version") != 1:
         raise ProtocolValidationError("unsupported protocol schema_version")
     protocol_id = str(data.get("protocol_id", ""))
-    if not protocol_id.endswith(("v1.0", "v1.1")):
+    if not protocol_id.endswith(("v1.0", "v1.1", "v1.2")):
         raise ProtocolValidationError("protocol_id must identify a supported frozen protocol")
 
     rqs = set(map(str, data.get("research_questions", [])))
@@ -56,6 +56,17 @@ def validate_protocol(path: Path) -> dict[str, object]:
             raise ProtocolValidationError(
                 f"claim {claim.get('id')} uses unknown oracles: {sorted(unknown)}"
             )
+
+    analysis_policy = data.get("analysis_policy", {})
+    if protocol_id.endswith("v1.2"):
+        behavioral = set(map(str, analysis_policy.get("false_reassurance_behavioral_oracles", [])))
+        format_only = set(map(str, analysis_policy.get("format_only_oracles", [])))
+        if not behavioral or behavioral - oracles:
+            raise ProtocolValidationError("v1.2 must register valid behavioral false-reassurance oracles")
+        if not format_only or format_only - oracles or behavioral & format_only:
+            raise ProtocolValidationError("v1.2 format-only oracles must be valid and disjoint")
+        if data.get("campaigns", {}).get("C1", {}).get("challenge_policy") != "fresh-32-byte-cryptographic-random-per-ceremony":
+            raise ProtocolValidationError("v1.2 must require fresh random WebAuthn challenges")
 
     campaigns = data.get("campaigns", {})
     if not isinstance(campaigns, dict):

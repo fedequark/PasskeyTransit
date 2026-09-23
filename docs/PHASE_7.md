@@ -24,6 +24,10 @@ The runner verifies independently in Python:
 - CXF-required zero signature-counter behavior;
 - browser-returned `largeBlob` bytes.
 
+Protocol v1.2 requires a fresh operating-system-generated 32-byte challenge for
+every ceremony. Each retained transcript binds that signed challenge to its
+`attempt_id`; the release gate rejects reused or undersized challenges.
+
 PRF/HMAC and `credBlob` positive preservation remain `NOT_EVALUABLE` because
 the Chromium CDP credential-import operation cannot inject their CXF state.
 Missing required material is still a definite `FAIL`. Secure Payment
@@ -50,7 +54,13 @@ unassessed because the import interface cannot restore the source HMAC secret.
 This remains a reference-policy/virtual-authenticator control. It supplies
 real browser evidence but does not authorize claims about commercial providers.
 
-## Historical v1.0 full run superseded by protocol v1.1
+## Historical runs
+
+Protocol v1.1 corrected strict-profile behavior but reused one deterministic
+challenge across C1 ceremonies. Its evidence is superseded by v1.2 and must not
+be presented as a standards-conforming relying-party ceremony campaign.
+
+### v1.0 full run superseded by protocol v1.1
 
 The definitive run used Edge `153.0.4234.32`, CDP protocol `1.3`, Playwright
 `1.62.0`, and clean source commit `d2893c3`. Results:

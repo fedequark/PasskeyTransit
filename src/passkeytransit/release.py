@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from . import __version__
-from .evidence import audit_browser_evidence
+from .evidence import audit_browser_evidence, audit_browser_evidence_payloads
 
 
 SENSITIVE_NAMES = {"private_key", "privatekey", "secret", "token", "password", "key"}
@@ -194,8 +194,23 @@ def verify_release(archive_path: Path, manifest_path: Path) -> dict[str, Any]:
             analysis = json.loads(archive.read(analysis_names[0]))
             missing = _analysis_lineage_missing(analysis, set(internal["entries"].values()))
             mismatches.extend(missing)
+        browser_audit: dict[str, Any] = {"passed": None, "reason": "not requested by manifest"}
+        if manifest.get("browser_transcript_audit") is not None:
+            browser_names = [
+                name for name in internal["entries"]
+                if Path(name).name.startswith("c1_phase7_")
+                and Path(name).name.endswith("_attempts.jsonl")
+            ]
+            try:
+                browser_audit = audit_browser_evidence_payloads(
+                    (name, archive.read(name)) for name in browser_names
+                )
+            except (ValueError, KeyError, json.JSONDecodeError) as exc:
+                browser_audit = {"passed": False, "error": str(exc)}
+                mismatches.append("browser-transcript-audit")
     return {
         "archive_sha256_ok": archive_hash_ok,
         "entry_hash_mismatches": mismatches,
+        "browser_transcript_audit": browser_audit,
         "verified": archive_hash_ok and not mismatches,
     }

@@ -9,7 +9,7 @@ import json
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 
-from passkeytransit.browser_campaign import ASSERT_CHALLENGE, _verify, run_browser_c1
+from passkeytransit.browser_campaign import _verify, run_browser_c1
 from passkeytransit.campaign import _passkey, build_c1_corpus
 from passkeytransit.model import b64url, unb64url
 
@@ -18,12 +18,13 @@ EDGE = Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
 
 
 def test_invalid_assertion_signature_is_recorded_as_failure():
-    protocol = json.loads((Path(__file__).parents[1] / "experiments" / "protocol_v1.1.json").read_text())
+    protocol = json.loads((Path(__file__).parents[1] / "experiments" / "protocol_v1.2.json").read_text())
     source = build_c1_corpus(protocol)[0][2]
     key = _passkey(source)
     origin = f"https://{key['rpId']}"
+    challenge = hashlib.sha256(b"test-challenge").digest()
     client_json = json.dumps({
-        "type": "webauthn.get", "challenge": b64url(ASSERT_CHALLENGE), "origin": origin,
+        "type": "webauthn.get", "challenge": b64url(challenge), "origin": origin,
     }, separators=(",", ":")).encode()
     authenticator_data = hashlib.sha256(key["rpId"].encode()).digest() + bytes([0x05]) + bytes(4)
     private_key = serialization.load_der_private_key(unb64url(key["key"]), password=None)
@@ -34,7 +35,7 @@ def test_invalid_assertion_signature_is_recorded_as_failure():
         "authenticatorData": b64url(authenticator_data), "clientDataJSON": b64url(client_json),
         "signature": b64url(bytes(signature)),
     }
-    checks = _verify(assertion, key, origin)
+    checks = _verify(assertion, key, origin, challenge)
     assert checks["signature"] is False
 
 
@@ -50,7 +51,7 @@ def test_real_webauthn_assertion_after_cxf_migration(tmp_path):
 
 @pytest.mark.skipif(not EDGE.is_file(), reason="Microsoft Edge/Chromium is unavailable")
 def test_phase7_browser_calibration(tmp_path):
-    protocol = Path(__file__).parents[1] / "experiments" / "protocol_v1.1.json"
+    protocol = Path(__file__).parents[1] / "experiments" / "protocol_v1.2.json"
     result = run_browser_c1(protocol, EDGE, tmp_path, calibration=True)
     summary = result["summary"]
     assert summary["attempt_count"] == 96
@@ -65,6 +66,12 @@ def test_phase7_browser_calibration(tmp_path):
     imported = next(row for row in rows if row["execution_status"] == "IMPORTED")
     evidence = imported["browser_evidence"]
     transcript = evidence["transcript"]
+    assert transcript["expected_attempt_id"] == imported["attempt_id"]
+    challenges = {
+        row["browser_evidence"]["transcript"]["expected_challenge"]
+        for row in rows if row["execution_status"] == "IMPORTED"
+    }
+    assert len(challenges) == summary["execution_statuses"]["IMPORTED"]
     canonical = json.dumps(transcript, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
     assert evidence["transcript_ref"] == "sha256:" + hashlib.sha256(canonical).hexdigest()
     public_key = serialization.load_der_public_key(unb64url(transcript["source_public_key_spki"]))

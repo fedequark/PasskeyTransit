@@ -96,9 +96,10 @@ and a recorded seed.
 - `paper/legacy/`: explicitly simulated legacy paper and rendered versions.
 - `docs/`: research state, provenance, and decision records.
 
-The historical Phase 1 design is in `docs/EXPERIMENT_PROTOCOL.md`. The corrected
-confirmatory design is in `docs/EXPERIMENT_PROTOCOL_V1_1.md`, with its
-machine-readable counterpart in `experiments/protocol_v1.1.json`.
+The historical Phase 1 design is in `docs/EXPERIMENT_PROTOCOL.md`. The current
+corrective design is in `docs/EXPERIMENT_PROTOCOL_V1_2.md`, with its
+machine-readable counterpart in `experiments/protocol_v1.2.json`. It records
+that prior data were inspected before the v1.2 corrections.
 
 ## Evidence policy
 

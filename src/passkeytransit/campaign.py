@@ -41,6 +41,12 @@ ORACLES = (
     "custody_ground_truth",
 )
 
+# Only browser-executable behavioral properties belong to the primary
+# false-reassurance estimand. The payments member is a format marker until an
+# SPC ceremony is available and is reported separately as a sensitivity check.
+BEHAVIORAL_FAILURE_ORACLES = ("uv", "prf_uv", "prf_no_uv", "large_blob", "cred_blob")
+FORMAT_ONLY_FAILURE_ORACLES = ("payments_marker",)
+
 
 def _canonical(value: object) -> bytes:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")

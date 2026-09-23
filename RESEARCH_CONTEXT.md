@@ -30,8 +30,8 @@ routes.
 4. How do implementations handle unknown values, version mismatch, duplicate
    imports, malformed data, and injected failures?
 
-The authoritative design is `docs/EXPERIMENT_PROTOCOL.md`, with the registered
-corrected machine-readable configuration in `experiments/protocol_v1.1.json`.
+The historical design is `docs/EXPERIMENT_PROTOCOL.md`; the current corrective
+machine-readable configuration is `experiments/protocol_v1.2.json`.
 
 ## Evidence boundaries
 
@@ -44,8 +44,10 @@ corrected machine-readable configuration in `experiments/protocol_v1.1.json`.
 
 ## Current evidence frontier
 
-PasskeyTransit v0.3 includes the corrected strict profile, auditable WebAuthn
-transcripts, the CXF profile, experimental CXP/HPKE
+PasskeyTransit v0.4 includes the corrected strict profile, unique per-ceremony
+WebAuthn challenges, attempt-bound auditable transcripts, an explicit
+behavioral false-reassurance estimand and a format-marker sensitivity analysis.
+It also includes the CXF profile, experimental CXP/HPKE
 transport, browser-backed C1 controls, C2 robustness cases, C3 transactional
 faults, an independent HPKE/Node.js boundary, and a hash-verified manuscript.
 The next evidence frontier is an identified external provider or independent

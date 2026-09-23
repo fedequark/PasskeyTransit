@@ -41,7 +41,7 @@ minimum values or hashes needed to audit the decision. `status` is `PASS`,
 Browser rows additionally contain `browser_evidence`: Boolean verification
 checks, SHA-256 digests of assertion components, and a public WebAuthn
 transcript (authenticator data, client data, signature, synthetic identifiers,
-source public key, expected challenge, RP ID and origin) bound to
+source public key, expected challenge, expected attempt ID, RP ID and origin) bound to
 `transcript_ref`. The release verifier independently recalculates the
 commitment, signature and every recorded assertion check. Private keys, PRF outputs and
 blob plaintext are not copied into the analytical row.
@@ -60,7 +60,8 @@ Required oracle keys are `cxf_structure`, `credential_id`, `rp_id`,
 | `semantic_class` | enum | Protocol semantic-preservation axis |
 | `normative_class` | enum | Protocol normative-assessment axis |
 | `basic_auth_pass` | boolean/null | Derived WebAuthn assertion result |
-| `false_reassurance` | boolean/null | Auth pass plus another applicable functional failure |
+| `false_reassurance` | boolean/null | Auth pass plus a failure among the registered browser-executable behavioral oracles (`uv`, PRF, `large_blob`, `cred_blob`); excludes the format-only payments marker |
+| `login_with_any_observed_property_failure` | boolean/null | Sensitivity flag adding `payments_marker` failure to the behavioral false-reassurance set |
 | `exclusion_reason` | string/null | Registered infrastructure-only exclusion code |
 
 ## C2 robustness additions
@@ -90,3 +91,8 @@ observations.
 Raw records never contain private keys, PRF seeds, plaintext credential blobs,
 or account PII. Such synthetic secrets remain in access-controlled ephemeral
 ground-truth artifacts and are referenced by hash.
+
+For browser evidence, each imported row retains a fresh random challenge and
+the expected attempt identifier. The release auditor rejects a missing,
+too-short or reused challenge and rejects any transcript whose attempt binding
+does not match its enclosing row.

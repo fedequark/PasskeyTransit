@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import secrets
 import subprocess
 import threading
 from contextlib import contextmanager
@@ -27,8 +28,6 @@ from .model import SyntheticPasskey, b64url, unb64url
 
 
 RP_ID = "localhost"
-REGISTER_CHALLENGE = hashlib.sha256(b"passkeytransit-register-v1").digest()
-ASSERT_CHALLENGE = hashlib.sha256(b"passkeytransit-assert-v1").digest()
 USER_HANDLE = hashlib.sha256(b"passkeytransit-user-v1").digest()[:32]
 LARGE_BLOB = b"PasskeyTransit phase-3 largeBlob ground truth"
 
@@ -80,7 +79,7 @@ def _decode_b64url(value: str) -> bytes:
     return unb64url(value)
 
 
-def _register(page: Any) -> dict[str, Any]:
+def _register(page: Any, challenge: bytes) -> dict[str, Any]:
     return page.evaluate(
         r"""async ({challenge, userId}) => {
           const decode = value => {
@@ -117,11 +116,11 @@ def _register(page: Any) -> dict[str, Any]:
             extensions: credential.getClientExtensionResults()
           };
         }""",
-        {"challenge": b64url(REGISTER_CHALLENGE), "userId": b64url(USER_HANDLE)},
+        {"challenge": b64url(challenge), "userId": b64url(USER_HANDLE)},
     )
 
 
-def _authenticate(page: Any, credential_id: bytes) -> dict[str, Any]:
+def _authenticate(page: Any, credential_id: bytes, challenge: bytes) -> dict[str, Any]:
     return page.evaluate(
         r"""async ({challenge, credentialId}) => {
           const decode = value => {
@@ -153,11 +152,13 @@ def _authenticate(page: Any, credential_id: bytes) -> dict[str, Any]:
             extensions: Object.keys(ext)
           };
         }""",
-        {"challenge": b64url(ASSERT_CHALLENGE), "credentialId": b64url(credential_id)},
+        {"challenge": b64url(challenge), "credentialId": b64url(credential_id)},
     )
 
 
-def _verify_assertion(assertion: dict[str, Any], public_spki: bytes) -> dict[str, Any]:
+def _verify_assertion(
+    assertion: dict[str, Any], public_spki: bytes, challenge: bytes
+) -> dict[str, Any]:
     authenticator_data = _decode_b64url(assertion["authenticatorData"])
     client_data_json = _decode_b64url(assertion["clientDataJSON"])
     signature = _decode_b64url(assertion["signature"])
@@ -169,7 +170,7 @@ def _verify_assertion(assertion: dict[str, Any], public_spki: bytes) -> dict[str
     public_key = serialization.load_der_public_key(public_spki)
     public_key.verify(signature, signed, ec.ECDSA(hashes.SHA256()))
     return {
-        "challenge": _decode_b64url(client_data["challenge"]) == ASSERT_CHALLENGE,
+        "challenge": _decode_b64url(client_data["challenge"]) == challenge,
         "origin": str(client_data["origin"]).startswith("http://localhost:"),
         "type": client_data["type"] == "webauthn.get",
         "rp_id_hash": authenticator_data[:32] == expected_rp_hash,
@@ -222,7 +223,7 @@ def run_webauthn_migration(browser_path: Path, output_path: Path | None = None) 
                 }},
             )["authenticatorId"]
             page.goto(origin, wait_until="domcontentloaded")
-            registration = _register(page)
+            registration = _register(page, secrets.token_bytes(32))
             source_credentials = cdp.send(
                 "WebAuthn.getCredentials", {"authenticatorId": source_authenticator}
             )["credentials"]
@@ -286,8 +287,9 @@ def run_webauthn_migration(browser_path: Path, output_path: Path | None = None) 
                     },
                 },
             )
-            assertion = _authenticate(page, credential_id)
-            verification = _verify_assertion(assertion, public_spki)
+            assertion_challenge = secrets.token_bytes(32)
+            assertion = _authenticate(page, credential_id, assertion_challenge)
+            verification = _verify_assertion(assertion, public_spki, assertion_challenge)
             destination_credentials = cdp.send(
                 "WebAuthn.getCredentials", {"authenticatorId": destination_authenticator}
             )["credentials"]
