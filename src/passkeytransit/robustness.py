@@ -70,7 +70,9 @@ def _normative_class(
 def _git_state(project_root: Path) -> tuple[str | None, bool | None]:
     try:
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project_root, text=True).strip()
-        dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=project_root, text=True).strip())
+        unstaged = subprocess.run(["git", "diff", "--quiet", "HEAD", "--"], cwd=project_root).returncode
+        staged = subprocess.run(["git", "diff", "--cached", "--quiet", "HEAD", "--"], cwd=project_root).returncode
+        dirty = unstaged != 0 or staged != 0
         return commit, dirty
     except Exception:
         return None, None

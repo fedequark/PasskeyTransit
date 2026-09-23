@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import re
 from pathlib import Path
 
@@ -281,6 +283,13 @@ def main() -> None:
     blocks = parse_markdown(args.source)
     build_docx(blocks, args.docx)
     build_pdf(blocks, args.pdf)
+    manifest_path = args.source.parent / "analysis_manifest.json"
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        outputs = manifest.setdefault("output_hashes", {})
+        for output in (args.docx, args.pdf):
+            outputs[output.name] = hashlib.sha256(output.read_bytes()).hexdigest()
+        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":

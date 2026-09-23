@@ -75,7 +75,9 @@ def run_independent_interop(node_path: Path, node_verifier: Path, output_path: P
     project_root = node_verifier.resolve().parent.parent
     try:
         source_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project_root, text=True).strip()
-        source_dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=project_root, text=True).strip())
+        unstaged = subprocess.run(["git", "diff", "--quiet", "HEAD", "--"], cwd=project_root).returncode
+        staged = subprocess.run(["git", "diff", "--cached", "--quiet", "HEAD", "--"], cwd=project_root).returncode
+        source_dirty = unstaged != 0 or staged != 0
     except Exception:
         source_commit, source_dirty = None, None
     result = {

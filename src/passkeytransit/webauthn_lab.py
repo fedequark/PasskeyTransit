@@ -185,7 +185,9 @@ def _git_state(project_root: Path) -> dict[str, Any]:
         return subprocess.check_output(args, cwd=project_root, text=True).strip()
     try:
         commit = run("git", "rev-parse", "HEAD")
-        dirty = bool(run("git", "status", "--porcelain"))
+        unstaged = subprocess.run(["git", "diff", "--quiet", "HEAD", "--"], cwd=project_root).returncode
+        staged = subprocess.run(["git", "diff", "--cached", "--quiet", "HEAD", "--"], cwd=project_root).returncode
+        dirty = unstaged != 0 or staged != 0
     except Exception:
         return {"commit": None, "dirty": None}
     return {"commit": commit, "dirty": dirty}
