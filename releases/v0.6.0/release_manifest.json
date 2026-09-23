@@ -1,0 +1,27 @@
+{
+  "release": "v0.6.0",
+  "generated_at_utc": "2026-09-23T17:57:05.447768+00:00",
+  "source_commit": "c85f4cfdb9b0039675bb4b8831a9e304010137a4",
+  "source_dirty": false,
+  "archive": "passkeytransit-v0.6.0-replication.zip",
+  "archive_sha256": "58b4e36b905f8a653e4c57e571f86f61ac19e2fbacd99e2480c8b25cdfc2c1b0",
+  "archive_bytes": 6631253,
+  "entry_count": 123,
+  "privacy_audit": {
+    "json_records_inspected": 9213,
+    "sensitive_field_findings": [],
+    "passed": true,
+    "scope": "field-name audit; synthetic identifiers and evidence hashes are retained"
+  },
+  "browser_transcript_audit": {
+    "files": 2,
+    "imported_transcripts_verified": 5200,
+    "unique_challenges_verified": 5200,
+    "attempt_bindings_verified": 5200,
+    "source_bound_contexts_verified": 5200,
+    "artifact_hash_sets_reproduced": 5200,
+    "large_blob_oracles_recomputed": 5200,
+    "rejected_without_ceremony": 1040,
+    "passed": true
+  }
+}

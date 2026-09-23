@@ -1,23 +1,24 @@
 {
   "claim_boundary_enforced": true,
   "input_hashes": {
-    "c2_manifest": "9afa22f571e896e021a18715b514185fd6e98eb4adc8d4daf6a277da4732d199",
-    "c2_summary": "2cbc88128655d0aa7d1cab49403b529c5ba4b5129783891316aaeaf08e989026",
-    "c3_manifest": "4e8eebc39b374ae6173274d612bda9765af5699b5a9bf908b858799a9df51610",
-    "c3_summary": "fa14e9625da782129a80b4b7c0255e6df38da1fc49a2fcc9d5f58c37e439c0ce",
+    "c2_manifest": "e0083ee3bc0b989700bc64fcfe2e3be4ce1377f21a40a87a633ad17828a0628e",
+    "c2_summary": "cb367f44ba5261a1b87be7e88ae68b55123ccf79234cf821b979f02d1a42e5a8",
+    "c3_manifest": "05f935da0feb058fb0665e4bcaa3d937cc9a7117d44637b0594586dd28acda6f",
+    "c3_summary": "d36b2fd9eb77ed02537a233d288d2254fb9e8e811ce8a01c22a0bbfa8e896e66",
     "phase11_external_cxf": "da6b0f303a000d29cf8b0711664950c2b77d01c6e6014e206c3a56358c2dc126",
     "phase12_oracles": "da4d481c6382caf4663d9de454943c49bddd2aff1d57f8576802674d437b5515",
-    "phase7_manifest": "da2ed0f6e24a04b84de49558309830c357117ddf182ac8008f4fb61e7cacaf16",
-    "phase7_summary": "1abcf8e6dd0ff69a375901c892b6a7240ddd72a0a1e2480b1c31bf182db53ee7",
-    "phase8_interop": "a40d9e6887d5e95d2cea9c361989d8975a9d77487d0aa62145e1234ea9a1bd2b"
+    "phase7_manifest": "7c91437a69a3a92007f363c82e1967b5dd7d504f74f37b221ebcb683bdb17765",
+    "phase7_summary": "8f694045b2c1a8f8a417bce29b9201530bcf197b88b2f0b51cd2a75ddf52fa6c",
+    "phase8_interop": "57df1a62836dd6fd930be0753f8ba9aa9563125552f3258d41b09066cc26ca32"
   },
   "output_hashes": {
-    "MANUSCRIPT.md": "4eeb3ffec48c796f18e94ede1a6c3e1759d97ae0264b67839c9a59569d77f3a9",
-    "PasskeyTransit_v0.5.docx": "d456fc75b503a9668201d96007a938aff7ecbf7e64af5131cbea7f9c53f2e9ff",
-    "PasskeyTransit_v0.5.pdf": "0057431b9922bda259fd2e5cecd33dc256a84d6f97209375661f6f0c1ccc05c2",
-    "results_v0.5.json": "a0dc9cbe647b04f77091cadb8766cb44b79c78d0e01581fa5b665e8be9077742",
-    "table_c1_estimands.csv": "913ceb3d5af3715bac702a1e7cf3010d6d077bc2485a94ea185b858295539902",
+    "MANUSCRIPT.md": "67dafb3e5971bb0e0b8dea9513132698b85a560ccbbd8b27bfebeb65a6d4361b",
+    "PasskeyTransit_v0.6.docx": "3e96ddb09632c920886ee1067be3f1f8ce1f840722b7b265610e521eb1f10df2",
+    "PasskeyTransit_v0.6.pdf": "da33ef5c5bfa16f887789e1396b3b040db466fe4f12d99307d0cb23b0e3d6f97",
+    "results_v0.6.json": "6d7df288317a1b022b13d7ccb0f0a6aef482dcbe44f27ec9ba1ecab23375332a",
+    "table_c1_estimands.csv": "70cbec550b19e5b68caa60fec78a080fd07a691940c43abc5244f5aab2484909",
     "table_c1_oracles.csv": "8bcc6f47bdacc071deeb79b43a253aac94c31ab9e534960fc26e971f87a3add8",
+    "table_c1_route_strata.csv": "345a0a69fa535b460e577a70a134aea26003ba9ecb6dbc26c585ec7852127089",
     "table_c2_mutations.csv": "3e59d7b3f9e64a0d20df6207bcec2014c33a3ce1ea1ac92fb63abf0ff58993bf",
     "table_c3_faults.csv": "7e07c59ab2cebca97a1a1dfc3e25128a656888d8b400c69abc1871d164c18f7e"
   }
