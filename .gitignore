@@ -7,5 +7,6 @@ htmlcov/
 datasets/generated/
 dist/
 build/
+tmp/
 *.egg-info/
 interop/bitwarden-cxf-adapter/target/
