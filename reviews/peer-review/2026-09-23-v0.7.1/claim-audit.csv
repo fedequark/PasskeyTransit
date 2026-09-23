@@ -1,0 +1,14 @@
+claim,location,required_evidence,observed_evidence,verdict
+"A successful login can coexist with executed functional loss in the designed controls","MANUSCRIPT.md:20-25,133-149","Signed WebAuthn assertion plus executed extension oracle","512/5120 assertion-PASS attempts have largeBlob FAIL; signed extension witnesses verified","supported"
+"Migration outcome depends on route in the controls","MANUSCRIPT.md:150-153,178-181","Paired credential/repetition route outcomes","14 registered comparisons; discordance reproduced from raw rows","supported"
+"Identity, key correspondence, assertion and UV survive completed imports","MANUSCRIPT.md:133-136","Source-bound transcripts and signatures","5120 primary transcripts and source contexts verified","supported"
+"largeBlob is preserved or lost by route","MANUSCRIPT.md:146-150","Browser observation bound to source credential","704 PASS and 512 FAIL applicable cases; 5120 witnesses verified","supported"
+"Positive PRF and credBlob preservation is established","MANUSCRIPT.md:37-39,186-188","Executable import interface for source extension state","Interface cannot inject state and manuscript says NOT_EVALUABLE","not claimed"
+"C2 exercises registered robustness families","MANUSCRIPT.md:154-158","Raw cases and family summaries","80 cases across ten families and eight strata; 64 rejections","supported"
+"C3 demonstrates durable crash recovery","MANUSCRIPT.md:160-170,191-192","Durable store and process-crash experiments","Only in-memory state-machine injection; claim explicitly prohibited","not claimed"
+"C3 simulates atomicity and retry idempotence controls","MANUSCRIPT.md:160-170","Registered state transitions and retries","960 sequences; 832 PASS and 128 deliberate FAIL for each control","supported"
+"RFC 9180 base-suite implementations interoperate functionally","MANUSCRIPT.md:108-118","Bidirectional independent implementation results","Native-to-reference and reference-to-native checks pass","supported"
+"Bitwarden parser preserves the normalized CXF test document","MANUSCRIPT.md:120-128","Pinned external parser round trip","Pinned crate v0.4.0 at recorded revision; semantic equality true","supported"
+"The exploratory hybrid is a CXP-PQC profile","MANUSCRIPT.md:117-118,190","Registered CXP profile and normative identifiers","Only a round trip; manuscript says out of scope","not claimed"
+"The release is reproducible from raw evidence","MANUSCRIPT.md:197-209","Raw-to-summary-to-publication regeneration","Verifier reproduces four summaries and seven managed outputs","supported"
+

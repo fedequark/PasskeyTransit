@@ -1,0 +1,19 @@
+{
+  "reviewed_tag": "v0.7.1",
+  "reviewed_head": "25206e3",
+  "release_source_commit": "4b7b9bc74a16325504a6250938e6f7eddfa84c87",
+  "archive_sha256": "3d9cbf83400fbf5237fca831ab566c5186700e97691e204945bbd4d555200627",
+  "blind_verdict": "Borderline",
+  "artifact_verdict": "Accept",
+  "final_verdict": "Weak Accept",
+  "confidence": 4,
+  "p0": 0,
+  "p1": 0,
+  "p2": 0,
+  "p3": 3,
+  "tests_passed": 70,
+  "release_verified": true,
+  "adversarial_summary_mutation_rejected": true,
+  "adversarial_extension_mutation_rejected": true,
+  "operational_recommendation": "SUBMIT AFTER MINOR REVISION"
+}
