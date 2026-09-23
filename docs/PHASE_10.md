@@ -2,7 +2,7 @@
 
 ## Objective
 
-Publish PasskeyTransit v0.2 as a hash-verifiable replication package generated
+Publish PasskeyTransit v0.5 as a hash-verifiable replication package generated
 from a clean source commit.
 
 ## Release gate
@@ -26,6 +26,6 @@ comparisons.
 4. Regenerate Phases 6, 7, 8, 11, 12 and 9.
 5. Build and visually verify the manuscript artifacts.
 6. Run `./research.ps1 phase10` and `./research.ps1 verify-release`.
-7. Commit the immutable package and create the local annotated tag `v0.2.0`.
+7. Commit the immutable package and create the local annotated tag `v0.5.0`.
 
 No command in this procedure publishes to a remote or creates a provider claim.

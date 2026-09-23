@@ -9,6 +9,12 @@
       "claim_effect": "positive and negative browser-backed observations are admissible"
     },
     {
+      "oracle": "uv",
+      "status": "EXECUTED",
+      "path": "authenticator-data UV flag from the signed WebAuthn assertion",
+      "claim_effect": "positive and negative browser-backed observations are admissible"
+    },
+    {
       "oracle": "large_blob",
       "status": "EXECUTED",
       "path": "CDP credential injection followed by WebAuthn largeBlob read",
@@ -50,11 +56,14 @@
       "claim_effect": "no CXP-PQC interoperability estimand is authorized"
     }
   ],
-  "open_behavioral_oracles": [
+  "executed_behavioral_oracles": [
+    "webauthn_assertion",
+    "uv",
+    "large_blob"
+  ],
+  "blocked_behavioral_oracles": [
     "prf_uv",
     "prf_no_uv",
-    "cred_blob",
-    "payments_marker",
-    "cxp_pqc"
+    "cred_blob"
   ]
 }

@@ -4,7 +4,7 @@
 
 Estudiamos si una passkey que continúa autenticando después de un intercambio
 conserva además su identidad, extensiones y garantías operacionales. Presentamos
-PasskeyTransit v0.4, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
+PasskeyTransit v0.5, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
 mutaciones y fallos transaccionales. La campaña principal ejecutó
 6,144 intentos sobre 256 credenciales,
 12 rutas y dos repeticiones usando políticas de control y
@@ -15,12 +15,18 @@ celdas credencial×ruta, ejecutadas dos veces y resumidas en
 ruta×estrato. Ninguna de estas unidades fue muestreada de una población real.
 Se importaron 5,120 intentos
 y se rechazaron 1,024 antes de la ceremonia. Las 5,120
-aserciones WebAuthn ejecutadas fueron aceptadas; 2,048 intentos
-(40.00%; intervalo descriptivo de sensibilidad por bootstrap de credencial
-35.71%–44.51%) combinaron
-login correcto con el fallo de un oráculo conductual ejecutable. Al añadir el
-marcador de pagos, que es sólo una comprobación de formato sin ceremonia SPC,
-la sensibilidad fue 45.00%
+aserciones WebAuthn ejecutadas fueron aceptadas; 512 intentos
+(10.00%; intervalo descriptivo de sensibilidad por bootstrap de credencial
+7.81%–12.19%) combinaron
+login correcto con el fallo de un oráculo conductual realmente ejecutado en el
+navegador (`uv` o `largeBlob`). Las pérdidas de representación no ejecutables de
+PRF o `credBlob` aparecieron en 1,792 intentos
+(35.00%); esta categoría se solapa con la
+anterior. La unión de fallos no relacionados con pagos fue
+40.00%
+(2,048/5,120). Al
+añadir el marcador de pagos, que es sólo una comprobación de formato sin
+ceremonia SPC, la sensibilidad total fue 45.00%
 (2,304/5,120). La preservación
 semántica completa observable fue 37.50%
 (2,304/6,144; intervalo descriptivo de sensibilidad
@@ -43,8 +49,8 @@ afirmaciones de novedad ni sobre implementaciones comerciales no examinadas.
 
 ## 2. Método
 
-El protocolo `passkeytransit-semantic-preservation-v1.2` fue congelado antes de
-esta replicación correctiva posterior a la inspección de v1.1. No la presentamos
+El protocolo `passkeytransit-semantic-preservation-v1.3` fue congelado antes de
+esta replicación correctiva posterior a la inspección de v1.2. No la presentamos
 como confirmación preregistrada independiente. El corpus contiene 256 credenciales ES256,
 32 en cada uno de ocho estratos: básica, PRF con UV, PRF sin UV, `largeBlob`,
 `credBlob`, marcador de pagos, combinación de extensiones y miembro opcional
@@ -53,9 +59,10 @@ futuro. Doce rutas cubren migración directa, round trip y multihop.
 Cada salto serializa un documento CXF validado y lo transporta mediante HPKE
 base X25519/HKDF-SHA256/AES-128-GCM [3]. El navegador importa el resultado en un
 autenticador virtual y ejecuta `navigator.credentials.get()`. Un verificador
-Python independiente de la ceremonia comprueba desafío único, vínculo con el
-identificador del intento, origen, RP-ID hash,
-flags UP/UV, firma ES256 y contador cero [4].
+Python independiente de la ceremonia recompone un desafío derivado de un nonce
+aleatorio y de un contexto canónico que incluye intento, credencial, ruta,
+repetición y ejecución. También comprueba origen, RP-ID hash, flags UP/UV, firma
+ES256, contador cero y la observación retenida de `largeBlob` [4].
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
 Separadamente clasificamos estado de ejecución, preservación semántica y
@@ -172,8 +179,9 @@ Los artefactos raw son JSONL inmutables; los derivados y manifiestos incluyen
 hashes SHA-256 del protocolo, resultados, navegador y commit. La campaña C1 se
 ejecutó con Chromium 153.0.4234.48 y Playwright
 1.62.0 desde un árbol Git limpio. El
-auditor de release exige un challenge criptográficamente aleatorio y único por
-ceremonia y verifica su vínculo con el intento. El
+auditor de release recompone cada challenge a partir de un nonce aleatorio y del
+contexto de la fila, rechaza transcripciones reasignadas y reproduce el oráculo
+`largeBlob` desde los valores esperado y observado retenidos. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 

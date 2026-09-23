@@ -6,7 +6,7 @@ interop result, the oracle capability report, literature review and submission
 checklist.
 
 The manuscript is written for an artifact-evaluation or security-measurement
-venue. It reports exact denominators and confidence intervals, separates
+venue. It reports exact denominators and descriptive bootstrap sensitivity intervals, separates
 synthetic controls from independent interoperability, and keeps all unexecuted
 oracles local to the relevant claims.
 
