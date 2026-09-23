@@ -1,0 +1,47 @@
+{
+  "release": "v0.7.0",
+  "generated_at_utc": "2026-09-23T19:16:19.132925+00:00",
+  "source_commit": "f9166e790fdb8e711b1ce401487b80a91b5393ae",
+  "source_dirty": false,
+  "archive": "passkeytransit-v0.7.0-replication.zip",
+  "archive_sha256": "052f31906990432d4d97bdaad26e46e0bdf370767cb97661284df56cdd021caf",
+  "archive_bytes": 8771498,
+  "entry_count": 117,
+  "privacy_audit": {
+    "json_records_inspected": 9213,
+    "sensitive_field_findings": [],
+    "passed": true,
+    "scope": "field-name audit; synthetic identifiers and evidence hashes are retained"
+  },
+  "browser_transcript_audit": {
+    "files": 2,
+    "imported_transcripts_verified": 5200,
+    "unique_challenges_verified": 10400,
+    "attempt_bindings_verified": 5200,
+    "source_bound_contexts_verified": 5200,
+    "artifact_hash_sets_reproduced": 5200,
+    "signed_extension_witnesses_verified": 5200,
+    "large_blob_oracles_recomputed": 5200,
+    "rejected_without_ceremony": 1040,
+    "passed": true
+  },
+  "derivation_audit": {
+    "protocol_id": "passkeytransit-semantic-preservation-v1.5",
+    "raw_summaries_recomputed": [
+      "c1-calibration",
+      "c1-full",
+      "c2",
+      "c3"
+    ],
+    "published_outputs_reproduced": [
+      "results_v0.7.json",
+      "MANUSCRIPT.md",
+      "table_c1_estimands.csv",
+      "table_c1_route_strata.csv",
+      "table_c1_oracles.csv",
+      "table_c2_mutations.csv",
+      "table_c3_faults.csv"
+    ],
+    "passed": true
+  }
+}

@@ -1,21 +1,21 @@
 {
   "claim_boundary_enforced": true,
   "input_hashes": {
-    "c2_manifest": "e0083ee3bc0b989700bc64fcfe2e3be4ce1377f21a40a87a633ad17828a0628e",
-    "c2_summary": "cb367f44ba5261a1b87be7e88ae68b55123ccf79234cf821b979f02d1a42e5a8",
-    "c3_manifest": "05f935da0feb058fb0665e4bcaa3d937cc9a7117d44637b0594586dd28acda6f",
-    "c3_summary": "d36b2fd9eb77ed02537a233d288d2254fb9e8e811ce8a01c22a0bbfa8e896e66",
+    "c2_manifest": "55af6e65b5dfe259b21a7eda37f2a147895e19fe271ee17898fe97ad43a811f9",
+    "c2_summary": "c7f8120c9760da9028a77b7eb855f9098f2997061e91b4e7f8c34db06d3d79f4",
+    "c3_manifest": "669c8945fa63777b91204f9b2e614e12a3280e2f9aca3e863024512d7db9847e",
+    "c3_summary": "ed8a4cad0e6fb6e6b7bce756cce4a4b59fe859fd2d10a96003fbaf5e7f78359f",
     "phase11_external_cxf": "da6b0f303a000d29cf8b0711664950c2b77d01c6e6014e206c3a56358c2dc126",
     "phase12_oracles": "da4d481c6382caf4663d9de454943c49bddd2aff1d57f8576802674d437b5515",
-    "phase7_manifest": "7c91437a69a3a92007f363c82e1967b5dd7d504f74f37b221ebcb683bdb17765",
-    "phase7_summary": "8f694045b2c1a8f8a417bce29b9201530bcf197b88b2f0b51cd2a75ddf52fa6c",
-    "phase8_interop": "57df1a62836dd6fd930be0753f8ba9aa9563125552f3258d41b09066cc26ca32"
+    "phase7_manifest": "1ebfea7b4f61ab691d651e0bfd7a6b8093cf48570a12009aa89243bedd7a6432",
+    "phase7_summary": "63f08b65916eed5f739e9a9400ce59908103c144dabf4a968240353e2d7e30e3",
+    "phase8_interop": "f983149d5aed95076aad257886b4cfad7c804a1a792e17ca065bd6a85aac988b"
   },
   "output_hashes": {
-    "MANUSCRIPT.md": "67dafb3e5971bb0e0b8dea9513132698b85a560ccbbd8b27bfebeb65a6d4361b",
-    "PasskeyTransit_v0.6.docx": "3e96ddb09632c920886ee1067be3f1f8ce1f840722b7b265610e521eb1f10df2",
-    "PasskeyTransit_v0.6.pdf": "da33ef5c5bfa16f887789e1396b3b040db466fe4f12d99307d0cb23b0e3d6f97",
-    "results_v0.6.json": "6d7df288317a1b022b13d7ccb0f0a6aef482dcbe44f27ec9ba1ecab23375332a",
+    "MANUSCRIPT.md": "491ead0f2ee17c8b0f656c3f54815bd361f571df3d1ca2005ad47c1548feaac3",
+    "PasskeyTransit_v0.7.docx": "8a3b84cb80aba32fedabac9c18668f00ee5376fbc4e08b133385d73933e7747b",
+    "PasskeyTransit_v0.7.pdf": "dac73d6c6dbb043cbca6db3bcde586236db229a34c17732c8d2ef5b3c22664a5",
+    "results_v0.7.json": "a5f8794494c12dd27c7e1fde86e37c17ee91a897a423ef0e801323e6f197f7ec",
     "table_c1_estimands.csv": "70cbec550b19e5b68caa60fec78a080fd07a691940c43abc5244f5aab2484909",
     "table_c1_oracles.csv": "8bcc6f47bdacc071deeb79b43a253aac94c31ab9e534960fc26e971f87a3add8",
     "table_c1_route_strata.csv": "345a0a69fa535b460e577a70a134aea26003ba9ecb6dbc26c585ec7852127089",

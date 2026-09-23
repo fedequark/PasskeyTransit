@@ -4,15 +4,19 @@
 
 Estudiamos si una passkey que continúa autenticando después de un intercambio
 conserva además su identidad, extensiones y garantías operacionales. Presentamos
-PasskeyTransit v0.6, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
-mutaciones y fallos transaccionales. La campaña principal ejecutó
+PasskeyTransit v0.7, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
+mutaciones y una simulación transaccional en memoria. La unidad descriptiva
+principal es la matriz completa de
+96 celdas
+ruta×estrato. Para comprobar estabilidad y evidencia técnica, la campaña ejecutó
 6,144 intentos sobre 256 credenciales,
-12 rutas y dos repeticiones usando políticas de control y
-autenticadores virtuales Chromium. El diseño contiene
+12 rutas y dos repeticiones con controles y autenticadores
+virtuales Chromium. El diseño contiene
 3,072
 celdas credencial×ruta, ejecutadas dos veces y resumidas en
-96 grupos
-ruta×estrato. Ninguna de estas unidades fue muestreada de una población real.
+96 grupos.
+Ninguna unidad fue muestreada de una población real y los porcentajes agregados
+son proporciones ponderadas por este diseño balanceado.
 Se importaron 5,120 intentos
 y se rechazaron 1,024 antes de la ceremonia. Las 5,120
 aserciones WebAuthn ejecutadas fueron aceptadas; 512 intentos
@@ -26,10 +30,10 @@ anterior. La unión de fallos no relacionados con pagos fue
 (2,048/5,120). Al
 añadir el marcador de pagos, que es sólo una comprobación de formato sin
 ceremonia SPC, la sensibilidad total fue 45.00%
-(2,304/5,120). La preservación
-semántica completa observable fue 37.50%
+(2,304/5,120). El rendimiento
+de intentos con `PASS` completo observable fue 37.50%
 (2,304/6,144). Estos
-porcentajes caracterizan estímulos sintéticos diseñados, no productos ni
+porcentajes son ponderaciones del diseño sintético, no tasas de productos ni
 prevalencia real. PRF y preservación positiva de `credBlob` permanecen no
 evaluables por límites de la interfaz CDP.
 
@@ -59,7 +63,7 @@ sintéticos; no estima comportamiento ni prevalencia de proveedores reales.
 
 ## 3. Método
 
-El protocolo `passkeytransit-semantic-preservation-v1.4` fue congelado antes de
+El protocolo `passkeytransit-semantic-preservation-v1.5` fue congelado antes de
 esta replicación correctiva posterior a la inspección de v1.2. No la presentamos
 como confirmación preregistrada independiente. El corpus contiene 256 credenciales ES256,
 32 en cada uno de ocho estratos: básica, PRF con UV, PRF sin UV, `largeBlob`,
@@ -71,15 +75,18 @@ base X25519/HKDF-SHA256/AES-128-GCM [3]. El navegador importa el resultado en un
 autenticador virtual y ejecuta `navigator.credentials.get()`. Un verificador
 Python independiente de la ceremonia recompone un desafío derivado de un nonce
 aleatorio y de un contexto canónico que incluye intento, credencial, ruta,
-repetición, ejecución, hash de SPKI, hash de user handle, RP ID y origen. También
-cruza esos valores con la fila, reproduce hashes de artefactos y comprueba flags
-UP/UV, firma ES256, contador cero y la observación retenida de `largeBlob` [4].
+repetición, ejecución, hash de SPKI, hash de user handle, RP ID y origen. Una
+segunda ceremonia firma otro desafío que compromete el primer challenge y el
+hash canónico de las observaciones de extensión, incluida `largeBlob`. El
+verificador cruza esos valores con la fila, reproduce hashes de artefactos y
+comprueba flags UP/UV, ambas firmas ES256 y contador cero [4].
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
 Separadamente clasificamos estado de ejecución, preservación semántica y
 evaluación normativa. Las 96 celdas ruta×estrato son un censo exacto del diseño
-registrado: informamos numeradores, denominadores y proporciones sin intervalos
-de muestreo. Las comparaciones de rutas son pareadas por credencial y repetición.
+registrado: la matriz es el resultado principal. Los porcentajes son agregados
+ponderados por el diseño y se informan sin intervalos de muestreo. Las
+comparaciones de rutas son pareadas por credencial y repetición.
 
 ## 4. Modelo de amenazas
 
@@ -136,7 +143,7 @@ produjeron resultados semánticos equivalentes.
 | No evaluable | 512 | 8.33% |
 | Rechazo previo a ceremonia | 1,024 | 16.67% |
 
-La tasa exacta de degradación silenciosa dentro del diseño fue 26.25%
+La proporción ponderada de degradación silenciosa dentro del diseño fue 26.25%
 (1,344/5,120). `largeBlob` fue
 observable en 1,216 casos aplicables: 704 pasaron y 512 fallaron según la ruta
 de control. La pérdida en un intermediario persistió al volver a un destino
@@ -150,9 +157,11 @@ o preservación estricta. Las familias se informan por separado; la clase normat
 se deriva del requisito aplicable y del resultado observado. No se calcula un
 porcentaje agrupado.
 
-### 6.3. Fallos y recuperación C3
+### 6.3. Simulación de fallos C3
 
-C3 ejecutó 960 secuencias y 1920 eventos. En
+C3 ejecutó 960 secuencias y 1920 eventos sobre una máquina
+de estados Python en memoria; no prueba almacenamiento durable ni recuperación
+ante caída de proceso. En
 832 secuencias (86.67%) hubo rollback completo
 y el retry convergió a una copia. Las 128 fallas restantes fueron el control
 positivo deliberado: `legacy` conservó un provisional en los dos puntos tardíos
@@ -180,6 +189,8 @@ visible, aun cuando el estado final de la credencial sea idéntico.
 - El binding adicional de CXP es experimental y no resuelve autenticación de
   identidad del exportador en modo HPKE base.
 - El ensayo PQC prueba disponibilidad criptográfica, no un perfil CXP-PQC.
+- C3 es una simulación determinista en memoria, no una prueba de durabilidad.
+- Los porcentajes agregados dependen de los pesos elegidos para rutas y estratos.
 - No se permite inferir vulnerabilidades, prevalencia de fallos ni superioridad
   de productos a partir de estos controles.
 
@@ -191,15 +202,16 @@ ejecutó con Chromium 153.0.4234.48 y Playwright
 1.62.0 desde un árbol Git limpio. El
 auditor de release recompone cada challenge a partir de un nonce aleatorio y del
 contexto de la fila, liga la firma a la clave pública fuente, verifica RP ID,
-user handle, origen y hashes de artefactos, rechaza transcripciones reasignadas y
-reproduce el oráculo `largeBlob` desde los valores retenidos. El
+user handle y origen, y verifica una segunda firma que compromete las
+observaciones de extensión. Además recalcula resúmenes C1/C2/C3 desde los JSONL
+y regenera resultados, tablas y manuscrito para compararlos con la release. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
 ## 10. Conclusión
 
-PasskeyTransit distingue compatibilidad sintáctica, autenticación básica,
-preservación funcional y recuperación operacional. En los controles diseñados,
+PasskeyTransit distingue compatibilidad sintáctica, autenticación básica y
+preservación funcional, y simula garantías transaccionales. En los controles diseñados,
 una aserción válida no basta para afirmar
 que una passkey migrada conserva todas sus garantías. El paso necesario para
 generalizar es ejecutar adaptadores identificados e independientes, manteniendo
