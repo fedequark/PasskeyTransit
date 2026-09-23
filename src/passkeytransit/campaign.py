@@ -316,7 +316,9 @@ def _bootstrap(rows: list[dict[str, Any]], numerator: Any, denominator: Any, see
 def _git_state(project_root: Path) -> tuple[str | None, bool | None]:
     try:
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=project_root, text=True).strip()
-        dirty = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=project_root, text=True).strip())
+        unstaged = subprocess.run(["git", "diff", "--quiet", "HEAD", "--"], cwd=project_root)
+        staged = subprocess.run(["git", "diff", "--cached", "--quiet", "HEAD", "--"], cwd=project_root)
+        dirty = unstaged.returncode != 0 or staged.returncode != 0
         return commit, dirty
     except Exception:
         return None, None
@@ -357,14 +359,30 @@ def _paired_route_comparisons(rows: list[dict[str, Any]], protocol: dict[str, An
 
 
 def _design_cell_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    cells: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    route_stratum_cells: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    credential_route_cells: dict[tuple[str, str], list[dict[str, Any]]] = {}
     for row in rows:
-        cells.setdefault((str(row["route_id"]), str(row["feature_stratum"])), []).append(row)
+        route_stratum_cells.setdefault(
+            (str(row["route_id"]), str(row["feature_stratum"])), []
+        ).append(row)
+        credential_route_cells.setdefault(
+            (str(row["credential_id_hash"]), str(row["route_id"])), []
+        ).append(row)
     return {
-        "unit": "route-by-feature-stratum",
-        "cell_count": len(cells),
-        "attempts_per_cell": sorted({len(items) for items in cells.values()}),
-        "interpretation": "designed synthetic result cells; attempts are repetitions within cells, not a population sample",
+        "execution_unit": "synthetic-credential-by-route",
+        "credential_route_cell_count": len(credential_route_cells),
+        "executions_per_credential_route_cell": sorted(
+            {len(items) for items in credential_route_cells.values()}
+        ),
+        "reporting_group": "route-by-feature-stratum",
+        "route_stratum_group_count": len(route_stratum_cells),
+        "executions_per_route_stratum_group": sorted(
+            {len(items) for items in route_stratum_cells.values()}
+        ),
+        "interpretation": (
+            "designed synthetic cells with exact repetitions; neither credentials nor "
+            "route-stratum groups are sampled from a real-world population"
+        ),
     }
 
 

@@ -8,9 +8,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
+from . import __version__
+from .evidence import audit_browser_evidence
+
 
 SENSITIVE_NAMES = {"private_key", "privatekey", "secret", "token", "password", "key"}
 STALE_GENERATED_PREFIXES = ("paper/current/", "releases/")
+RELEASE_ID = f"v{__version__}"
+ARCHIVE_NAME = f"passkeytransit-{RELEASE_ID}-replication.zip"
 
 
 def _sha(data: bytes) -> str:
@@ -25,6 +30,12 @@ def _tracked_files(project_root: Path) -> list[Path]:
         project_root / item.decode("utf-8") for item in output.split(b"\0")
         if item and not item.decode("utf-8").replace("\\", "/").startswith(STALE_GENERATED_PREFIXES)
     ]
+
+
+def _tracked_tree_dirty(project_root: Path) -> bool:
+    unstaged = subprocess.run(["git", "diff", "--quiet", "HEAD", "--"], cwd=project_root)
+    staged = subprocess.run(["git", "diff", "--cached", "--quiet", "HEAD", "--"], cwd=project_root)
+    return unstaged.returncode != 0 or staged.returncode != 0
 
 
 def _analysis_lineage_missing(analysis_manifest: dict[str, Any], hashes: set[str]) -> list[str]:
@@ -96,7 +107,7 @@ def build_release(
     output_dir: Path,
 ) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    archive_path = output_dir / "passkeytransit-v0.2.0-replication.zip"
+    archive_path = output_dir / ARCHIVE_NAME
     manifest_path = output_dir / "release_manifest.json"
     if archive_path.exists() or manifest_path.exists():
         raise FileExistsError("release output is immutable; remove or choose a new output directory")
@@ -116,13 +127,12 @@ def build_release(
     missing = _analysis_lineage_missing(json.loads(analysis_manifests[0].read_text(encoding="utf-8")), evidence_hashes)
     if missing:
         raise ValueError(f"analysis lineage has unresolved hashes: {missing}")
+    browser_audit = audit_browser_evidence(evidence_files)
 
     commit = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=project_root, text=True
     ).strip()
-    dirty = bool(
-        subprocess.check_output(["git", "status", "--porcelain"], cwd=project_root, text=True).strip()
-    )
+    dirty = _tracked_tree_dirty(project_root)
     if dirty:
         raise ValueError("release must be built from a clean source tree")
 
@@ -142,7 +152,7 @@ def build_release(
             arcname = f"evidence/phase11-12/{path.name}"
             entry_hashes[arcname] = _zip_write(archive, arcname, path.read_bytes())
         internal = {
-            "release": "v0.2.0",
+            "release": RELEASE_ID,
             "source_commit": commit,
             "entries": entry_hashes,
             "reproduce": "Extract source/, run ./research.ps1 setup, test, phase6, phase7, phase8, phase9, phase11 and oracle-audit.",
@@ -150,7 +160,7 @@ def build_release(
         _zip_write(archive, "MANIFEST.json", (json.dumps(internal, indent=2) + "\n").encode())
 
     manifest = {
-        "release": "v0.2.0",
+        "release": RELEASE_ID,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_commit": commit,
         "source_dirty": False,
@@ -159,6 +169,7 @@ def build_release(
         "archive_bytes": archive_path.stat().st_size,
         "entry_count": len(entry_hashes) + 1,
         "privacy_audit": audit,
+        "browser_transcript_audit": browser_audit,
     }
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return manifest
@@ -173,7 +184,10 @@ def verify_release(archive_path: Path, manifest_path: Path) -> dict[str, Any]:
         for name, expected in internal["entries"].items():
             if _sha(archive.read(name)) != expected:
                 mismatches.append(name)
-        analysis_names = [name for name in internal["entries"] if name.endswith("/analysis_manifest.json")]
+        analysis_names = [
+            name for name in internal["entries"]
+            if name.startswith("evidence/") and name.endswith("/analysis_manifest.json")
+        ]
         if len(analysis_names) != 1:
             mismatches.append("analysis-manifest-count")
         else:

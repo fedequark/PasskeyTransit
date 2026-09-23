@@ -31,7 +31,7 @@ routes.
    imports, malformed data, and injected failures?
 
 The authoritative design is `docs/EXPERIMENT_PROTOCOL.md`, with the registered
-machine-readable configuration in `experiments/protocol_v1.0.json`.
+corrected machine-readable configuration in `experiments/protocol_v1.1.json`.
 
 ## Evidence boundaries
 
@@ -44,7 +44,8 @@ machine-readable configuration in `experiments/protocol_v1.0.json`.
 
 ## Current evidence frontier
 
-PasskeyTransit v0.2 now includes the CXF profile, experimental CXP/HPKE
+PasskeyTransit v0.3 includes the corrected strict profile, auditable WebAuthn
+transcripts, the CXF profile, experimental CXP/HPKE
 transport, browser-backed C1 controls, C2 robustness cases, C3 transactional
 faults, an independent HPKE/Node.js boundary, and a hash-verified manuscript.
 The next evidence frontier is an identified external provider or independent

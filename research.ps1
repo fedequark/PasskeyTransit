@@ -7,6 +7,8 @@ param(
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $VenvPython = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
+$ProtocolPath = Join-Path $ProjectRoot "experiments\protocol_v1.1.json"
+$PublicationStem = "PasskeyTransit_v0.3"
 
 function Require-Venv {
     if (-not (Test-Path -LiteralPath $VenvPython)) {
@@ -36,7 +38,7 @@ switch ($Action) {
     "protocol" {
         Require-Venv
         & $VenvPython -m passkeytransit protocol `
-            --config (Join-Path $ProjectRoot "experiments\protocol_v1.0.json")
+            --config $ProtocolPath
     }
     "requirements" {
         Require-Venv
@@ -70,21 +72,21 @@ switch ($Action) {
         Require-Venv
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         & $VenvPython -m passkeytransit campaign-c1 `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --output (Join-Path $ProjectRoot "datasets\generated\phase5_c1\$RunStamp")
     }
     "campaign-c2" {
         Require-Venv
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         & $VenvPython -m passkeytransit campaign-c2 `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --output (Join-Path $ProjectRoot "datasets\generated\phase6\$RunStamp\c2")
     }
     "campaign-c3" {
         Require-Venv
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         & $VenvPython -m passkeytransit campaign-c3 `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --output (Join-Path $ProjectRoot "datasets\generated\phase6\$RunStamp\c3")
     }
     "phase6" {
@@ -92,17 +94,17 @@ switch ($Action) {
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         $RunRoot = Join-Path $ProjectRoot "datasets\generated\phase6\$RunStamp"
         & $VenvPython -m passkeytransit campaign-c2 `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --output (Join-Path $RunRoot "c2")
         & $VenvPython -m passkeytransit campaign-c3 `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --output (Join-Path $RunRoot "c3")
     }
     "phase7-calibration" {
         Require-Venv
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         & $VenvPython -m passkeytransit browser-c1 `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --mode calibration `
             --output (Join-Path $ProjectRoot "datasets\generated\phase7\$RunStamp\calibration")
     }
@@ -111,12 +113,12 @@ switch ($Action) {
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         $RunRoot = Join-Path $ProjectRoot "datasets\generated\phase7\$RunStamp"
         & $VenvPython -m passkeytransit browser-c1 `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --mode calibration `
             --output (Join-Path $RunRoot "calibration")
         if ($LASTEXITCODE -ne 0) { throw "Phase 7 calibration failed; full campaign was not started." }
         & $VenvPython -m passkeytransit browser-c1 `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --mode full `
             --output (Join-Path $RunRoot "full")
     }
@@ -158,7 +160,7 @@ switch ($Action) {
         $CargoPath = (Get-Command cargo -ErrorAction Stop).Source
         $NodePath = (Get-Command node -ErrorAction Stop).Source
         & $VenvPython -m passkeytransit bitwarden-interop `
-            --protocol (Join-Path $ProjectRoot "experiments\protocol_v1.0.json") `
+            --protocol $ProtocolPath `
             --cargo $CargoPath `
             --manifest (Join-Path $ProjectRoot "interop\bitwarden-cxf-adapter\Cargo.toml") `
             --node $NodePath `
@@ -177,8 +179,8 @@ switch ($Action) {
         $AnalysisRun = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\analysis") -Directory | Sort-Object Name | Select-Object -Last 1
         & $VenvPython (Join-Path $ProjectRoot "tools\build_publication.py") `
             --source (Join-Path $AnalysisRun.FullName "MANUSCRIPT.md") `
-            --docx (Join-Path $AnalysisRun.FullName "PasskeyTransit_v0.2.docx") `
-            --pdf (Join-Path $AnalysisRun.FullName "PasskeyTransit_v0.2.pdf")
+            --docx (Join-Path $AnalysisRun.FullName "$PublicationStem.docx") `
+            --pdf (Join-Path $AnalysisRun.FullName "$PublicationStem.pdf")
     }
     "phase10" {
         Require-Venv
@@ -202,9 +204,11 @@ switch ($Action) {
     "verify-release" {
         Require-Venv
         $ReleaseRun = Get-ChildItem (Join-Path $ProjectRoot "datasets\generated\releases") -Directory | Sort-Object Name | Select-Object -Last 1
+        $ManifestPath = Join-Path $ReleaseRun.FullName "release_manifest.json"
+        $Manifest = Get-Content -Raw $ManifestPath | ConvertFrom-Json
         & $VenvPython -m passkeytransit verify-release `
-            --archive (Join-Path $ReleaseRun.FullName "passkeytransit-v0.2.0-replication.zip") `
-            --manifest (Join-Path $ReleaseRun.FullName "release_manifest.json")
+            --archive (Join-Path $ReleaseRun.FullName $Manifest.archive) `
+            --manifest $ManifestPath
     }
     "status" {
         if (Test-Path -LiteralPath $VenvPython) {

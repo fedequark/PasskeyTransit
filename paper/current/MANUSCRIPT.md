@@ -8,13 +8,15 @@ PasskeyTransit v0.2, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
 mutaciones y fallos transaccionales. La campaña principal ejecutó
 6,144 intentos sobre 256 credenciales,
 12 rutas y dos repeticiones usando políticas de control y
-autenticadores virtuales Chromium. Las 6,144
+autenticadores virtuales Chromium. La unidad analítica primaria son 96 celdas
+diseñadas ruta×estrato; los intentos son ejecuciones repetidas dentro de esas
+celdas, no observaciones muestreadas de una población. Las 6,144
 aserciones WebAuthn fueron aceptadas, pero 2,944 intentos
-(47.92%; IC95% por bootstrap de credencial
+(47.92%; intervalo descriptivo de sensibilidad por bootstrap de credencial
 43.42%–52.47%) combinaron
 login correcto con el fallo de otra propiedad aplicable. La preservación
 semántica completa observable fue 37.50%
-(2,304/6,144; IC95%
+(2,304/6,144; intervalo descriptivo de sensibilidad
 32.42%–42.58%). Estos
 porcentajes caracterizan estímulos sintéticos diseñados, no productos ni
 prevalencia real. PRF y preservación positiva de `credBlob` permanecen no
@@ -48,8 +50,9 @@ flags UP/UV, firma ES256 y contador cero.
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
 Separadamente clasificamos estado de ejecución, preservación semántica y
-evaluación normativa. Los intervalos se obtienen con bootstrap agrupado por
-credencial; las comparaciones de rutas son pareadas por credencial y repetición.
+evaluación normativa. Los intervalos de bootstrap agrupado por credencial son
+análisis descriptivos de sensibilidad del diseño y no intervalos de confianza
+poblacionales; las comparaciones de rutas son pareadas por credencial y repetición.
 
 ## 3. Implementación del transporte
 

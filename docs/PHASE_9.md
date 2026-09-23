@@ -10,7 +10,7 @@ must contain 960 sequences; all applicable Phase 8 checks must pass.
 
 The analysis emits:
 
-- `results_v0.2.json`, preserving the complete evidence and claim boundary;
+- `results_v0.3.json`, preserving the complete evidence and claim boundary;
 - four CSV tables for C1 estimands/oracles, C2 mutations and C3 faults;
 - `MANUSCRIPT.md`, a non-simulated Spanish research manuscript;
 - `analysis_manifest.json`, hashing every input and output.
@@ -44,6 +44,6 @@ robustness attempts, 960 C3 sequences/1,920 events, and the Phase 8 independent
 boundary. `analysis_manifest.json` records every selected input hash and every
 derived output hash, with `claim_boundary_enforced: true`.
 
-The historical `paper/current/` files predate the strict-profile change. A
+The historical v0.2 files predate the strict-profile change. A
 revision must be generated from new Phase 6–8 inputs into a new output
 directory, and its release must resolve every analysis input/output hash.

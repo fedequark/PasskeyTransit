@@ -227,6 +227,9 @@ def _assertion_evidence(
         "signature": assertion["signature"],
         "userHandle": assertion["userHandle"],
         "source_public_key_spki": b64url(public_spki),
+        "expected_credential_id": source_key["credentialId"],
+        "expected_user_handle": source_key["userHandle"],
+        "expected_challenge": b64url(ASSERT_CHALLENGE),
         "source_rp_id": source_key["rpId"],
         "expected_origin": origin,
     }

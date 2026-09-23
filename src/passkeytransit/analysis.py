@@ -6,6 +6,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+from . import __version__
+
+
+RESULTS_FILENAME = "results_v0.3.json"
+
 
 def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -54,7 +59,7 @@ def _manuscript(results: dict[str, Any]) -> str:
     if external:
         external_text = f"""
 
-### 3.1. Implementación CXF externa
+### 4.1. Implementación CXF externa
 
 La librería Rust `credential-exchange-format` {external['adapter']['version']} de
 Bitwarden, fijada al commit `{external['adapter']['source_revision']}`, parseó y
@@ -63,20 +68,22 @@ conservó exactamente su hash SHA-256. Esta prueba establece interoperabilidad d
 formato con una implementación abierta independiente; no ejecuta el flujo de un
 producto ni autoriza afirmaciones sobre Bitwarden como proveedor.
 """
-    return f"""# Migrar una passkey no basta: preservación semántica en controles CXF/CXP
+    return f"""# Preservación semántica en migraciones de passkeys con CXF y CXP
 
 ## Resumen
 
 Estudiamos si una passkey que continúa autenticando después de un intercambio
 conserva además su identidad, extensiones y garantías operacionales. Presentamos
-PasskeyTransit v0.2, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
+PasskeyTransit v{__version__.rsplit('.', 1)[0]}, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
 mutaciones y fallos transaccionales. La campaña principal ejecutó
 {c1['attempt_count']:,} intentos sobre {c1['credential_count']} credenciales,
 {c1['route_count']} rutas y dos repeticiones usando políticas de control y
-autenticadores virtuales Chromium. La unidad analítica primaria son
-{c1.get('design_result_cells', {}).get('cell_count', 96)} celdas diseñadas
-ruta×estrato; los intentos son ejecuciones repetidas dentro de esas celdas, no
-observaciones muestreadas de una población. Se importaron {imported:,} intentos
+autenticadores virtuales Chromium. El diseño contiene
+{c1.get('design_result_cells', {}).get('credential_route_cell_count', 3072):,}
+celdas credencial×ruta, ejecutadas dos veces y resumidas en
+{c1.get('design_result_cells', {}).get('route_stratum_group_count', 96)} grupos
+ruta×estrato. Ninguna de estas unidades fue muestreada de una población real.
+Se importaron {imported:,} intentos
 y se rechazaron {rejected:,} antes de la ceremonia. Las {assertion_pass:,}
 aserciones WebAuthn ejecutadas fueron aceptadas; {reassurance['numerator']:,} intentos
 ({_percent(reassurance['estimate'])}; intervalo descriptivo de sensibilidad por bootstrap de credencial
@@ -103,8 +110,8 @@ afirmaciones de novedad ni sobre implementaciones comerciales no examinadas.
 
 ## 2. Método
 
-El protocolo `passkeytransit-semantic-preservation-v1.0` fue congelado antes de
-la implementación confirmatoria. El corpus contiene 256 credenciales ES256,
+El protocolo `{c1['protocol_id']}` fue congelado antes de
+esta campaña confirmatoria corregida. El corpus contiene 256 credenciales ES256,
 32 en cada uno de ocho estratos: básica, PRF con UV, PRF sin UV, `largeBlob`,
 `credBlob`, marcador de pagos, combinación de extensiones y miembro opcional
 futuro. Doce rutas cubren migración directa, round trip y multihop.
@@ -121,7 +128,19 @@ evaluación normativa. Los intervalos de bootstrap agrupado por credencial son
 análisis descriptivos de sensibilidad del diseño y no intervalos de confianza
 poblacionales; las comparaciones de rutas son pareadas por credencial y repetición.
 
-## 3. Implementación del transporte
+## 3. Modelo de amenazas
+
+El experimento protege la confidencialidad e integridad del payload frente a un
+observador o modificador del canal que no posee la clave privada del importador.
+El importador y los perfiles de control son componentes confiables e
+instrumentados; no modelamos compromiso del endpoint, extracción de claves,
+canales laterales ni engaño del usuario. El binding experimental rechaza mezcla
+de solicitudes, modificación del contexto, downgrade y replay dentro del estado
+local de la ejecución. HPKE base no autentica la identidad del exportador y el
+ensayo no demuestra autorización del usuario, attestation del proveedor ni
+persistencia global del estado antireplay.
+
+## 4. Implementación del transporte
 
 La implementación HPKE reproduce el vector oficial de RFC 9180 [3]. El Working
 Draft CXP [2] no define campos para la encapsulación HPKE ni para el challenge
@@ -136,9 +155,9 @@ ensayo híbrido ML-KEM-768+X25519 fue exitoso, pero permanece fuera del perfil
 CXP y de los estimandos.
 {external_text}
 
-## 4. Resultados
+## 5. Resultados
 
-### 4.1. Campaña C1 con navegador
+### 5.1. Campaña C1 con navegador
 
 De {c1['attempt_count']:,} intentos, {imported:,} fueron importados y {rejected:,}
 rechazados por el control `strict`. Identidad, correspondencia de clave pública,
@@ -160,7 +179,7 @@ observable en {large_blob_statuses.get('PASS', 0) + large_blob_statuses.get('FAI
 de control. La pérdida en un intermediario persistió al volver a un destino
 capaz, produciendo discordancias en comparaciones pareadas con el mismo destino.
 
-### 4.2. Robustez C2
+### 5.2. Robustez C2
 
 C2 ejecutó {c2['attempt_count']} casos: diez familias sobre ocho estratos. Se
 rechazaron {c2_rejected} casos por validación estructural, política de duplicados
@@ -168,7 +187,7 @@ o preservación estricta. Las familias se informan por separado; la clase normat
 se deriva del requisito aplicable y del resultado observado. No se calcula un
 porcentaje agrupado.
 
-### 4.3. Fallos y recuperación C3
+### 5.3. Fallos y recuperación C3
 
 C3 ejecutó {total_c3} secuencias y {c3['event_count']} eventos. En
 {atomic_pass} secuencias ({_percent(atomic_pass/total_c3)}) hubo rollback completo
@@ -176,7 +195,7 @@ y el retry convergió a una copia. Las 128 fallas restantes fueron el control
 positivo deliberado: `legacy` conservó un provisional en los dos puntos tardíos
 y el retry creó un duplicado, haciendo fallar atomicidad e idempotencia.
 
-## 5. Discusión
+## 6. Discusión
 
 El experimento demuestra una capacidad del método: la autenticación funcionó
 en los {imported:,} intentos importados, incluidos aquellos en los que los
@@ -189,7 +208,7 @@ no puede reconstruir material descartado por un intermediario. La declaración
 pre-commit cambia además la clasificación de una misma pérdida de silenciosa a
 visible, aun cuando el estado final de la credencial sea idéntico.
 
-## 6. Limitaciones
+## 7. Limitaciones
 
 - Los cuatro perfiles son controles sintéticos, no proveedores comerciales.
 - CDP no permite inyectar HMAC/PRF ni `credBlob`; los casos positivos son
@@ -201,7 +220,7 @@ visible, aun cuando el estado final de la credencial sea idéntico.
 - No se permite inferir vulnerabilidades, prevalencia de fallos ni superioridad
   de productos a partir de estos controles.
 
-## 7. Reproducibilidad
+## 8. Reproducibilidad
 
 Los artefactos raw son JSONL inmutables; los derivados y manifiestos incluyen
 hashes SHA-256 del protocolo, resultados, navegador y commit. La campaña C1 se
@@ -210,11 +229,11 @@ ejecutó con Chromium {results['environment']['browser_version']} y Playwright
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
-## 8. Conclusión
+## 9. Conclusión
 
-PasskeyTransit distingue correctamente compatibilidad sintáctica, autenticación
-básica, preservación funcional y recuperación operacional. Los controles
-confirman la proposición metodológica: una aserción válida no basta para afirmar
+PasskeyTransit distingue compatibilidad sintáctica, autenticación básica,
+preservación funcional y recuperación operacional. En los controles diseñados,
+una aserción válida no basta para afirmar
 que una passkey migrada conserva todas sus garantías. El paso necesario para
 generalizar es ejecutar adaptadores identificados e independientes, manteniendo
 los mismos oráculos y límites de afirmación.
@@ -228,7 +247,7 @@ los mismos oráculos y límites de afirmación.
 3. Barnes et al., Hybrid Public Key Encryption, RFC 9180, 2022,
    https://www.rfc-editor.org/rfc/rfc9180.
 4. W3C, Web Authentication Level 3 Candidate Recommendation, 2026-05-26,
-   https://www.w3.org/TR/webauthn-3/.
+   https://www.w3.org/TR/2026/CR-webauthn-3-20260526/.
 5. PyCA, `cryptography` HPKE API documentation,
    https://cryptography.io/en/latest/hazmat/primitives/hpke/.
 6. Bitwarden, `credential-exchange` v0.4.0,
@@ -273,6 +292,12 @@ def run_analysis(
         raise ValueError("Phase 7 input is not the complete equivalent-repeat C1 run")
     if c3.get("failure_sequence_count") != 960:
         raise ValueError("Phase 6 C3 input is incomplete")
+    protocols = {c1.get("protocol_id"), c2.get("protocol_id"), c3.get("protocol_id")}
+    if len(protocols) != 1 or None in protocols:
+        raise ValueError("C1, C2 and C3 must use one protocol identifier")
+    protocol_id = next(iter(protocols))
+    if not str(protocol_id).endswith("v1.1"):
+        raise ValueError("corrected analysis requires protocol v1.1 evidence")
     if interop.get("all_applicable_checks_pass") is not True:
         raise ValueError("Phase 8 interoperability checks did not pass")
     if interop.get("git", {}).get("source_dirty") is not False:
@@ -283,7 +308,7 @@ def run_analysis(
     if external is not None and external.get("semantic_json_equal") is not True:
         raise ValueError("Phase 11 external CXF round trip did not preserve normalized JSON")
     results = {
-        "evidence_class": "reference-control-analysis",
+        "evidence_class": "corrected-v1.1-reference-control-analysis",
         "c1": c1,
         "c2": c2,
         "c3": c3,
@@ -309,9 +334,9 @@ def run_analysis(
         ],
     }
     output_dir.mkdir(parents=True, exist_ok=True)
-    results_path = output_dir / "results_v0.2.json"
+    results_path = output_dir / RESULTS_FILENAME
     manuscript_path = output_dir / "MANUSCRIPT.md"
-    results_path.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
+    results_path.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     _write_csv(
         output_dir / "table_c1_estimands.csv",
@@ -332,9 +357,9 @@ def run_analysis(
         output_dir / "table_c3_faults.csv",
         [{"destination_failure_point": name, **value} for name, value in c3["by_destination_and_failure_point"].items()],
     )
-    manuscript_path.write_text(_manuscript(results), encoding="utf-8")
+    manuscript_path.write_text(_manuscript(results), encoding="utf-8", newline="\n")
     managed_outputs = (
-        "results_v0.2.json",
+        RESULTS_FILENAME,
         "MANUSCRIPT.md",
         "table_c1_estimands.csv",
         "table_c1_oracles.csv",
@@ -347,5 +372,7 @@ def run_analysis(
         "output_hashes": output_hashes,
         "claim_boundary_enforced": True,
     }
-    (output_dir / "analysis_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    (output_dir / "analysis_manifest.json").write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
     return {"results": results, "manifest": manifest}

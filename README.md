@@ -96,8 +96,9 @@ and a recorded seed.
 - `paper/legacy/`: explicitly simulated legacy paper and rendered versions.
 - `docs/`: research state, provenance, and decision records.
 
-The frozen Phase 1 design is in `docs/EXPERIMENT_PROTOCOL.md`; its
-machine-readable counterpart is `experiments/protocol_v1.0.json`.
+The historical Phase 1 design is in `docs/EXPERIMENT_PROTOCOL.md`. The corrected
+confirmatory design is in `docs/EXPERIMENT_PROTOCOL_V1_1.md`, with its
+machine-readable counterpart in `experiments/protocol_v1.1.json`.
 
 ## Evidence policy
 

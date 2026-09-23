@@ -20,7 +20,7 @@ from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, 
 
 
 TITLE = "Preservación semántica en migraciones de passkeys con CXF y CXP"
-SUBTITLE = "PasskeyTransit v0.2 Informe reproducible de controles e interoperabilidad"
+SUBTITLE = "PasskeyTransit v0.3 Informe reproducible de controles e interoperabilidad"
 
 
 def _plain(text: str) -> str:
@@ -200,7 +200,7 @@ def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
 
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    footer_run = footer.add_run("PasskeyTransit v0.2")
+    footer_run = footer.add_run("PasskeyTransit v0.3")
     footer_run.font.size = Pt(8)
     footer_run.font.color.rgb = RGBColor(90, 90, 90)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -264,7 +264,7 @@ def build_pdf(blocks: list[tuple[str, object]], output: Path) -> None:
         canvas.saveState()
         canvas.setFont("Helvetica", 8)
         canvas.setFillColor(colors.HexColor("#666666"))
-        canvas.drawCentredString(LETTER[0] / 2, 0.45 * inch, f"PasskeyTransit v0.2  |  {doc.page}")
+        canvas.drawCentredString(LETTER[0] / 2, 0.45 * inch, f"PasskeyTransit v0.3  |  {doc.page}")
         canvas.restoreState()
 
     output.parent.mkdir(parents=True, exist_ok=True)

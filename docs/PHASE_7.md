@@ -50,7 +50,7 @@ unassessed because the import interface cannot restore the source HMAC secret.
 This remains a reference-policy/virtual-authenticator control. It supplies
 real browser evidence but does not authorize claims about commercial providers.
 
-## Historical full run (superseded by the strict-profile revision)
+## Historical v1.0 full run superseded by protocol v1.1
 
 The definitive run used Edge `153.0.4234.32`, CDP protocol `1.3`, Playwright
 `1.62.0`, and clean source commit `d2893c3`. Results:

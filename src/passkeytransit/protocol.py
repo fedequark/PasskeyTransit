@@ -21,8 +21,9 @@ def validate_protocol(path: Path) -> dict[str, object]:
     data = json.loads(path.read_text(encoding="utf-8"))
     if data.get("schema_version") != 1:
         raise ProtocolValidationError("unsupported protocol schema_version")
-    if not str(data.get("protocol_id", "")).endswith("v1.0"):
-        raise ProtocolValidationError("protocol_id must identify v1.0")
+    protocol_id = str(data.get("protocol_id", ""))
+    if not protocol_id.endswith(("v1.0", "v1.1")):
+        raise ProtocolValidationError("protocol_id must identify a supported frozen protocol")
 
     rqs = set(map(str, data.get("research_questions", [])))
     if rqs != {"RQ1", "RQ2", "RQ3", "RQ4"}:
@@ -90,4 +91,3 @@ def validate_protocol(path: Path) -> dict[str, object]:
         "c3_failure_sequences": expected_c3,
         "valid": True,
     }
-
