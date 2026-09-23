@@ -13,6 +13,12 @@ CAPABILITIES: list[dict[str, Any]] = [
         "claim_effect": "positive and negative browser-backed observations are admissible",
     },
     {
+        "oracle": "uv",
+        "status": "EXECUTED",
+        "path": "authenticator-data UV flag from the signed WebAuthn assertion",
+        "claim_effect": "positive and negative browser-backed observations are admissible",
+    },
+    {
         "oracle": "large_blob",
         "status": "EXECUTED",
         "path": "CDP credential injection followed by WebAuthn largeBlob read",
