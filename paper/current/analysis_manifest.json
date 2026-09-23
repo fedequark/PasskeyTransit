@@ -1,22 +1,24 @@
 {
+  "claim_boundary_enforced": true,
   "input_hashes": {
-    "phase7_summary": "9c24ce09d74fa1cecac744a7d101e062a978ba38c62b387828c3bb394f0fa4d0",
-    "phase7_manifest": "5c81df8946f470745f6a7b84eb0f1aac796aceb4de5b70a216631761c91921c8",
-    "c2_summary": "567bd53828c8198062f00a9bcca485db829defe36a11131bd3b7607be368ca77",
-    "c2_manifest": "4a780824d0a086c0bbb3921133c2fda4218bf29204a51474d833c46487dbcd31",
-    "c3_summary": "16512c88531d67338ab33ac2562378873fdb28875e072b4fbf81c60216a2902d",
-    "c3_manifest": "4360fa2962788e25937b376a8e37ddf5500bb93c5d13c0452ce6f4eff9b50b9e",
-    "phase8_interop": "84d53ee5c5c16c0a78c887ce21ac7c13c86ad4cb34a5d9765dbea03318298381",
+    "c2_manifest": "649e353e23b167e22f87a54e03b607dc2b76d74c6b7a85141a789ebbd153d022",
+    "c2_summary": "5806da4e3d17b11f5afeaba55f5da9580a5d02b1807aafb82ee68a5715bfab17",
+    "c3_manifest": "5cf9de43a5ca84102ee2eae840b45deb60f2c5af4edb30d6e4a47e5c35cd62b2",
+    "c3_summary": "893dfb55d3fa1fd9becaf081d82892b0f9c88863da571b01191aa9fd3bf46ed6",
     "phase11_external_cxf": "da6b0f303a000d29cf8b0711664950c2b77d01c6e6014e206c3a56358c2dc126",
-    "phase12_oracles": "2db7a6643d79c9070ee08bba6da7d01a54d21b9c46d1ea27f38e40f8f98a10df"
+    "phase12_oracles": "2db7a6643d79c9070ee08bba6da7d01a54d21b9c46d1ea27f38e40f8f98a10df",
+    "phase7_manifest": "f262525ee2a55700cc93483daab823b3c6eb3eebae6699dc370cac509a0b2e3f",
+    "phase7_summary": "51dce1d92a09ef0ee8e6e418ab733381568cf95fdfdbfb134402fced54ca97bc",
+    "phase8_interop": "35216e7f5959a725c1570841736b2e836c42859455e717d51bde07854fe50f6d"
   },
   "output_hashes": {
-    "results_v0.2.json": "468a33b20059891d8bdd3cb65dcc82e018ace528440c4001543b5a57814fd786",
-    "MANUSCRIPT.md": "f4e48b1e1be718696dba4183c881aaa1ba7f5c3591a2254c88d82ae10d262fc7",
-    "table_c1_estimands.csv": "58f6b3be45188b8157a033bdc30cbcaef86eab77b4c4c465eb48b789262f45d1",
-    "table_c1_oracles.csv": "f76fa9eb2a5b9aace065c33f671553064f5a073c95945c8e3897ccea5e57a6b7",
-    "table_c2_mutations.csv": "9a30db7b87613b50ac0fdea9f2a225ce070a677686e948097bc9ff1ccf60c63b",
-    "table_c3_faults.csv": "7cd69b1352e6e1131805d317a8b2321d99d564d1f6390a401d648d4cd60535a9"
-  },
-  "claim_boundary_enforced": true
+    "MANUSCRIPT.md": "0a00eb5b6cfa6d7a023e3f6bd69c0e435866ef095db5a73f649efe30ce45c5d2",
+    "PasskeyTransit_v0.3.docx": "0acab6b1e8cf12b5bb675f35059976f6d85f4828b6c3eddf437416c8428ad2c6",
+    "PasskeyTransit_v0.3.pdf": "deb3f2c275526c37e50217598fb9387d1caab237949299cef3e7a4d14848ac85",
+    "results_v0.3.json": "99f9a9cd33e894b41a71b3d4d4fa8c0edbb913c3aa6c6e5f35442d3682efd72f",
+    "table_c1_estimands.csv": "c0c68d7129875527277d1a4fc035229d39ad988e2a9290b84294d656126c51a4",
+    "table_c1_oracles.csv": "8bcc6f47bdacc071deeb79b43a253aac94c31ab9e534960fc26e971f87a3add8",
+    "table_c2_mutations.csv": "3e59d7b3f9e64a0d20df6207bcec2014c33a3ce1ea1ac92fb63abf0ff58993bf",
+    "table_c3_faults.csv": "7e07c59ab2cebca97a1a1dfc3e25128a656888d8b400c69abc1871d164c18f7e"
+  }
 }
