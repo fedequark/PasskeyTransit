@@ -27,6 +27,7 @@ from passkeytransit import __version__
 TITLE = "Preservación semántica en migraciones de passkeys con CXF y CXP"
 DISPLAY_VERSION = "v" + __version__.rsplit(".", 1)[0]
 SUBTITLE = f"PasskeyTransit {DISPLAY_VERSION} Informe reproducible de controles e interoperabilidad"
+AUTHOR = "Federico Pacheco, BASE4 Security"
 
 
 def _plain(text: str) -> str:
@@ -139,11 +140,18 @@ def _keep_table_together(table) -> None:
                 paragraph.paragraph_format.keep_with_next = True
 
 
-def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
+def build_docx(
+    blocks: list[tuple[str, object]],
+    output: Path,
+    *,
+    title_text: str = TITLE,
+    subtitle_text: str = SUBTITLE,
+    author_text: str = AUTHOR,
+) -> None:
     doc = Document()
-    doc.core_properties.title = TITLE
+    doc.core_properties.title = title_text
     doc.core_properties.subject = "Informe reproducible de controles sintéticos e interoperabilidad para migración de passkeys"
-    doc.core_properties.author = "PasskeyTransit research team"
+    doc.core_properties.author = author_text
     doc.core_properties.keywords = "passkeys, WebAuthn, CXF, CXP, semantic preservation"
     doc.core_properties.comments = "Generated from the versioned PasskeyTransit manuscript"
     doc.core_properties.created = datetime.now(timezone.utc)
@@ -185,10 +193,10 @@ def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
 
     title = doc.add_paragraph(style="Title")
     title.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    title.add_run(TITLE)
+    title.add_run(title_text)
     subtitle = doc.add_paragraph()
     subtitle.paragraph_format.space_after = Pt(20)
-    run = subtitle.add_run(SUBTITLE)
+    run = subtitle.add_run(subtitle_text)
     run.font.size = Pt(11)
     run.font.color.rgb = RGBColor(65, 78, 92)
 
@@ -240,7 +248,14 @@ def build_docx(blocks: list[tuple[str, object]], output: Path) -> None:
     doc.save(output)
 
 
-def build_pdf(blocks: list[tuple[str, object]], output: Path) -> None:
+def build_pdf(
+    blocks: list[tuple[str, object]],
+    output: Path,
+    *,
+    title_text: str = TITLE,
+    subtitle_text: str = SUBTITLE,
+    author_text: str = AUTHOR,
+) -> None:
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle(name="PaperTitle", parent=styles["Title"], fontName="Helvetica-Bold", fontSize=22, leading=26, textColor=colors.black, alignment=TA_CENTER, spaceAfter=12))
     styles.add(ParagraphStyle(name="PaperSubtitle", parent=styles["Normal"], fontName="Helvetica", fontSize=10, leading=14, textColor=colors.HexColor("#41505F"), alignment=TA_CENTER, spaceAfter=24))
@@ -266,7 +281,7 @@ def build_pdf(blocks: list[tuple[str, object]], output: Path) -> None:
     styles.add(ParagraphStyle(name="PaperReference", parent=styles["BodyText"], leftIndent=18, firstLineIndent=-18, spaceAfter=4))
     styles.add(ParagraphStyle(name="TableHeader", parent=styles["BodyText"], fontName="Helvetica-Bold", textColor=colors.white))
 
-    story = [Paragraph(TITLE, styles["PaperTitle"]), Paragraph(SUBTITLE, styles["PaperSubtitle"])]
+    story = [Paragraph(title_text, styles["PaperTitle"]), Paragraph(subtitle_text, styles["PaperSubtitle"])]
     for kind, content in blocks:
         if kind == "heading1":
             story.append(Paragraph(str(content), styles["Heading1"]))
@@ -311,7 +326,7 @@ def build_pdf(blocks: list[tuple[str, object]], output: Path) -> None:
         canvas.restoreState()
 
     output.parent.mkdir(parents=True, exist_ok=True)
-    document = SimpleDocTemplate(str(output), pagesize=LETTER, rightMargin=0.9 * inch, leftMargin=0.9 * inch, topMargin=0.75 * inch, bottomMargin=0.7 * inch, title=TITLE, author="PasskeyTransit research team")
+    document = SimpleDocTemplate(str(output), pagesize=LETTER, rightMargin=0.9 * inch, leftMargin=0.9 * inch, topMargin=0.75 * inch, bottomMargin=0.7 * inch, title=title_text, author=author_text)
     document.build(story, onFirstPage=footer, onLaterPages=footer)
 
 
@@ -320,10 +335,27 @@ def main() -> None:
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--docx", type=Path, required=True)
     parser.add_argument("--pdf", type=Path, required=True)
+    parser.add_argument("--title")
+    parser.add_argument("--subtitle", default=SUBTITLE)
+    parser.add_argument("--author", default=AUTHOR)
     args = parser.parse_args()
     blocks = parse_markdown(args.source)
-    build_docx(blocks, args.docx)
-    build_pdf(blocks, args.pdf)
+    first_line = args.source.read_text(encoding="utf-8").splitlines()[0]
+    title_text = args.title or first_line.removeprefix("# ").strip()
+    build_docx(
+        blocks,
+        args.docx,
+        title_text=title_text,
+        subtitle_text=args.subtitle,
+        author_text=args.author,
+    )
+    build_pdf(
+        blocks,
+        args.pdf,
+        title_text=title_text,
+        subtitle_text=args.subtitle,
+        author_text=args.author,
+    )
     manifest_path = args.source.parent / "analysis_manifest.json"
     if manifest_path.is_file():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))

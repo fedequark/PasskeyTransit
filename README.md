@@ -3,6 +3,17 @@
 This repository consolidates the research on semantic property preservation in
 passkey migration through CXF/CXP.
 
+## Public records
+
+- Spanish replication package and manuscript:
+  https://doi.org/10.5281/zenodo.22925150
+- English manuscript translation:
+  https://doi.org/10.5281/zenodo.22925334
+
+The Zenodo records are linked reciprocally as original and variant forms. The
+English translation reuses the evidence in the Spanish replication package and
+does not introduce a second experimental dataset.
+
 ## Current status
 
 The conceptual model and a simulated paper predate this repository. A later
@@ -100,6 +111,8 @@ and a recorded seed.
 - `experiments/`: versioned experiment configurations.
 - `datasets/`: generated datasets and future immutable releases.
 - `paper/legacy/`: explicitly simulated legacy paper and rendered versions.
+- `paper/current/MANUSCRIPT.md`: current Spanish manuscript.
+- `paper/current/MANUSCRIPT_EN.md`: reviewed English translation.
 - `docs/`: research state, provenance, and decision records.
 
 The historical Phase 1 design is in `docs/EXPERIMENT_PROTOCOL.md`. The current
