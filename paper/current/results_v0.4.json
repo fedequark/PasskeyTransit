@@ -1,0 +1,649 @@
+{
+  "evidence_class": "corrective-v1.2-reference-control-analysis",
+  "c1": {
+    "protocol_id": "passkeytransit-semantic-preservation-v1.2",
+    "campaign_id": "C1",
+    "mode": "full",
+    "evidence_class": "browser-webauthn-reference-policy-control",
+    "attempt_count": 6144,
+    "credential_count": 256,
+    "route_count": 12,
+    "repetitions": 2,
+    "execution_statuses": {
+      "IMPORTED": 5120,
+      "REJECTED": 1024
+    },
+    "semantic_classes": {
+      "DEGRADED_SILENT": 1344,
+      "PASS": 2304,
+      "NOT_APPLICABLE": 1024,
+      "DEGRADED_VISIBLE": 960,
+      "NOT_EVALUABLE": 512
+    },
+    "oracle_statuses": {
+      "cxf_structure": {
+        "PASS": 6144
+      },
+      "credential_id": {
+        "PASS": 5120,
+        "NOT_APPLICABLE": 1024
+      },
+      "rp_id": {
+        "PASS": 5120,
+        "NOT_APPLICABLE": 1024
+      },
+      "user_handle": {
+        "PASS": 5120,
+        "NOT_APPLICABLE": 1024
+      },
+      "public_key": {
+        "PASS": 5120,
+        "NOT_APPLICABLE": 1024
+      },
+      "webauthn_assertion": {
+        "PASS": 5120,
+        "NOT_APPLICABLE": 1024
+      },
+      "uv": {
+        "PASS": 5120,
+        "NOT_APPLICABLE": 1024
+      },
+      "prf_uv": {
+        "NOT_APPLICABLE": 4992,
+        "FAIL": 896,
+        "NOT_EVALUABLE": 256
+      },
+      "prf_no_uv": {
+        "NOT_APPLICABLE": 5568,
+        "FAIL": 448,
+        "NOT_EVALUABLE": 128
+      },
+      "large_blob": {
+        "NOT_APPLICABLE": 4928,
+        "PASS": 704,
+        "FAIL": 512
+      },
+      "cred_blob": {
+        "FAIL": 896,
+        "NOT_APPLICABLE": 4992,
+        "NOT_EVALUABLE": 256
+      },
+      "payments_marker": {
+        "NOT_APPLICABLE": 5504,
+        "PASS": 384,
+        "FAIL": 256
+      },
+      "idempotence": {
+        "NOT_APPLICABLE": 6144
+      },
+      "atomicity": {
+        "NOT_APPLICABLE": 6144
+      },
+      "custody_ground_truth": {
+        "PASS": 6144
+      }
+    },
+    "estimands": {
+      "preserving_migration_yield": {
+        "numerator": 2304,
+        "denominator": 6144,
+        "estimate": 0.375,
+        "ci95": [
+          0.326171875,
+          0.42578125
+        ]
+      },
+      "conditional_semantic_preservation": {
+        "numerator": 2304,
+        "denominator": 5120,
+        "estimate": 0.45,
+        "ci95": [
+          0.39414325286901464,
+          0.5040462427745664
+        ]
+      },
+      "silent_degradation_rate": {
+        "numerator": 1344,
+        "denominator": 5120,
+        "estimate": 0.2625,
+        "ci95": [
+          0.2398609501738123,
+          0.2841897233201581
+        ]
+      },
+      "false_reassurance_rate": {
+        "numerator": 2048,
+        "denominator": 5120,
+        "estimate": 0.4,
+        "ci95": [
+          0.35705996131528045,
+          0.4450592885375494
+        ]
+      },
+      "login_with_any_observed_property_failure_rate": {
+        "numerator": 2304,
+        "denominator": 5120,
+        "estimate": 0.45,
+        "ci95": [
+          0.4063821607074202,
+          0.4920760697305864
+        ]
+      }
+    },
+    "design_result_cells": {
+      "execution_unit": "synthetic-credential-by-route",
+      "credential_route_cell_count": 3072,
+      "executions_per_credential_route_cell": [
+        2
+      ],
+      "reporting_group": "route-by-feature-stratum",
+      "route_stratum_group_count": 96,
+      "executions_per_route_stratum_group": [
+        64
+      ],
+      "interpretation": "designed synthetic cells with exact repetitions; neither credentials nor route-stratum groups are sampled from a real-world population"
+    },
+    "paired_route_comparisons": [
+      {
+        "destination": "compatible-lossy",
+        "left_route": "R02",
+        "right_route": "R07",
+        "paired_attempts": 512,
+        "semantic_discordant": 0,
+        "any_oracle_discordant": 0
+      },
+      {
+        "destination": "legacy",
+        "left_route": "R03",
+        "right_route": "R09",
+        "paired_attempts": 512,
+        "semantic_discordant": 0,
+        "any_oracle_discordant": 0
+      },
+      {
+        "destination": "reference",
+        "left_route": "R04",
+        "right_route": "R05",
+        "paired_attempts": 512,
+        "semantic_discordant": 256,
+        "any_oracle_discordant": 256
+      },
+      {
+        "destination": "reference",
+        "left_route": "R04",
+        "right_route": "R06",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 384
+      },
+      {
+        "destination": "reference",
+        "left_route": "R04",
+        "right_route": "R12",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 384
+      },
+      {
+        "destination": "reference",
+        "left_route": "R05",
+        "right_route": "R06",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 192
+      },
+      {
+        "destination": "reference",
+        "left_route": "R05",
+        "right_route": "R12",
+        "paired_attempts": 512,
+        "semantic_discordant": 192,
+        "any_oracle_discordant": 192
+      },
+      {
+        "destination": "reference",
+        "left_route": "R06",
+        "right_route": "R12",
+        "paired_attempts": 512,
+        "semantic_discordant": 192,
+        "any_oracle_discordant": 0
+      },
+      {
+        "destination": "strict",
+        "left_route": "R01",
+        "right_route": "R08",
+        "paired_attempts": 512,
+        "semantic_discordant": 256,
+        "any_oracle_discordant": 256
+      },
+      {
+        "destination": "strict",
+        "left_route": "R01",
+        "right_route": "R10",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 384
+      },
+      {
+        "destination": "strict",
+        "left_route": "R01",
+        "right_route": "R11",
+        "paired_attempts": 512,
+        "semantic_discordant": 384,
+        "any_oracle_discordant": 384
+      },
+      {
+        "destination": "strict",
+        "left_route": "R08",
+        "right_route": "R10",
+        "paired_attempts": 512,
+        "semantic_discordant": 128,
+        "any_oracle_discordant": 128
+      },
+      {
+        "destination": "strict",
+        "left_route": "R08",
+        "right_route": "R11",
+        "paired_attempts": 512,
+        "semantic_discordant": 128,
+        "any_oracle_discordant": 128
+      },
+      {
+        "destination": "strict",
+        "left_route": "R10",
+        "right_route": "R11",
+        "paired_attempts": 512,
+        "semantic_discordant": 0,
+        "any_oracle_discordant": 0
+      }
+    ],
+    "repeat_equivalent": true,
+    "confirmatory_provider_claims_authorized": false,
+    "challenge_policy": "fresh-32-byte-cryptographic-random-per-ceremony"
+  },
+  "c2": {
+    "protocol_id": "passkeytransit-semantic-preservation-v1.2",
+    "campaign_id": "C2",
+    "evidence_class": "synthetic-reference-robustness-control",
+    "attempt_count": 80,
+    "strata": 8,
+    "mutation_families": {
+      "missing-required": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "invalid-base64url": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "malformed-pkcs8": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "key-mismatch": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "rp-id-change": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "credential-id-collision": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "AMBIGUOUS": 8
+        }
+      },
+      "unknown-optional-member": {
+        "attempts": 8,
+        "execution_statuses": {
+          "IMPORTED": 8
+        },
+        "semantic_classes": {
+          "NOT_EVALUABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "unknown-required-enum": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "minor-version-increase": {
+        "attempts": 8,
+        "execution_statuses": {
+          "IMPORTED": 8
+        },
+        "semantic_classes": {
+          "NOT_EVALUABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      },
+      "major-version-mismatch": {
+        "attempts": 8,
+        "execution_statuses": {
+          "REJECTED": 8
+        },
+        "semantic_classes": {
+          "NOT_APPLICABLE": 8
+        },
+        "normative_classes": {
+          "CONFORMANT": 8
+        }
+      }
+    },
+    "pooled_preservation_estimate": null,
+    "confirmatory_provider_claims_authorized": false
+  },
+  "c3": {
+    "protocol_id": "passkeytransit-semantic-preservation-v1.2",
+    "campaign_id": "C3",
+    "evidence_class": "synthetic-transaction-fault-control",
+    "credential_count": 64,
+    "failure_sequence_count": 960,
+    "event_count": 1920,
+    "initial_execution_statuses": {
+      "ROLLED_BACK": 832,
+      "PARTIAL": 128
+    },
+    "final_execution_statuses": {
+      "IMPORTED": 960
+    },
+    "atomicity": {
+      "PASS": 832,
+      "FAIL": 128
+    },
+    "idempotence": {
+      "PASS": 832,
+      "FAIL": 128
+    },
+    "semantic_classes": {
+      "NOT_EVALUABLE": 528,
+      "DEGRADED_SILENT": 272,
+      "DEGRADED_VISIBLE": 160
+    },
+    "by_destination_and_failure_point": {
+      "strict:after-validation": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "strict:after-approval": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "strict:after-payload-decode": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "strict:after-provisional-persistence": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "strict:before-commit": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:after-validation": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:after-approval": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:after-payload-decode": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:after-provisional-persistence": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "compatible-lossy:before-commit": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "legacy:after-validation": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "legacy:after-approval": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "legacy:after-payload-decode": {
+        "sequences": 64,
+        "atomicity_failures": 0,
+        "idempotence_failures": 0
+      },
+      "legacy:after-provisional-persistence": {
+        "sequences": 64,
+        "atomicity_failures": 64,
+        "idempotence_failures": 64
+      },
+      "legacy:before-commit": {
+        "sequences": 64,
+        "atomicity_failures": 64,
+        "idempotence_failures": 64
+      }
+    },
+    "confirmatory_provider_claims_authorized": false
+  },
+  "interop": {
+    "phase": 8,
+    "evidence_class": "independent-implementation-interoperability",
+    "implementations": {
+      "reference_hpke": "passkeytransit.hpke",
+      "native_hpke": "cryptography 50.0.1",
+      "independent_cxf_consumer": "Node.js v24.18.0"
+    },
+    "git": {
+      "source_commit": "e1da492401414cafa94c8203493882384a966dc8",
+      "source_dirty": false
+    },
+    "hpke": {
+      "suite": "DHKEM(X25519,HKDF-SHA256)/HKDF-SHA256/AES-128-GCM",
+      "native_to_reference": true,
+      "reference_to_native": true,
+      "aad_profile_interop": "NOT_EVALUATED_NATIVE_API_HAS_NO_AAD_PARAMETER"
+    },
+    "cxf_node_consumer": {
+      "verified": true,
+      "envelope": true,
+      "passkeyType": true,
+      "pkcs8Parsed": true,
+      "publicSpkiSha256": "ea7328ba36d7f1cf47648be91fc88cbbe661aa7e68c276c46bbce927b41e2968",
+      "credentialIdSha256": "4e9db700153b25fbc6fcebe2bc833c791eb5f07a1b5dda795c462e3ffb89ab32",
+      "largeBlobSha256": "288586e28a43fe7effba6abdb20f75db7bd634a73af11e7147dc7ed7482fe3f9"
+    },
+    "pqc_exploration": {
+      "suite": "ML-KEM-768+X25519/HKDF-SHA256/AES-128-GCM",
+      "round_trip": true,
+      "encapsulation_bytes": 1120,
+      "message_bytes": 1171,
+      "cxp_normative_assessment": "OUT_OF_SCOPE"
+    },
+    "all_applicable_checks_pass": true,
+    "limitations": [
+      "independent HPKE check covers the RFC 9180 base suite, not the underspecified full CXP ZIP/JWE framing",
+      "cryptography's single-shot native HPKE API does not expose application AAD",
+      "the hybrid PQC suite is exploratory and is not claimed as a CXP v0 profile"
+    ]
+  },
+  "external_cxf": {
+    "adapter": {
+      "name": "bitwarden/credential-exchange credential-exchange-format",
+      "version": "0.4.0",
+      "source_url": "https://github.com/bitwarden/credential-exchange",
+      "source_revision": "0ee5516e4c0481ab6b0a68f8541fc39c3c3379b1"
+    },
+    "adapter_protocol_version": 1,
+    "process_exit_code": 0,
+    "source_sha256": "5f91de7a12458ef53045e2ccd3683b89d9071f24d5716c5c5d08571d116cf287",
+    "round_trip_sha256": "5f91de7a12458ef53045e2ccd3683b89d9071f24d5716c5c5d08571d116cf287",
+    "semantic_json_equal": true,
+    "adapter_metadata": {
+      "accounts": 1,
+      "crate": "credential-exchange-format",
+      "credentials": 1,
+      "implementation": "bitwarden/credential-exchange",
+      "items": 1,
+      "revision": "0ee5516e4c0481ab6b0a68f8541fc39c3c3379b1",
+      "version": "0.4.0"
+    },
+    "evidence_class": "independent-open-source-parser-round-trip",
+    "limitations": [
+      "the tested crate is a parser and serializer, not a credential-provider product flow",
+      "semantic JSON equality does not establish WebAuthn import behavior or CXP interoperability",
+      "the input contains deterministic synthetic key material only"
+    ]
+  },
+  "oracle_capabilities": {
+    "schema_version": 1,
+    "evidence_rule": "only EXECUTED capabilities can support positive behavioral claims",
+    "capabilities": [
+      {
+        "oracle": "webauthn_assertion",
+        "status": "EXECUTED",
+        "path": "Chromium virtual authenticator plus independent RP verification",
+        "claim_effect": "positive and negative browser-backed observations are admissible"
+      },
+      {
+        "oracle": "large_blob",
+        "status": "EXECUTED",
+        "path": "CDP credential injection followed by WebAuthn largeBlob read",
+        "claim_effect": "positive and negative browser-backed observations are admissible"
+      },
+      {
+        "oracle": "prf_uv",
+        "status": "BLOCKED_BY_INTERFACE",
+        "path": "native OS credential-provider test adapter or software CTAP authenticator",
+        "blocker": "CDP addCredential exposes no CXF hmacCredentials seed injection",
+        "claim_effect": "positive preservation remains NOT_EVALUABLE"
+      },
+      {
+        "oracle": "prf_no_uv",
+        "status": "BLOCKED_BY_INTERFACE",
+        "path": "native OS credential-provider test adapter or software CTAP authenticator",
+        "blocker": "CDP addCredential exposes no CXF hmacCredentials seed injection",
+        "claim_effect": "positive preservation remains NOT_EVALUABLE"
+      },
+      {
+        "oracle": "cred_blob",
+        "status": "BLOCKED_BY_INTERFACE",
+        "path": "native CTAP2 import path with credBlob state control",
+        "blocker": "CDP addCredential exposes no credBlob injection",
+        "claim_effect": "positive preservation remains NOT_EVALUABLE"
+      },
+      {
+        "oracle": "payments_marker",
+        "status": "FORMAT_ONLY",
+        "path": "SPC-capable browser and enrolled payment instrument test environment",
+        "blocker": "the current lab has no payment-instrument enrollment or SPC relying-party flow",
+        "claim_effect": "the CXF marker is checked, but SPC behavior is NOT_EVALUABLE"
+      },
+      {
+        "oracle": "cxp_pqc",
+        "status": "OUT_OF_SCOPE",
+        "path": "a separately versioned CXP-PQC profile with algorithm identifiers and transcript binding",
+        "blocker": "CXP v0 does not register the exploratory hybrid construction",
+        "claim_effect": "no CXP-PQC interoperability estimand is authorized"
+      }
+    ],
+    "open_behavioral_oracles": [
+      "prf_uv",
+      "prf_no_uv",
+      "cred_blob",
+      "payments_marker",
+      "cxp_pqc"
+    ]
+  },
+  "environment": {
+    "browser_version": "153.0.4234.48",
+    "playwright_version": "1.62.0",
+    "source_commits": [
+      "e1da492401414cafa94c8203493882384a966dc8"
+    ]
+  },
+  "supported_claims": [
+    "browser assertion alone is insufficient in the designed lossy controls",
+    "the harness detects route-dependent, atomicity, and idempotence losses",
+    "the RFC 9180 base suite interoperates with cryptography's native implementation",
+    "a pinned independent open-source CXF parser preserves the normalized test document"
+  ],
+  "prohibited_claims": [
+    "commercial provider behavior or prevalence",
+    "complete normative CXP interoperability",
+    "positive PRF or credBlob preservation",
+    "a vulnerability or novelty claim"
+  ]
+}

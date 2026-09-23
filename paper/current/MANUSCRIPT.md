@@ -4,7 +4,7 @@
 
 Estudiamos si una passkey que continúa autenticando después de un intercambio
 conserva además su identidad, extensiones y garantías operacionales. Presentamos
-PasskeyTransit v0.3, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
+PasskeyTransit v0.4, un harness reproducible para CXF, CXP/HPKE, WebAuthn,
 mutaciones y fallos transaccionales. La campaña principal ejecutó
 6,144 intentos sobre 256 credenciales,
 12 rutas y dos repeticiones usando políticas de control y
@@ -18,7 +18,10 @@ y se rechazaron 1,024 antes de la ceremonia. Las 5,120
 aserciones WebAuthn ejecutadas fueron aceptadas; 2,048 intentos
 (40.00%; intervalo descriptivo de sensibilidad por bootstrap de credencial
 35.71%–44.51%) combinaron
-login correcto con el fallo de otra propiedad aplicable. La preservación
+login correcto con el fallo de un oráculo conductual ejecutable. Al añadir el
+marcador de pagos, que es sólo una comprobación de formato sin ceremonia SPC,
+la sensibilidad fue 45.00%
+(2,304/5,120). La preservación
 semántica completa observable fue 37.50%
 (2,304/6,144; intervalo descriptivo de sensibilidad
 32.62%–42.58%). Estos
@@ -40,8 +43,9 @@ afirmaciones de novedad ni sobre implementaciones comerciales no examinadas.
 
 ## 2. Método
 
-El protocolo `passkeytransit-semantic-preservation-v1.1` fue congelado antes de
-esta campaña confirmatoria corregida. El corpus contiene 256 credenciales ES256,
+El protocolo `passkeytransit-semantic-preservation-v1.2` fue congelado antes de
+esta replicación correctiva posterior a la inspección de v1.1. No la presentamos
+como confirmación preregistrada independiente. El corpus contiene 256 credenciales ES256,
 32 en cada uno de ocho estratos: básica, PRF con UV, PRF sin UV, `largeBlob`,
 `credBlob`, marcador de pagos, combinación de extensiones y miembro opcional
 futuro. Doce rutas cubren migración directa, round trip y multihop.
@@ -49,7 +53,8 @@ futuro. Doce rutas cubren migración directa, round trip y multihop.
 Cada salto serializa un documento CXF validado y lo transporta mediante HPKE
 base X25519/HKDF-SHA256/AES-128-GCM [3]. El navegador importa el resultado en un
 autenticador virtual y ejecuta `navigator.credentials.get()`. Un verificador
-Python independiente de la ceremonia comprueba desafío, origen, RP-ID hash,
+Python independiente de la ceremonia comprueba desafío único, vínculo con el
+identificador del intento, origen, RP-ID hash,
 flags UP/UV, firma ES256 y contador cero [4].
 
 Los oráculos devuelven `PASS`, `FAIL`, `NOT_APPLICABLE` o `NOT_EVALUABLE`.
@@ -73,8 +78,9 @@ persistencia global del estado antireplay.
 ## 4. Implementación del transporte
 
 La implementación HPKE reproduce el vector oficial de RFC 9180 [3]. El Working
-Draft CXP [2] no define campos para la encapsulación HPKE ni para el challenge
-firmado que describe su narrativa, y no concreta completamente el ZIP/JWE.
+Draft CXP [2] define parámetros HPKE, pero no un miembro para la clave
+encapsulada `enc` ni miembros de esquema para el challenge firmado que describe
+su narrativa, y no concreta completamente el mapeo HPKE a ZIP/JWE.
 Usamos una extensión experimental autenticada como AAD y no reclamamos
 interoperabilidad CXP normativa completa.
 
@@ -166,6 +172,8 @@ Los artefactos raw son JSONL inmutables; los derivados y manifiestos incluyen
 hashes SHA-256 del protocolo, resultados, navegador y commit. La campaña C1 se
 ejecutó con Chromium 153.0.4234.48 y Playwright
 1.62.0 desde un árbol Git limpio. El
+auditor de release exige un challenge criptográficamente aleatorio y único por
+ceremonia y verifica su vínculo con el intento. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
