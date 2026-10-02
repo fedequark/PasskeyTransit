@@ -1,0 +1,125 @@
+{
+  "changed_seed_control_signed_assertions_verified": 4,
+  "classification": "source-informed exploratory; software authenticator, no browser/provider-app CXP",
+  "experiment": "phase17-proton-cxf-prf-software",
+  "no_uv_ceremony_evaluated": false,
+  "no_uv_seed_bytes_preserved": true,
+  "positive_prf_seed_checks_verified": 8,
+  "positive_signed_assertions_verified": 8,
+  "prf_seed_checks_verified": 12,
+  "proton_package": "@protontech/pass-rust-core@2.0.0",
+  "proton_source_commit": "69a0927f0fe7071243d6c38e404459a69210fdd4",
+  "repetitions": 2,
+  "runs": [
+    {
+      "changed_seed_control": {
+        "prf_changed": true,
+        "prf_seed_checks_verified": 2,
+        "signed_assertions_verified": 2
+      },
+      "positive": {
+        "exported_cxf_sha256": "d0089fcc0b1e99028abba4ebf1f88167bd259290d7b225a73082c3b7bf7134e7",
+        "observations": [
+          {
+            "destination": {
+              "prf_matches_cxf_seed": true,
+              "prf_sha256": "80f410ec992739bd275d0a06307a4e4da5845526a9d7fd18b81a123017489327",
+              "signature_verified": true,
+              "uv_flag": true
+            },
+            "same_input_prf_equal": true,
+            "source": {
+              "prf_matches_cxf_seed": true,
+              "prf_sha256": "80f410ec992739bd275d0a06307a4e4da5845526a9d7fd18b81a123017489327",
+              "signature_verified": true,
+              "uv_flag": true
+            }
+          },
+          {
+            "destination": {
+              "prf_matches_cxf_seed": true,
+              "prf_sha256": "c6ff8eddaa6c82e361db79d076024e59bbd8377f4f1e34ac4b55d0f8fac57053",
+              "signature_verified": true,
+              "uv_flag": true
+            },
+            "same_input_prf_equal": true,
+            "source": {
+              "prf_matches_cxf_seed": true,
+              "prf_sha256": "c6ff8eddaa6c82e361db79d076024e59bbd8377f4f1e34ac4b55d0f8fac57053",
+              "signature_verified": true,
+              "uv_flag": true
+            }
+          }
+        ],
+        "prf_seed_checks_verified": 4,
+        "retained": {
+          "credWithUV": true,
+          "credWithoutUV": true,
+          "credentialId": true,
+          "key": true,
+          "rpId": true,
+          "userHandle": true
+        },
+        "signed_assertions_verified": 4,
+        "source_cxf_sha256": "a7dd3f6b6116acb0acbb75b9c853fcf1ab57323ef123c869a63a100811371f51"
+      },
+      "repeat": 1
+    },
+    {
+      "changed_seed_control": {
+        "prf_changed": true,
+        "prf_seed_checks_verified": 2,
+        "signed_assertions_verified": 2
+      },
+      "positive": {
+        "exported_cxf_sha256": "e9439f84510e57a1d443630f542f51131ddd30008c8cc20f20d119e14644eff2",
+        "observations": [
+          {
+            "destination": {
+              "prf_matches_cxf_seed": true,
+              "prf_sha256": "1116c9f61ffc09c55a365a6fa079312529a26d8663d4b444ea722bea622d1202",
+              "signature_verified": true,
+              "uv_flag": true
+            },
+            "same_input_prf_equal": true,
+            "source": {
+              "prf_matches_cxf_seed": true,
+              "prf_sha256": "1116c9f61ffc09c55a365a6fa079312529a26d8663d4b444ea722bea622d1202",
+              "signature_verified": true,
+              "uv_flag": true
+            }
+          },
+          {
+            "destination": {
+              "prf_matches_cxf_seed": true,
+              "prf_sha256": "546242537406344ae39e0a7dfbd30787655982f26ea6990cb0a7342900738d2c",
+              "signature_verified": true,
+              "uv_flag": true
+            },
+            "same_input_prf_equal": true,
+            "source": {
+              "prf_matches_cxf_seed": true,
+              "prf_sha256": "546242537406344ae39e0a7dfbd30787655982f26ea6990cb0a7342900738d2c",
+              "signature_verified": true,
+              "uv_flag": true
+            }
+          }
+        ],
+        "prf_seed_checks_verified": 4,
+        "retained": {
+          "credWithUV": true,
+          "credWithoutUV": true,
+          "credentialId": true,
+          "key": true,
+          "rpId": true,
+          "userHandle": true
+        },
+        "signed_assertions_verified": 4,
+        "source_cxf_sha256": "4fe752cf3d3dd675ab084ef1861968149492210782390fbc891ee47b8bdd8b4c"
+      },
+      "repeat": 2
+    }
+  ],
+  "signed_assertions_verified": 12,
+  "uv_seed_preserved": true
+}

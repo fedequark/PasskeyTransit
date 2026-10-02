@@ -1,0 +1,9 @@
+{
+  "name": "passkeytransit-proton-cxf-prf-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@protontech/pass-rust-core": "2.0.0"
+  }
+}

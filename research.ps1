@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "phase14", "phase15", "phase16", "verify-release", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "phase14", "phase15", "phase16", "phase17", "verify-release", "status")]
     [string]$Action = "status"
 )
 
@@ -40,7 +40,11 @@ switch ($Action) {
     }
     "test" {
         Require-Venv
-        & $VenvPython -m pytest
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        $TestTemp = Join-Path $ProjectRoot "tmp\pytest\$RunStamp"
+        New-Item -ItemType Directory -Path (Split-Path -Parent $TestTemp) -Force | Out-Null
+        & $VenvPython -m pytest -p no:cacheprovider --basetemp $TestTemp
+        if ($LASTEXITCODE -ne 0) { throw "Research test suite failed." }
     }
     "pilot" {
         Require-Venv
@@ -295,6 +299,24 @@ switch ($Action) {
             --report $Report `
             --protocol $Protocol
         if ($LASTEXITCODE -ne 0) { throw "Fenko round trip verification failed." }
+    }
+    "phase17" {
+        Require-Venv
+        $AdapterRoot = Join-Path $ProjectRoot "interop\proton-cxf-prf"
+        Push-Location $AdapterRoot
+        try {
+            npm ci --ignore-scripts --no-audit --no-fund
+            if ($LASTEXITCODE -ne 0) { throw "Pinned Proton WASM install failed." }
+        } finally {
+            Pop-Location
+        }
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        $NodePath = (Get-Command node -ErrorAction Stop).Source
+        & $VenvPython (Join-Path $ProjectRoot "tools\run_proton_cxf_prf.py") `
+            --node $NodePath `
+            --adapter (Join-Path $AdapterRoot "run.mjs") `
+            --output (Join-Path $ProjectRoot "datasets\generated\phase17\$RunStamp\proton_cxf_prf.json")
+        if ($LASTEXITCODE -ne 0) { throw "Proton CXF/PRF experiment failed." }
     }
     "phase10" {
         Require-Venv

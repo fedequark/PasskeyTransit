@@ -90,7 +90,8 @@ the exported document omitted the PRF extension state. This is one selected
 provider route, not a provider prevalence estimate or a CXP provider exchange.
 See `docs/PHASE_15.md`, `docs/EXPERIMENT_PROTOCOL_V2.md`, and the separate
 `paper/current/MANUSCRIPT_V0_8_DRAFT.md`. Full provider CXP and positive
-preservation of the original CXF HMAC seeds remain `NOT_EVALUABLE` on this host.
+browser-to-browser preservation of the original CXF HMAC seeds remain
+`NOT_EVALUABLE` on this host.
 
 Phase 16 adds a source-informed Fenko-to-Fenko browser round trip through
 the provider's CXF export/import UI. Both fresh repetitions returned equal
@@ -101,6 +102,12 @@ this is same-provider functional continuity, not seed preservation or CXP.
 See `docs/PHASE_16.md`.
 `docs/CXP_PROVIDER_FEASIBILITY_2026.md` distinguishes a prospective Android
 platform-mediated CXF transfer from the public CXP Working Draft wire claim.
+Phase 17 adds an external Proton Pass 2.0.0 software-authenticator control:
+the original CXF HMAC seeds and UV PRF survived its CXF import/export/reimport
+in two selected repetitions, with 12 verified signed assertions and 12
+separately checked PRF results
+including changed-seed controls. This does not establish browser-to-browser
+or two-provider CXP interoperability. See `docs/PHASE_17.md`.
 
 ## Quick start
 
@@ -126,6 +133,7 @@ From PowerShell:
 ./research.ps1 phase14
 ./research.ps1 phase15
 ./research.ps1 phase16
+./research.ps1 phase17
 ./research.ps1 verify-release
 ./research.ps1 pilot
 ```

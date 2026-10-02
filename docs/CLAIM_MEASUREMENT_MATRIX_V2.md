@@ -13,6 +13,7 @@ frozen v1.5 claim permissions.
 | V2-06 | The original CXF HMAC-seed PRF survived browser-to-browser migration | Same input, source and destination signed browser observations with restored HMAC state | NOT_EVALUABLE |
 | V2-07 | Fenko's PRF output stayed equal across two Fenko browser profiles after its own CXF export/import | Source and destination signed browser observations, same fixed input, second input and PRF digest witnesses | PASS in 2/2 selected same-provider runs; original CXF seed state not preserved |
 | V2-08 | Two distinct Android provider apps completed a platform-mediated CXF transfer | Separate synthetic vaults, app versions, system transfer receipt, imported identity and signed browser assertion | NOT_EVALUABLE |
+| V2-09 | Proton Pass software preserved original CXF HMAC seeds and UV PRF through its own import/export/reimport path | Pinned external WASM, both seed bytes, signed software WebAuthn assertions, separate HMAC oracle and changed-seed control | PASS in 2/2 selected exploratory runs; 8 positive signatures and PRF checks plus 4 changed-seed control signatures and PRF checks |
 
 The denominators for V2-01 through V2-04 are two designed repetitions of one
 selected open provider route. They are repeatability checks, not independent
@@ -25,3 +26,7 @@ V2-05 and V2-08 are distinct: Android's documented transfer API provides a
 CXF JSON payload through a system-mediated Content URI; that observation
 would not by itself establish the public Working Draft ZIP/JWE framing. See
 `CXP_PROVIDER_FEASIBILITY_2026.md`.
+V2-09 is a software authenticator result, not a browser or provider-app
+migration. Its no-UV seed bytes survived but no no-UV PRF ceremony was
+evaluated. The PRF extension result itself is not covered by the WebAuthn
+signature; the HMAC checks are independent. See `PHASE_17.md`.

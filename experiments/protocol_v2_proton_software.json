@@ -1,0 +1,32 @@
+{
+  "protocol_id": "passkeytransit-v2-proton-software-addendum",
+  "status": "source-informed exploratory; not preregistered and outside frozen v2.0 denominator",
+  "date": "2026-10-02",
+  "external_module": "@protontech/pass-rust-core@2.0.0",
+  "source_tag_commit": "69a0927f0fe7071243d6c38e404459a69210fdd4",
+  "repetitions": 2,
+  "route": "synthetic CXF -> Proton WASM import -> Proton WASM signed PRF -> Proton WASM CXF export -> Proton WASM reimport -> Proton WASM signed PRF",
+  "fixture_scope": "two synthetic ES256 passkeys with distinct UV/no-UV HMAC seeds and no largeBlob or credBlob",
+  "per_repetition": {
+    "positive_salts": 2,
+    "source_and_destination_assertions_per_salt": 2,
+    "changed_uv_seed_control_salts": 1,
+    "changed_seed_control_assertions": 2
+  },
+  "oracles": [
+    "CXF acceptance and export without warnings",
+    "credential identity and PKCS8 key retained",
+    "CXF credWithUV and credWithoutUV bytes retained",
+    "independent ES256 signature, challenge, origin, RP hash and UV flag verification",
+    "PRF first output equals independent normative HMAC calculation from original credWithUV seed",
+    "same salt source/destination PRF equality and changed salt separation",
+    "changed credWithUV seed alters PRF while signing identity remains valid"
+  ],
+  "not_evaluated": [
+    "no-UV PRF ceremony",
+    "browser-to-browser PRF preservation",
+    "Android provider transfer",
+    "public CXP Working Draft ZIP/JWE exchange",
+    "full provider application storage"
+  ]
+}

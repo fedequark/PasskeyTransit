@@ -10,3 +10,4 @@ build/
 tmp/
 *.egg-info/
 interop/bitwarden-cxf-adapter/target/
+interop/proton-cxf-prf/node_modules/

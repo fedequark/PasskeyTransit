@@ -1,7 +1,7 @@
 # Preservación semántica en migraciones de passkeys con CXF y CXP: controles reproducibles y un caso abierto de proveedor
 
 Versión 0.8, borrador exploratorio de 2026-10-02. Conserva por separado los
-resultados de la release v0.7.1 y añade las fases 14 a 16. No reemplaza la
+resultados de la release v0.7.1 y añade las fases 14 a 17. No reemplaza la
 release publicada ni constituye una nueva muestra de proveedores.
 
 ## Resumen
@@ -52,8 +52,12 @@ Fenko→Fenko por CXF produjo PRF iguales en dos perfiles de navegador en 2/2
 repeticiones, con 24 firmas y 12 vínculos PRF verificados. La continuidad
 funcional ocurrió pese a la pérdida de las semillas CXF originales: Fenko
 derivó un valor propio de la clave de firma. Ambos casos son seleccionados y
-no miden frecuencia de fallos entre proveedores. CXP entre proveedores y la
-preservación positiva de las semillas CXF originales siguen sin evaluar.
+no miden frecuencia de fallos entre proveedores. Un control adicional con el
+módulo software abierto de Proton Pass 2.0.0 conservó las dos semillas HMAC
+originales por CXF y produjo el PRF esperado con UV antes y después de la
+reimportación: ocho firmas y comprobaciones PRF independientes, más cuatro de control
+con la semilla modificada. CXP entre proveedores y la conservación del PRF
+original entre navegadores siguen sin evaluar.
 
 ## 1. Introducción
 
@@ -201,6 +205,19 @@ autenticación posterior. No bastaría, por sí mismo, para afirmar conformidad
 con el encapsulado ZIP/JWE del borrador público. Durante este estudio no hubo
 un entorno Android accesible al banco de pruebas para ejecutar ese flujo.
 
+### 5.3. Control CXF/PRF con implementación software independiente
+
+Ejecutamos el módulo WASM publicado por Proton Pass 2.0.0, fijado por versión
+e integridad npm; inspeccionamos su código fuente en el commit asociado a la
+etiqueta 2.0.0 [16]. En dos repeticiones sintéticas, cada credencial cruzó su
+importador CXF, autenticador software, exportador CXF y una nueva importación.
+Para dos entradas PRF por repetición, el origen y destino firmaron desafíos
+distintos. Un verificador Python comprobó clave, identidad, ambas semillas
+HMAC, firmas ES256, challenge, origen, RP hash y bits UP/UV; calculó aparte el
+PRF esperado desde `credWithUV`. Un control cambió solo esa semilla y repitió
+la ruta. El diseño fue escrito tras una prueba exploratoria inicial y queda
+fuera del denominador congelado v2.0.
+
 
 ## 6. Resultados
 
@@ -293,6 +310,22 @@ PRF entre perfiles coexiste con la pérdida del estado CXF original. Este
 resultado no prueba conformidad CXF 1.0 ni interoperabilidad con otro
 proveedor.
 
+### 6.7. Fase 17: control positivo de semillas CXF en software Proton
+
+En 2/2 repeticiones, el CXF exportado conservó ID, RP ID, user handle, clave
+PKCS#8 y los bytes de `credWithUV` y `credWithoutUV`. No hubo avisos en
+importación, exportación o reimportación. El verificador comprobó 8/8 firmas
+ES256 y 8/8 resultados PRF con UV del recorrido positivo: cada resultado
+coincidió con el HMAC derivado de la semilla CXF original, y origen y destino
+coincidieron para la misma entrada. Una segunda entrada dio otro resultado.
+Con la semilla UV modificada, las 4/4 aserciones adicionales conservaron la
+identidad y firma válidas, mientras el PRF cambió según el control. Total:
+12/12 firmas y 12/12 comprobaciones PRF independientes. El resultado de la
+extensión PRF no está cubierto por la firma WebAuthn; la comparación con el
+HMAC de la semilla es un oráculo separado. Los bytes de la semilla sin UV
+se conservaron, pero no se ejecutó una ceremonia PRF sin UV. Este es un resultado de
+autenticador software, no de migración entre navegadores o apps.
+
 ## 7. Discusión
 
 El experimento demuestra una capacidad del método: la autenticación funcionó
@@ -321,6 +354,11 @@ devolver el mismo valor aun cuando la extensión CXF de origen se haya
 descartado. La igualdad del output, por sí sola, no valida la representación
 intercambiada ni el algoritmo interno de un proveedor.
 
+El control Proton muestra el contraste realizable: una implementación externa
+puede transportar las semillas CXF originales y generar el PRF con UV esperado
+tras reimportar. El contraste es entre rutas seleccionadas de software y no
+establece prevalencia, superioridad de producto ni interoperabilidad CXP.
+
 ## 8. Limitaciones
 
 - Los cuatro perfiles de la campaña C1 son controles sintéticos; el caso Fenko
@@ -339,9 +377,12 @@ intercambiada ni el algoritmo interno de un proveedor.
   no son una muestra aleatoria ni un ensayo de otras versiones o proveedores.
 - Las dos repeticiones de la fase 16 también usan la misma revisión Fenko en
   ambos extremos; no prueban interoperabilidad entre implementaciones.
-- No se ejecutó CXP entre dos proveedores. Tampoco hubo PRF WebAuthn de origen
-  y destino con las mismas semillas restauradas; ambos oráculos son
+- No se ejecutó CXP entre dos proveedores. Tampoco hubo ceremonias PRF en
+  navegadores de origen y destino con las mismas semillas restauradas; ambos oráculos son
   `NOT_EVALUABLE` en el seguimiento.
+- El control Proton usa el módulo WASM y su autenticador software; el paquete
+  npm está fijado por integridad, pero no reproducimos el build de origen.
+  No se probó la persistencia en la app Proton ni PRF sin UV.
 - Una futura transferencia entre apps Android deberá informarse como flujo
   mediado por la plataforma salvo que se capture y valide aparte el encapsulado
   del borrador CXP público.
@@ -360,7 +401,7 @@ y regenera resultados, tablas y manuscrito para compararlos con la release. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
-Las fases 14 a 16 quedan fuera de aquella release y tienen informes separados.
+Las fases 14 a 17 quedan fuera de aquella release y tienen informes separados.
 `./research.ps1 phase14` reproduce el intercambio propio y el control CDP;
 `./research.ps1 phase15` construye Fenko desde el commit fijado, ejecuta sus
 tests CXF y el caso en dos perfiles, y vuelve a verificar las transcripciones
@@ -380,6 +421,14 @@ independiente. Los informes son
 recalculan desde las dos filas públicas. El archivo CXF de paso y los perfiles
 temporales se eliminan tras el ensayo.
 
+`./research.ps1 phase17` instala el WASM oficial fijado de Proton Pass 2.0.0
+y reproduce dos rutas sintéticas CXF→software→CXF→software, con dos sales
+PRF y un control de semilla modificada por repetición. El driver verifica
+firmas y PRF fuera del módulo externo y guarda solo hashes, conteos y
+resultados de oráculos en
+`experiments/phase17_exploratory/proton_cxf_prf.json`. El protocolo exploratorio
+se documenta en `experiments/protocol_v2_proton_software.json`.
+
 ## 10. Conclusión
 
 PasskeyTransit distingue compatibilidad sintáctica, autenticación básica y
@@ -390,9 +439,10 @@ generalizar es ejecutar más rutas identificadas e independientes, manteniendo
 los mismos oráculos y límites de afirmación. El caso externo confirma en una
 ruta concreta que autenticar no garantiza conservar el PRF importado. La
 fase 16 demuestra continuidad funcional Fenko→Fenko sin conservar las
-semillas CXF originales. La interoperabilidad CXP entre proveedores y la
-preservación positiva del PRF original siguen pendientes de un entorno
-accesible.
+semillas CXF originales. El control Proton demuestra que un autenticador
+software externo puede conservar esas semillas por CXF y reproducir su PRF
+con UV. La interoperabilidad CXP entre proveedores y la preservación del
+PRF original entre navegadores siguen pendientes de un entorno accesible.
 La matriz de afirmaciones distingue además una transferencia CXF mediada
 por Android de la interoperabilidad del formato de transporte CXP público.
 
@@ -431,3 +481,6 @@ por Android de la interoperabilidad del formato de transporte CXP público.
     https://keyguard.dev/docs/credential-exchange/.
 15. Keyguard, project description and license,
     https://github.com/AChep/keyguard-app.
+16. Proton Pass common 2.0.0, commit
+    `69a0927f0fe7071243d6c38e404459a69210fdd4`,
+    https://github.com/protonpass/proton-pass-common/tree/69a0927f0fe7071243d6c38e404459a69210fdd4.

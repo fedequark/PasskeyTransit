@@ -43,7 +43,13 @@ selection criterion.
 | Same-provider browser PRF continuity over CXF | Signed source/destination PRF observations | Fenko Phase 16: measured |
 | Android platform-mediated transfer between distinct provider apps | Two identified apps on a live Android/Play-services environment with separate vaults, transfer receipt, retained identity and signed destination assertion | Not evaluated |
 | Public CXP Working Draft wire interoperability | Captured request/response, selected HPKE parameters, ZIP/JWE payload, independent recipient, negative controls | Not evaluated |
-| Preservation of original CXF HMAC seeds | Original source-browser PRF, restored destination-browser PRF on the same inputs, seed-state trace | Not evaluated positively; selected Fenko route failed against the source CXF seed control |
+| Browser-to-browser preservation of original CXF HMAC seeds | Original source-browser PRF, restored destination-browser PRF on the same inputs, seed-state trace | Not evaluated positively; selected Fenko route failed against the source CXF seed control |
+
+After this audit, Phase 17 executed Proton Pass 2.0.0's published worker
+WASM. Its independent CXF import/export/reimport preserved both original HMAC
+seed byte strings and its software authenticator returned the expected UV PRF.
+This adds a positive software control, but the source-browser to
+destination-browser and two-provider CXP rows above remain unevaluated.
 
 ## Environment and next executable route
 
@@ -71,8 +77,16 @@ observable browser/provider behavior for that run.
 The open `go-cxp` package publishes protocol data types but no package-level
 functions; the Bitwarden `credential-exchange` high-level crate is reserved.
 Neither is an executable independent provider exporter/importer by itself.
-Adding a local adapter around these models would be useful for schema checks,
-but could not replace the provider-flow or normative wire evidence above.
+Proton Pass 2.0.0 does include executable CXP import/export handlers in its
+source tree; the published worker WASM exposes CXF import/export but not those
+CXP handlers. Its source handler encrypts CXF JSON directly with HPKE, so an
+execution of that route would still need a separately qualified claim against
+the public Working Draft's ZIP/JWE payload.
+
+KeePassDX is GPL-licensed and advertises passkey PRF, but its own import/export
+documentation explicitly says CXF is still under development. It therefore
+cannot currently be selected as an executable CXF migration route based on
+that documentation alone.
 
 ## Primary sources checked 2026-10-02
 
@@ -94,3 +108,9 @@ but could not replace the provider-flow or normative wire evidence above.
   https://pkg.go.dev/github.com/nvinuesa/go-cxp
 - OpenAI, remote connections:
   https://learn.chatgpt.com/docs/remote-connections
+- Proton Pass common 2.0.0, pinned source:
+  https://github.com/protonpass/proton-pass-common/tree/69a0927f0fe7071243d6c38e404459a69210fdd4
+- KeePassDX, import/export status:
+  https://github.com/Kunzisoft/KeePassDX/wiki/Import-and-Export
+- KeePassDX, changelog:
+  https://github.com/Kunzisoft/KeePassDX/blob/master/CHANGELOG

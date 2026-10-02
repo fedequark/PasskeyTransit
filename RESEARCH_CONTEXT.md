@@ -89,3 +89,11 @@ platform-brokered Content URI. An eventual Android app-to-app result must be
 classified separately from the public CXP Working Draft ZIP/JWE wire claim;
 neither has yet been measured here. See
 `docs/CXP_PROVIDER_FEASIBILITY_2026.md`.
+
+Phase 17 uses Proton Pass 2.0.0's official prebuilt WASM as an independent
+software CXF/PRF control. In two synthetic repetitions, both HMAC seed fields
+survived import/export/reimport and the UV PRF matched the standard HMAC
+calculation before and after. Twelve signatures and twelve separate PRF seed
+calculations were checked,
+including four changed-seed controls. No source/destination browser or app
+transfer was run. See `docs/PHASE_17.md`.
