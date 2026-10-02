@@ -54,6 +54,24 @@ It also includes the CXF profile, experimental CXP/HPKE
 transport, browser-backed C1 controls, C2 robustness cases, a C3 in-memory
 transactional simulation, an independent HPKE/Node.js boundary, and a
 reproducible manuscript. C3 does not establish durable-storage or process-crash recovery.
-The next evidence frontier is an identified external provider or independent
-CXP implementation; until then, no result may be generalized beyond the
-versioned reference controls.
+The next evidence frontier is a provider-to-provider CXP exchange and positive
+browser-to-browser PRF preservation. The synthetic controls do not support
+population claims.
+
+An exploratory Phase 14, performed after the v0.7.1 release, exercises the
+experimental CXP binding in separately written Python and Node.js code and
+observes browser PRF before and after CDP-based import. The source PRF executes,
+but the destination PRF state is absent because CDP does not expose or inject
+that secret. This is a local loss control, not positive PRF preservation or an
+external-provider result. See `docs/PHASE_14.md`.
+
+The source-informed Phase 15 follows one pinned open provider, Fenko Vault
+0.12.0: CXF file import through its UI, browser WebAuthn assertion, persistent
+storage and CXF export through its UI. Two fresh runs retained basic
+authentication but showed PRF divergence from the source CXF seed control and
+omitted PRF extension state on export. The public transcripts independently
+verify 16 signatures and six PRF witness bindings. This is a selected provider
+case, not an estimate of failure frequency. Fenko does not supply a CXP
+provider path; a full third-party CXP exchange and positive browser-to-browser
+PRF migration remain `NOT_EVALUABLE` here. See `docs/PHASE_15.md` and
+`paper/current/MANUSCRIPT_V0_8_DRAFT.md`.

@@ -1,0 +1,75 @@
+{
+  "evidence_class": "independent-public-transcript-recalculation",
+  "report_sha256": "0e37480b1a045a33017a40aed67d701d0e9e5265cdb4d176dec51b7b30d11a79",
+  "verified": true,
+  "summary": {
+    "repetitions": 2,
+    "signed_assertions_verified": 16,
+    "prf_witness_bindings_verified": 6,
+    "source_prf_mismatch_runs": 2,
+    "missing_export_prf_state_runs": 2,
+    "bad_key_rejected_runs": 2,
+    "duplicate_skipped_runs": 2,
+    "restart_persisted_runs": 2
+  },
+  "rows": [
+    {
+      "repetition": 1,
+      "assertion_set_valid": true,
+      "assertions_valid": {
+        "basic": true,
+        "prf_first": true,
+        "prf_first_witness": true,
+        "prf_repeat": true,
+        "prf_repeat_witness": true,
+        "prf_other_salt": true,
+        "prf_other_salt_witness": true,
+        "after_restart": true
+      },
+      "witness_binding": {
+        "prf_first": true,
+        "prf_repeat": true,
+        "prf_other_salt": true
+      },
+      "source_documents_valid": true,
+      "source_digest_valid": true,
+      "prf_status_valid": true,
+      "prf_digest_relation_valid": true,
+      "storage_counts_valid": true,
+      "import_summary_valid": true,
+      "export_summary_valid": true,
+      "observations_valid": true,
+      "sensitive_absent": true,
+      "checks_consistent": true
+    },
+    {
+      "repetition": 2,
+      "assertion_set_valid": true,
+      "assertions_valid": {
+        "basic": true,
+        "prf_first": true,
+        "prf_first_witness": true,
+        "prf_repeat": true,
+        "prf_repeat_witness": true,
+        "prf_other_salt": true,
+        "prf_other_salt_witness": true,
+        "after_restart": true
+      },
+      "witness_binding": {
+        "prf_first": true,
+        "prf_repeat": true,
+        "prf_other_salt": true
+      },
+      "source_documents_valid": true,
+      "source_digest_valid": true,
+      "prf_status_valid": true,
+      "prf_digest_relation_valid": true,
+      "storage_counts_valid": true,
+      "import_summary_valid": true,
+      "export_summary_valid": true,
+      "observations_valid": true,
+      "sensitive_absent": true,
+      "checks_consistent": true
+    }
+  ]
+}

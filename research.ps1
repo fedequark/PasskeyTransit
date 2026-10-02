@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "verify-release", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "phase14", "phase15", "verify-release", "status")]
     [string]$Action = "status"
 )
 
@@ -195,6 +195,68 @@ switch ($Action) {
             --source (Join-Path $AnalysisRun.FullName "MANUSCRIPT.md") `
             --docx (Join-Path $AnalysisRun.FullName "$PublicationStem.docx") `
             --pdf (Join-Path $AnalysisRun.FullName "$PublicationStem.pdf")
+    }
+    "phase14" {
+        Require-Venv
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        $RunRoot = Join-Path $ProjectRoot "datasets\generated\phase14\$RunStamp"
+        $NodePath = (Get-Command node -ErrorAction Stop).Source
+        $NodeScript = Join-Path $ProjectRoot "interop\node_cxp_exchange.mjs"
+        $BrowserPath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+        if (-not (Test-Path -LiteralPath $BrowserPath)) {
+            $BrowserPath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+        }
+        if (-not (Test-Path -LiteralPath $BrowserPath)) {
+            throw "No supported local Chromium executable was found."
+        }
+        & $VenvPython -m passkeytransit cross-runtime-cxp `
+            --protocol $ProtocolPath `
+            --node $NodePath `
+            --node-script $NodeScript `
+            --output (Join-Path $RunRoot "cross_runtime_cxp.json")
+        if ($LASTEXITCODE -ne 0) { throw "Cross-runtime CXP experiment failed; PRF experiment was not started." }
+        & $VenvPython -m passkeytransit prf-migration `
+            --browser $BrowserPath `
+            --node $NodePath `
+            --node-script $NodeScript `
+            --output (Join-Path $RunRoot "prf_migration.json")
+    }
+    "phase15" {
+        Require-Venv
+        $FenkoRoot = Join-Path $ProjectRoot "tmp\vendor_fenko"
+        if (-not (Test-Path -LiteralPath (Join-Path $FenkoRoot "package-lock.json"))) {
+            throw "Pinned Fenko source missing; see docs/PHASE_15.md for setup."
+        }
+        $BrowserPath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+        if (-not (Test-Path -LiteralPath $BrowserPath)) {
+            $BrowserPath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+        }
+        if (-not (Test-Path -LiteralPath $BrowserPath)) {
+            throw "No supported local Chromium executable was found."
+        }
+        Push-Location $FenkoRoot
+        try {
+            npm test -- --runInBand tests/porting/cxf.test.ts
+            if ($LASTEXITCODE -ne 0) { throw "Fenko CXF tests failed." }
+            npm run typecheck
+            if ($LASTEXITCODE -ne 0) { throw "Fenko typecheck failed." }
+            npm run build:chrome
+            if ($LASTEXITCODE -ne 0) { throw "Fenko extension build failed." }
+        } finally {
+            Pop-Location
+        }
+        $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
+        $Report = Join-Path $ProjectRoot "datasets\generated\phase15\$RunStamp\fenko_provider.json"
+        & $VenvPython -m passkeytransit fenko-provider `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v2.json") `
+            --vendor-root $FenkoRoot `
+            --browser $BrowserPath `
+            --output $Report
+        if ($LASTEXITCODE -ne 0) { throw "Fenko provider experiment failed." }
+        & $VenvPython -m passkeytransit verify-fenko-provider `
+            --report $Report `
+            --protocol (Join-Path $ProjectRoot "experiments\protocol_v2.json")
+        if ($LASTEXITCODE -ne 0) { throw "Fenko evidence verification failed." }
     }
     "phase10" {
         Require-Venv

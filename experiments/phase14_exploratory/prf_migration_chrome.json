@@ -1,0 +1,41 @@
+{
+  "evidence_class": "browser-executed-prf-loss-control-after-cross-runtime-exchange",
+  "study_status": "post-inspection-exploratory",
+  "node_script_sha256": "55642661f2d1ea14a8ecfaa1625f9cbcd2d5b2b0ab721f99f4c96534cf3a67b0",
+  "python_runner_sha256": "f3021466a6ca4f99f20d1d3596f23e70ab6429286369db562f30ef80040e0224",
+  "browser_version": "154.0.8037.58",
+  "node_version": "v24.18.0",
+  "rp_id": "localhost",
+  "credential_id_sha256": "3b863292e097febaa622c8c67a6c687b32b64a44dd31a5febc3356d1f162c902",
+  "source_prf_output_sha256": "779b8b9df4e1d0fc14b85ed15da92fc0bcc725d229a98fdd437974dd761b4f8f",
+  "source_cdp_fields": [
+    "backupEligibility",
+    "backupState",
+    "credentialId",
+    "isResidentCredential",
+    "privateKey",
+    "rpId",
+    "signCount",
+    "userDisplayName",
+    "userHandle",
+    "userName"
+  ],
+  "checks": {
+    "source_registration_prf_enabled": true,
+    "source_prf_executed": true,
+    "same_salt_stable": true,
+    "different_salt_changes_output": true,
+    "all_assertion_signatures_valid": true,
+    "credential_id_preserved": true,
+    "source_prf_state_not_exposed_in_cdp_fields": true,
+    "cxp_document_equal": true,
+    "destination_prf_result_missing": true
+  },
+  "all_checks_pass": true,
+  "interpretation": "PRF was executed before migration and absent after CDP-based import; this proves loss detection for this test path, not positive PRF preservation or provider behavior.",
+  "limitations": [
+    "CDP getCredentials/addCredential does not expose or inject the PRF secret",
+    "the Node CXP implementation is project-authored and uses an experimental binding",
+    "Chromium virtual authenticators are not commercial credential providers"
+  ]
+}

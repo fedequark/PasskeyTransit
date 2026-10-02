@@ -15,6 +15,10 @@ from .requirements import requirement_coverage
 from .robustness import run_c2_robustness, run_c3_faults
 from .interop import run_independent_interop
 from .external_adapter import run_bitwarden_interop
+from .cross_runtime import run_cross_runtime_cxp
+from .prf_migration import run_prf_migration
+from .fenko_provider import run_fenko_provider
+from .fenko_verify import verify_fenko_report
 from .oracle_capabilities import write_oracle_capability_report
 from .release import build_release, verify_release
 from .webauthn_lab import run_webauthn_migration
@@ -73,6 +77,24 @@ def build_parser() -> argparse.ArgumentParser:
     external.add_argument("--wasi-runner", type=Path, required=True)
     external.add_argument("--cargo-toolchain")
     external.add_argument("--output", type=Path, required=True)
+    cross_runtime = subparsers.add_parser("cross-runtime-cxp", help="exercise the experimental CXP binding in Python and Node.js")
+    cross_runtime.add_argument("--protocol", type=Path, required=True)
+    cross_runtime.add_argument("--node", type=Path, required=True)
+    cross_runtime.add_argument("--node-script", type=Path, required=True)
+    cross_runtime.add_argument("--output", type=Path, required=True)
+    prf_migration = subparsers.add_parser("prf-migration", help="run a browser-executed PRF migration loss control")
+    prf_migration.add_argument("--browser", type=Path, required=True)
+    prf_migration.add_argument("--node", type=Path, required=True)
+    prf_migration.add_argument("--node-script", type=Path, required=True)
+    prf_migration.add_argument("--output", type=Path, required=True)
+    fenko = subparsers.add_parser("fenko-provider", help="run the pinned open-source Fenko CXF/browser follow-up")
+    fenko.add_argument("--protocol", type=Path, required=True)
+    fenko.add_argument("--vendor-root", type=Path, required=True)
+    fenko.add_argument("--browser", type=Path, required=True)
+    fenko.add_argument("--output", type=Path, required=True)
+    fenko_verify = subparsers.add_parser("verify-fenko-provider", help="recalculate Fenko public transcripts")
+    fenko_verify.add_argument("--report", type=Path, required=True)
+    fenko_verify.add_argument("--protocol", type=Path, required=True)
     oracle_audit = subparsers.add_parser("oracle-audit", help="write the Phase 12 capability report")
     oracle_audit.add_argument("--output", type=Path, required=True)
     release = subparsers.add_parser("release", help="build a self-contained replication archive")
@@ -154,6 +176,22 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps(result, indent=2))
         return 0 if result["semantic_json_equal"] else 1
+    if args.command == "cross-runtime-cxp":
+        result = run_cross_runtime_cxp(args.protocol, args.node, args.node_script, args.output)
+        print(json.dumps(result, indent=2))
+        return 0 if result["all_checks_pass"] else 1
+    if args.command == "prf-migration":
+        result = run_prf_migration(args.browser, args.node, args.node_script, args.output)
+        print(json.dumps(result, indent=2))
+        return 0 if result["all_checks_pass"] else 1
+    if args.command == "fenko-provider":
+        result = run_fenko_provider(args.protocol, args.vendor_root, args.browser, args.output)
+        print(json.dumps({"output": str(args.output), "all_harness_checks_pass": result["all_harness_checks_pass"]}, indent=2))
+        return 0 if result["all_harness_checks_pass"] else 1
+    if args.command == "verify-fenko-provider":
+        result = verify_fenko_report(args.report, args.protocol)
+        print(json.dumps(result, indent=2))
+        return 0 if result["verified"] else 1
     if args.command == "oracle-audit":
         print(json.dumps(write_oracle_capability_report(args.output), indent=2))
         return 0

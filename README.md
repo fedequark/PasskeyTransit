@@ -74,6 +74,24 @@ design-weighted descriptions of the synthetic matrix. None of
 these additions converts parser interop or
 synthetic controls into commercial-provider evidence.
 
+Phase 14 adds exploratory cross-runtime exchange through a separately written
+Node.js implementation of the project's experimental CXP binding, a positive
+software PRF control over exported CXF state, and an executable browser PRF
+loss control. These results are outside the v0.7.1 release and do not establish
+a third-party provider flow or positive browser PRF preservation. See
+`docs/PHASE_14.md`.
+
+Phase 15 adds a source-pinned open provider case using Fenko Vault's unmodified
+CXF import/export and browser-extension WebAuthn path. Across two fresh runs,
+imported credentials signed 16 independently verified assertions, including
+six signed PRF-observation witnesses. Basic authentication and storage after a
+restart worked; the PRF result diverged from the imported CXF seed control and
+the exported document omitted the PRF extension state. This is one selected
+provider route, not a provider prevalence estimate or a CXP provider exchange.
+See `docs/PHASE_15.md`, `docs/EXPERIMENT_PROTOCOL_V2.md`, and the separate
+`paper/current/MANUSCRIPT_V0_8_DRAFT.md`. Full provider CXP and positive
+browser-to-browser PRF preservation remain `NOT_EVALUABLE` on this host.
+
 ## Quick start
 
 From PowerShell:
@@ -95,6 +113,8 @@ From PowerShell:
 ./research.ps1 phase12
 ./research.ps1 phase13
 ./research.ps1 phase10
+./research.ps1 phase14
+./research.ps1 phase15
 ./research.ps1 verify-release
 ./research.ps1 pilot
 ```
@@ -113,12 +133,16 @@ and a recorded seed.
 - `paper/legacy/`: explicitly simulated legacy paper and rendered versions.
 - `paper/current/MANUSCRIPT.md`: current Spanish manuscript.
 - `paper/current/MANUSCRIPT_EN.md`: reviewed English translation.
+- `paper/current/MANUSCRIPT_V0_8_DRAFT.md`: exploratory Spanish follow-up;
+  not part of the v0.7.1 release.
 - `docs/`: research state, provenance, and decision records.
 
 The historical Phase 1 design is in `docs/EXPERIMENT_PROTOCOL.md`. The current
 corrective design is in `docs/EXPERIMENT_PROTOCOL_V1_5.md`, with its
 machine-readable counterpart in `experiments/protocol_v1.5.json`. It records
 that prior data and reviews were inspected before the v1.5 corrections.
+The source-informed follow-up design is in `docs/EXPERIMENT_PROTOCOL_V2.md`
+and `experiments/protocol_v2.json`.
 
 ## Evidence policy
 
