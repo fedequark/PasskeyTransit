@@ -186,6 +186,21 @@ conservó exactamente su hash SHA-256. Esta prueba establece interoperabilidad d
 formato con una implementación abierta independiente; no ejecuta el flujo de un
 producto ni autoriza afirmaciones sobre Bitwarden como proveedor.
 
+### 5.2. Frontera entre CXP público y transferencia Android
+
+El borrador CXP público de 2024 describe solicitud y respuesta JSON, con un
+payload ZIP de archivos JWE cifrados [2]. La API de transferencia de
+credenciales publicada por Android entrega, en cambio, un documento CXF JSON
+a través de un URI temporal mediado por el sistema [12]. Bitwarden denomina
+CXP a su flujo directo entre apps móviles [13]; Keyguard documenta CXF 1.0
+en ambos sentidos sobre el mecanismo Android [14]. Keyguard es un cliente de
+la plataforma Bitwarden y KeePass con código disponible solo para uso
+personal [15]; una comparación exigiría bóvedas sintéticas separadas. Un
+eventual ensayo entre esas apps mediría transferencia mediada por Android y
+autenticación posterior. No bastaría, por sí mismo, para afirmar conformidad
+con el encapsulado ZIP/JWE del borrador público. Durante este estudio no hubo
+un entorno Android accesible al banco de pruebas para ejecutar ese flujo.
+
 
 ## 6. Resultados
 
@@ -327,6 +342,9 @@ intercambiada ni el algoritmo interno de un proveedor.
 - No se ejecutó CXP entre dos proveedores. Tampoco hubo PRF WebAuthn de origen
   y destino con las mismas semillas restauradas; ambos oráculos son
   `NOT_EVALUABLE` en el seguimiento.
+- Una futura transferencia entre apps Android deberá informarse como flujo
+  mediado por la plataforma salvo que se capture y valide aparte el encapsulado
+  del borrador CXP público.
 
 ## 9. Reproducibilidad
 
@@ -375,6 +393,8 @@ fase 16 demuestra continuidad funcional Fenko→Fenko sin conservar las
 semillas CXF originales. La interoperabilidad CXP entre proveedores y la
 preservación positiva del PRF original siguen pendientes de un entorno
 accesible.
+La matriz de afirmaciones distingue además una transferencia CXF mediada
+por Android de la interoperabilidad del formato de transporte CXP público.
 
 ## Referencias
 
@@ -403,3 +423,11 @@ accesible.
 11. FenkoHQ, Passkey Vault 0.12.0, commit
     `2d873fbe25257250de6e322e9d785b97b17a544f`,
     https://github.com/FenkoHQ/passkey-vault/tree/2d873fbe25257250de6e322e9d785b97b17a544f.
+12. Android Developers, Credential transfer,
+    https://developer.android.com/identity/sign-in/credential-transfer.
+13. Bitwarden, Import to your Vault or Collections,
+    https://bitwarden.com/help/import-data/.
+14. Keyguard, Credential Exchange,
+    https://keyguard.dev/docs/credential-exchange/.
+15. Keyguard, project description and license,
+    https://github.com/AChep/keyguard-app.

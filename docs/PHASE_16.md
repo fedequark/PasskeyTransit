@@ -66,3 +66,5 @@ needed for the provider CXP claim. A positive *standard CXF seed*
 preservation case needs an importer that restores both HMAC seeds and a
 source/destination browser ceremony with the same input. Neither result can
 be inferred from this same-provider control.
+The separate Android platform-transfer and public CXP Working Draft gates
+are recorded in `CXP_PROVIDER_FEASIBILITY_2026.md`.

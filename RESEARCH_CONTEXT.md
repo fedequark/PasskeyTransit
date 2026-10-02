@@ -83,3 +83,9 @@ bindings independently verified. Yet the original CXF seed control still
 failed and Fenko's export omitted its extension state. This establishes
 same-provider functional continuity, not preservation of the original CXF
 seeds or CXP interoperability. See `docs/PHASE_16.md`.
+
+Android's documented provider-transfer API passes CXF JSON through a
+platform-brokered Content URI. An eventual Android app-to-app result must be
+classified separately from the public CXP Working Draft ZIP/JWE wire claim;
+neither has yet been measured here. See
+`docs/CXP_PROVIDER_FEASIBILITY_2026.md`.

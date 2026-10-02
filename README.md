@@ -99,6 +99,8 @@ independently verified assertions and 12 PRF witnesses. The original CXF
 HMAC-seed control still differed and the export still omitted those seeds;
 this is same-provider functional continuity, not seed preservation or CXP.
 See `docs/PHASE_16.md`.
+`docs/CXP_PROVIDER_FEASIBILITY_2026.md` distinguishes a prospective Android
+platform-mediated CXF transfer from the public CXP Working Draft wire claim.
 
 ## Quick start
 

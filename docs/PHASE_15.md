@@ -107,6 +107,8 @@ crate. Thus the full third-party CXP provider route is currently
 The Android Codex app can access this desktop task through a remote connection,
 but it does not expose the phone's credential-provider applications or passkey
 store as an Android test device to the desktop harness.
+For the distinction between an Android platform-mediated CXF transfer and the
+public CXP Working Draft wire format, see `CXP_PROVIDER_FEASIBILITY_2026.md`.
 
 Sources checked 2026-10-02:
 
