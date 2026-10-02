@@ -90,7 +90,15 @@ the exported document omitted the PRF extension state. This is one selected
 provider route, not a provider prevalence estimate or a CXP provider exchange.
 See `docs/PHASE_15.md`, `docs/EXPERIMENT_PROTOCOL_V2.md`, and the separate
 `paper/current/MANUSCRIPT_V0_8_DRAFT.md`. Full provider CXP and positive
-browser-to-browser PRF preservation remain `NOT_EVALUABLE` on this host.
+preservation of the original CXF HMAC seeds remain `NOT_EVALUABLE` on this host.
+
+Phase 16 adds a source-informed Fenko-to-Fenko browser round trip through
+the provider's CXF export/import UI. Both fresh repetitions returned equal
+PRF outputs in source and destination profiles for matching inputs, with 24
+independently verified assertions and 12 PRF witnesses. The original CXF
+HMAC-seed control still differed and the export still omitted those seeds;
+this is same-provider functional continuity, not seed preservation or CXP.
+See `docs/PHASE_16.md`.
 
 ## Quick start
 
@@ -115,6 +123,7 @@ From PowerShell:
 ./research.ps1 phase10
 ./research.ps1 phase14
 ./research.ps1 phase15
+./research.ps1 phase16
 ./research.ps1 verify-release
 ./research.ps1 pilot
 ```

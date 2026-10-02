@@ -55,7 +55,7 @@ transport, browser-backed C1 controls, C2 robustness cases, a C3 in-memory
 transactional simulation, an independent HPKE/Node.js boundary, and a
 reproducible manuscript. C3 does not establish durable-storage or process-crash recovery.
 The next evidence frontier is a provider-to-provider CXP exchange and positive
-browser-to-browser PRF preservation. The synthetic controls do not support
+preservation of original CXF HMAC-seed PRF state. The synthetic controls do not support
 population claims.
 
 An exploratory Phase 14, performed after the v0.7.1 release, exercises the
@@ -72,6 +72,14 @@ authentication but showed PRF divergence from the source CXF seed control and
 omitted PRF extension state on export. The public transcripts independently
 verify 16 signatures and six PRF witness bindings. This is a selected provider
 case, not an estimate of failure frequency. Fenko does not supply a CXP
-provider path; a full third-party CXP exchange and positive browser-to-browser
-PRF migration remain `NOT_EVALUABLE` here. See `docs/PHASE_15.md` and
+provider path; a full third-party CXP exchange and positive preservation of
+the original CXF HMAC seeds remain `NOT_EVALUABLE` here. See `docs/PHASE_15.md` and
 `paper/current/MANUSCRIPT_V0_8_DRAFT.md`.
+
+An exploratory Phase 16 executes Fenko CXF export/import between two isolated
+browser profiles. In 2/2 repetitions, source and destination WebAuthn PRF
+outputs matched for the same inputs; 24 signed assertions and 12 PRF witness
+bindings independently verified. Yet the original CXF seed control still
+failed and Fenko's export omitted its extension state. This establishes
+same-provider functional continuity, not preservation of the original CXF
+seeds or CXP interoperability. See `docs/PHASE_16.md`.

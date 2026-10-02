@@ -19,6 +19,8 @@ from .cross_runtime import run_cross_runtime_cxp
 from .prf_migration import run_prf_migration
 from .fenko_provider import run_fenko_provider
 from .fenko_verify import verify_fenko_report
+from .fenko_roundtrip import run_fenko_roundtrip
+from .fenko_roundtrip_verify import verify_fenko_roundtrip
 from .oracle_capabilities import write_oracle_capability_report
 from .release import build_release, verify_release
 from .webauthn_lab import run_webauthn_migration
@@ -95,6 +97,14 @@ def build_parser() -> argparse.ArgumentParser:
     fenko_verify = subparsers.add_parser("verify-fenko-provider", help="recalculate Fenko public transcripts")
     fenko_verify.add_argument("--report", type=Path, required=True)
     fenko_verify.add_argument("--protocol", type=Path, required=True)
+    fenko_roundtrip = subparsers.add_parser("fenko-roundtrip", help="run same-provider browser PRF CXF round trip")
+    fenko_roundtrip.add_argument("--protocol", type=Path, required=True)
+    fenko_roundtrip.add_argument("--vendor-root", type=Path, required=True)
+    fenko_roundtrip.add_argument("--browser", type=Path, required=True)
+    fenko_roundtrip.add_argument("--output", type=Path, required=True)
+    fenko_roundtrip_verify = subparsers.add_parser("verify-fenko-roundtrip", help="recalculate same-provider browser PRF round trip")
+    fenko_roundtrip_verify.add_argument("--report", type=Path, required=True)
+    fenko_roundtrip_verify.add_argument("--protocol", type=Path, required=True)
     oracle_audit = subparsers.add_parser("oracle-audit", help="write the Phase 12 capability report")
     oracle_audit.add_argument("--output", type=Path, required=True)
     release = subparsers.add_parser("release", help="build a self-contained replication archive")
@@ -190,6 +200,18 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if result["all_harness_checks_pass"] else 1
     if args.command == "verify-fenko-provider":
         result = verify_fenko_report(args.report, args.protocol)
+        print(json.dumps(result, indent=2))
+        return 0 if result["verified"] else 1
+    if args.command == "fenko-roundtrip":
+        result = run_fenko_roundtrip(args.protocol, args.vendor_root, args.browser, args.output)
+        print(json.dumps({"output": str(args.output),
+                          "all_procedure_checks_pass": result["all_procedure_checks_pass"],
+                          "functional_prf_continuity_oracles": [
+                              run["functional_prf_continuity_oracle"] for run in result["runs"]
+                          ]}, indent=2))
+        return 0 if result["all_procedure_checks_pass"] else 1
+    if args.command == "verify-fenko-roundtrip":
+        result = verify_fenko_roundtrip(args.report, args.protocol)
         print(json.dumps(result, indent=2))
         return 0 if result["verified"] else 1
     if args.command == "oracle-audit":

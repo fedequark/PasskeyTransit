@@ -1,0 +1,452 @@
+{
+  "evidence_class": "selected-same-provider-browser-CXF-roundtrip",
+  "protocol_id": "passkeytransit-fenko-cxf-browser-roundtrip-v2.1",
+  "protocol_sha256": "8ef13a93bc5c20e8687b082f023f0da8854ddc225d8854ef2f01c3d251e99609",
+  "provider": {
+    "name": "Fenko Vault",
+    "version": "0.12.0",
+    "source_revision": "2d873fbe25257250de6e322e9d785b97b17a544f",
+    "source_file_sha256": {
+      "src/porting/formats/cxf.ts": "5ec0e1748f8e2022cf6db76a6ecdc3eab9a870153c1122fdb713bfaa541febf4",
+      "src/porting/import.ts": "d3af7bb95f3229f23c5b9721195b26acc9725e3011e220c4d9289d2ea060c87a",
+      "src/porting/export.ts": "06c5d9b9047a40010d12c8fcd4bb584913c839df5906c3b94efb87c62dcf9579",
+      "src/background/prf.ts": "bde843a266105217e357116e309011bc88b0f393f71fa96c8c8ed848fb6dac21"
+    },
+    "built_extension_sha256": {
+      "background.js": "5f15caa3c992ab8bab62777676e75c0d66432b4b6edd95771e91c056f3e15663",
+      "import.js": "5bd78e78acc4715bec55f7c0dd80a34f7f6ab320c5a2710a158484f74c55de7b",
+      "options.js": "de9ca96896683220f12f1680f381adb943bb55865388faf4ef72b242791d96de",
+      "webauthn-inject.js": "d8f20b26c6aed7c8e4a9b144cd43db165cb05bcfe7c00bd7b06c542a8d491478"
+    }
+  },
+  "browser_version": "154.0.4258.48",
+  "runner_sha256": "662d16834aff6bf99a9da522bc8688b252f878ba5712ce7690dcb485e70a0912",
+  "runs": [
+    {
+      "repetition": 1,
+      "browser_version": "154.0.4258.48",
+      "source_document_sha256": "9430653bb1666d67c4e9d30e0eb69a8433e07020a3ec317ee3c8536cc5623d5a",
+      "exported_document_sha256": "0d097803399051d85e72fa4fb6768286455e31d5b139f486c29cd3c0425f2b7d",
+      "source_standard_prf_sha256": "b9eb035f6b10c4284a3e2ec33b4e2c78aafaf8bbb53f69ac9c0486880080c8dd",
+      "export": {
+        "version": {
+          "major": 0,
+          "minor": 0
+        },
+        "credential_count": 1,
+        "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+        "user_handle_equal": true,
+        "sign_count": 0,
+        "prf_extension_state_present": false
+      },
+      "import": {
+        "source": {
+          "new_count": 1,
+          "duplicate_count": 0,
+          "warning_count": 0,
+          "ui_success": true,
+          "status_sha256": "c8ac96f9d48158a4d31423b513062e7befa036754c8aef4335b7089e0d5d84e0"
+        },
+        "destination": {
+          "new_count": 1,
+          "duplicate_count": 0,
+          "warning_count": 0,
+          "ui_success": true,
+          "status_sha256": "c8ac96f9d48158a4d31423b513062e7befa036754c8aef4335b7089e0d5d84e0"
+        }
+      },
+      "stored_counts": {
+        "source": 1,
+        "destination": 1
+      },
+      "assertions": {
+        "source": {
+          "first": {
+            "challenge": "CM_2pXrscZootD1NmnYdMaaRE8976oglBGujD2-VrP0",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAQ",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiQ01fMnBYcnNjWm9vdEQxTm1uWWRNYWFSRTg5NzZvZ2xCR3VqRDItVnJQMCIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEQCIDMLqSHA67Hdd9KqGU0bG4JISSetzfVkMzRxrxh9zxMsAiBEAyIB83r1f-EyKACL01KcJd2rAHjwlkmw103NPiwI2A",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": "a93f3682f56534a2c666a785d92dd71558e8c445b7b994a127970c9445381247"
+          },
+          "first_witness": {
+            "challenge": "ii6MAty4g7Jg6vmRawANaV8TJntiByqu8HXF0_59s80",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAg",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiaWk2TUF0eTRnN0pnNnZtUmF3QU5hVjhUSm50aUJ5cXU4SFhGMF81OXM4MCIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQDv2bSWnHYo3Jbxv4kQ-ZVWsQB457iOpV36AMHwKdJ7IQIhAM0U3k48xI74Xr32aRXVQ7684kcrwaFylXsWb760Qw5x",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": null
+          },
+          "repeat": {
+            "challenge": "NvVGAN8jgny_BbRUJVZQajhw89dT082Sm0WzCz9zBmU",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAw",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiTnZWR0FOOGpnbnlfQmJSVUpWWlFhamh3ODlkVDA4MlNtMFd6Q3o5ekJtVSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQCbdbSNt4zcaMrlmkL-vKtF01qFaJXk_thLhpvu2RpNRAIhAMOUrXBvm5dcwwMDD_4avEOrUSLmRu_rTzxTC1NLn0f_",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": "a93f3682f56534a2c666a785d92dd71558e8c445b7b994a127970c9445381247"
+          },
+          "repeat_witness": {
+            "challenge": "yghlCGqH4w5AYPQ4dUwoN1j3eyPAE1EkbJnch2drV0g",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABA",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoieWdobENHcUg0dzVBWVBRNGRVd29OMWozZXlQQUUxRWtiSm5jaDJkclYwZyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEUCIBte-CZMapH2yzae8GJJP3fXzHFHRSwmwys1DeJcQw23AiEA4q1PiAoCgldXKwNWZk5aPRkUrM6kupDvQgjQB9eYbq8",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": null
+          },
+          "other": {
+            "challenge": "xW8fx7bUv0y3RrBU-GlT-ij7XmiQilzro9erY98BsMI",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABQ",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoieFc4Zng3YlV2MHkzUnJCVS1HbFQtaWo3WG1pUWlsenJvOWVyWTk4QnNNSSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQC0owK-TLjuqu-2OMTLxNekJBgKcyTAzPz1e-6xVCOhLQIhALeOzMSNWn0E4143RCSi9jWvpezuYER07obsta-DZB-t",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": "319ef489ca7708ed9a7b135019598d4939f011bfbf11ec07863651ef8ae8038a"
+          },
+          "other_witness": {
+            "challenge": "LjB20tSKppXgzYgUn5YgQWNTPODuDAOCsh8kzxk2I6w",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABg",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiTGpCMjB0U0twcFhnellnVW41WWdRV05UUE9EdURBT0NzaDhrenhrMkk2dyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQC_5E8wuIaYrlAxPmzhbvd-cLZq58OGapnikgXWJE0abQIhAOdVB3JQe8CNugvcf45_7a9LpxtEuhTV_IOOwhCZBZ2u",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": null
+          }
+        },
+        "destination": {
+          "first": {
+            "challenge": "ut0xtzvBShTRtyGcOpvh2eUYt6yYp51BfdmUwYaNvpA",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAQ",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoidXQweHR6dkJTaFRSdHlHY09wdmgyZVVZdDZ5WXA1MUJmZG1Vd1lhTnZwQSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEQCIAvn13cEteOzGXnDQ90oExkR5daoAE7z8vsFpSbZUDvEAiBvwf9kBRpwzMe1g5UsOZ9hS6EAOKJF1Zqh3rWObGA0nA",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": "a93f3682f56534a2c666a785d92dd71558e8c445b7b994a127970c9445381247"
+          },
+          "first_witness": {
+            "challenge": "yl5hINDw-njw8EscHkMo_r4TatujajeVjXPGyxfAELs",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAg",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoieWw1aElORHctbmp3OEVzY0hrTW9fcjRUYXR1amFqZVZqWFBHeXhmQUVMcyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEUCIQDdPFQ2_87IOFUZq0u1Q0pj0zmvWcybyxXXstb46yrZvwIgLtyk15N6hG5hQF_n8fZ1GcdcGIc3GZtHu6w2ii4KZLE",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": null
+          },
+          "repeat": {
+            "challenge": "lj3xKh-aqM2Nr07ADyzpcsRuf3SCtqQnyUsBrsJjsvQ",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAw",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoibGozeEtoLWFxTTJOcjA3QUR5enBjc1J1ZjNTQ3RxUW55VXNCcnNKanN2USIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQCKEefZeO1QbquKl4HqLXvC4rPvdKyqH4bBnLFG36BtWwIhAMuOedMIahRRjLrbOCIhktN8G56NDfTGVJvErYyHkqOs",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": "a93f3682f56534a2c666a785d92dd71558e8c445b7b994a127970c9445381247"
+          },
+          "repeat_witness": {
+            "challenge": "zvEQ2849iW7MN2z6kzymduQ3EMbEEP4u2zegHniRR3M",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABA",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoienZFUTI4NDlpVzdNTjJ6Nmt6eW1kdVEzRU1iRUVQNHUyemVnSG5pUlIzTSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEQCIFYcjl9zVP_H3zVv_pyFAJqVqZC9xsJ5LHYw0Jn7L_F4AiBvyH9PM1YNE5dxsrzhpxlEKA40tOjZ2kviRnv0kXb9Lw",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": null
+          },
+          "other": {
+            "challenge": "x8dZaKpJN-E0FBmJIJt77G4V-J7nC_ZR4FQg7vm-D7Q",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABQ",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoieDhkWmFLcEpOLUUwRkJtSklKdDc3RzRWLUo3bkNfWlI0RlFnN3ZtLUQ3USIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEUCIQDDAx-0NeC7WoqCJzHJBMmeGjkBEv-E1I1fXYZGAmrcAAIgC0R6JVbbzaVjuHHKD9YWYPncrBjNWv1gGoulBPxaqVw",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": "319ef489ca7708ed9a7b135019598d4939f011bfbf11ec07863651ef8ae8038a"
+          },
+          "other_witness": {
+            "challenge": "66bgit4s2L2a6KwedXn_gdHaCxp-jmGe5fsyJ4WxHiQ",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE6m8ZKcdkG7jbxse-H22yk2aw7xa6pyZ0Bg6F8yYsx6pUM0HMAEeUN9gTSxy9UHAVL9mGeupGBj1nnuNcEtpsqw",
+            "credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "observed_credential_id_sha256": "896bac4ffcbbca2fb373a7b24befda279bacaae4fca53178aa7fd2ac516a2d79",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABg",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiNjZiZ2l0NHMyTDJhNkt3ZWRYbl9nZEhhQ3hwLWptR2U1ZnN5SjRXeEhpUSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEQCICqVCyuPcQVX1TrabmZz5BQZG2AUtgmL5kGhXhx4AT3_AiBB88Piv4WYci6zXjzSqIliaPGlDhYwZw7KVA0eldo6ZA",
+            "user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "observed_user_handle_sha256": "73d3a62bbc6843fbdf0dcf388869e8b0c89da47ca242bbbe56203f748964de06",
+            "prf_output_sha256": null
+          }
+        }
+      },
+      "checks": {
+        "source_imported": true,
+        "destination_imported": true,
+        "all_assertions_verified": true,
+        "all_prf_results_present": true,
+        "exported_identity_present": true,
+        "zero_counter_at_export": true
+      },
+      "all_procedure_checks_pass": true,
+      "outcomes": {
+        "source_fixed_stable": true,
+        "destination_fixed_stable": true,
+        "source_other_differs": true,
+        "destination_other_differs": true,
+        "fixed_source_destination_equal": true,
+        "other_source_destination_equal": true,
+        "source_cxf_seed_mismatch": true,
+        "exported_prf_state_missing": true
+      },
+      "functional_prf_continuity_oracle": "PASS",
+      "source_cxf_seed_oracle": "FAIL"
+    },
+    {
+      "repetition": 2,
+      "browser_version": "154.0.4258.48",
+      "source_document_sha256": "78f0296a380c27e333cb9c517240ac5fdf60d4f71a05ecd9e893f8f1e44b4101",
+      "exported_document_sha256": "dbafe9ed2514a79a62703f7e9d5c1f2b0559c0323c1e0adb781ab426c542b9de",
+      "source_standard_prf_sha256": "3142cbf91c492fc0c0dc606e6ab2b377372c052580005485ea5d434eeef78a47",
+      "export": {
+        "version": {
+          "major": 0,
+          "minor": 0
+        },
+        "credential_count": 1,
+        "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+        "user_handle_equal": true,
+        "sign_count": 0,
+        "prf_extension_state_present": false
+      },
+      "import": {
+        "source": {
+          "new_count": 1,
+          "duplicate_count": 0,
+          "warning_count": 0,
+          "ui_success": true,
+          "status_sha256": "c8ac96f9d48158a4d31423b513062e7befa036754c8aef4335b7089e0d5d84e0"
+        },
+        "destination": {
+          "new_count": 1,
+          "duplicate_count": 0,
+          "warning_count": 0,
+          "ui_success": true,
+          "status_sha256": "c8ac96f9d48158a4d31423b513062e7befa036754c8aef4335b7089e0d5d84e0"
+        }
+      },
+      "stored_counts": {
+        "source": 1,
+        "destination": 1
+      },
+      "assertions": {
+        "source": {
+          "first": {
+            "challenge": "zeWzK5xmphQaI98dihIoQBfQCHEL_PG8o61yBZ1Dkh0",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAQ",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiemVXeks1eG1waFFhSTk4ZGloSW9RQmZRQ0hFTF9QRzhvNjF5QloxRGtoMCIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQCaxAsehM5_c1L4VRc1TDCtmniPrS0aX2NSAj3JYe6ceAIhAJyQUpO00rhfVHkqwwvjRzbRYSO9xSjjUVmHYmFzcME1",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": "03c95ec5280accb130bebe64c3fa8e2a35b95439cb0b97470c2a0b4458aa49d3"
+          },
+          "first_witness": {
+            "challenge": "h0k5plaYK2KLEy89KlRTldq8Nc7tRVvXTTbm3Ljw5vA",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAg",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiaDBrNXBsYVlLMktMRXk4OUtsUlRsZHE4TmM3dFJWdlhUVGJtM0xqdzV2QSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQDLt-FC2jDtff4fvQa5ohmDxNiCVEj8sCWgbH5kQDE6dAIhAKQ4GJQ3T_O6Gp3QBFvQ6Hqsw6b-y1jv4EcigUhrbN-u",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": null
+          },
+          "repeat": {
+            "challenge": "qh2pebEywrEHxEOyRyStyb8LdmxyjFrzhLTnwK79Lek",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAw",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoicWgycGViRXl3ckVIeEVPeVJ5U3R5YjhMZG14eWpGcnpoTFRud0s3OUxlayIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEUCIFgF5SpKOT6j5npwrb-KdqniP0NMaVvaAnhnAi9LgaB7AiEAn_Ls-XzVayMUhLGNvvLGBR6g5pDSYHWyCpg_7n41OQk",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": "03c95ec5280accb130bebe64c3fa8e2a35b95439cb0b97470c2a0b4458aa49d3"
+          },
+          "repeat_witness": {
+            "challenge": "sN6D9YX6ygqv_Bh2rgJtFT5pG9sSb9dyJED-50bU2QY",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABA",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoic042RDlZWDZ5Z3F2X0JoMnJnSnRGVDVwRzlzU2I5ZHlKRUQtNTBiVTJRWSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEQCID_T4sA8R0YsVs8It9IYNYPv37AkccoekqXv86AkA5AJAiATOPwuca4toGScgUKW-Q_8EpCQnJOn4e3ACgDvcNUw1A",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": null
+          },
+          "other": {
+            "challenge": "bx0UyFT9H8GT-rNeCdD8Xx_odoTze5hWHULSsXMnWjI",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABQ",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiYngwVXlGVDlIOEdULXJOZUNkRDhYeF9vZG9UemU1aFdIVUxTc1hNbldqSSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQC7lzH4O_43TSpZAQm_Oe9QNaCjvnphpvNR5Bo2DoZNXgIhAJ8ud-wQ_e3pYLvaKDpCfe552ChhHinPm4fpbhUak31A",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": "67845f8529aafe1819ca9debbec11d436b358f9f4adf7e76889103e33a220cad"
+          },
+          "other_witness": {
+            "challenge": "tOLaF7mPEEeI4z1AXzKg2QbOV1Dya5ZiCCEaRkiYIbA",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABg",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoidE9MYUY3bVBFRWVJNHoxQVh6S2cyUWJPVjFEeWE1WmlDQ0VhUmtpWUliQSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEQCIAUkGO960rbE6r6kdN1sgPUvyvIcTo3IG4dltilXZbOwAiBcN1-fkp0bBtOquOYTmSkS41Mttla-d4BGiyD5NKbBtA",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": null
+          }
+        },
+        "destination": {
+          "first": {
+            "challenge": "w00olt35eFjrMca8sKVfG977aHukLVzx--iUnyQ_sc4",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAQ",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoidzAwb2x0MzVlRmpyTWNhOHNLVmZHOTc3YUh1a0xWengtLWlVbnlRX3NjNCIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQDsBUB-XfAehUojarVoZtCdI0fQ424hNtBPhzStFFCkWwIhANF3fz9ZWn3-RmSEdoxQAGJl9HlHY9H092ajHNlK8eB0",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": "03c95ec5280accb130bebe64c3fa8e2a35b95439cb0b97470c2a0b4458aa49d3"
+          },
+          "first_witness": {
+            "challenge": "98q95IMLcDiVzkZdm2T5qRjIsUV3NCGUcBQQYV5tYHw",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAg",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiOThxOTVJTUxjRGlWemtaZG0yVDVxUmpJc1VWM05DR1VjQlFRWVY1dFlIdyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEUCIDlbF-z-7q5HXHxk8Ll45yN3GMG-yufF_esZpBMantzbAiEA1iZ_OhhXR8eVVTKzGLGj0ucIf9GmDj5Vd5meq1hC7Ew",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": null
+          },
+          "repeat": {
+            "challenge": "PILRmt4W1KSsetFm_uszMHVNdtmW1cWZqQcTGoP8IGc",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAw",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiUElMUm10NFcxS1NzZXRGbV91c3pNSFZOZHRtVzFjV1pxUWNUR29QOElHYyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEQCIG1JBRWbPR-U3xNGaT2P-MiM06khO4po7PJkgAorOKi4AiBhQU4_sWd-kWf879XNb-Ov8ldHjTa19XPmvGLeaDMdhw",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": "03c95ec5280accb130bebe64c3fa8e2a35b95439cb0b97470c2a0b4458aa49d3"
+          },
+          "repeat_witness": {
+            "challenge": "c5oEWJpUzx0fdpp9WxrYcOC1aUBhxvfTuOPqVMjTns4",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABA",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiYzVvRVdKcFV6eDBmZHBwOVd4clljT0MxYVVCaHh2ZlR1T1BxVk1qVG5zNCIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEUCIQDnal1D8qrJG254MPUV2DZ3jJid918kEAI3Lo5X17IauQIgUzvVUOrrnPvqHrAMt6YNUeDNh_l-55hupQhO_EveONU",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": null
+          },
+          "other": {
+            "challenge": "FzgmWacYBYkS0bWvddlQLPebsSqYRt6yB_NZr3bPJHw",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABQ",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiRnpnbVdhY1lCWWtTMGJXdmRkbFFMUGVic1NxWVJ0NnlCX05acjNiUEpIdyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEYCIQCVTn6WB03VYo19OqaoscrLEcGqeyPkeCecb11uLhGtgQIhAIB5AGzcx0A9m1PRUQpIWm0iDJRBURGoqNC4O85nety8",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": "67845f8529aafe1819ca9debbec11d436b358f9f4adf7e76889103e33a220cad"
+          },
+          "other_witness": {
+            "challenge": "TqUS1osCpBCUxIR9fePK1XAN3iOfjRGY_RQf4G7tIbM",
+            "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEE-Pjt1OVKgQXR6bMhKWzkZUP7xIbXrJDup5l2-rvssFKc5fsh84JN_H_GnkspaDyqg5x78poj8_yDiNO2dzjPw",
+            "credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "observed_credential_id_sha256": "f320b96ecb6cc23700250ad6da13da0bbd27ddff3953528e234869415caee643",
+            "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABg",
+            "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiVHFVUzFvc0NwQkNVeElSOWZlUEsxWEFOM2lPZmpSR1lfUlFmNEc3dEliTSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTIzMjIifQ",
+            "signature": "MEQCIBVQTe9uWmoU9brsTR6xr6lKcfEHsViYaENJFX_xc1TfAiBv7CIJeEhlTNTDBEgj749oWoS3-CNPdN8vxVUBK7pbzg",
+            "user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "observed_user_handle_sha256": "1c9bee3d942c7989b349af5a88350ac7dcc65127b127942019e0bf13b946920b",
+            "prf_output_sha256": null
+          }
+        }
+      },
+      "checks": {
+        "source_imported": true,
+        "destination_imported": true,
+        "all_assertions_verified": true,
+        "all_prf_results_present": true,
+        "exported_identity_present": true,
+        "zero_counter_at_export": true
+      },
+      "all_procedure_checks_pass": true,
+      "outcomes": {
+        "source_fixed_stable": true,
+        "destination_fixed_stable": true,
+        "source_other_differs": true,
+        "destination_other_differs": true,
+        "fixed_source_destination_equal": true,
+        "other_source_destination_equal": true,
+        "source_cxf_seed_mismatch": true,
+        "exported_prf_state_missing": true
+      },
+      "functional_prf_continuity_oracle": "PASS",
+      "source_cxf_seed_oracle": "FAIL"
+    }
+  ],
+  "all_procedure_checks_pass": true,
+  "limitations": [
+    "both browser profiles use the same open provider revision",
+    "the selected provider was inspected before this protocol was fixed",
+    "Fenko exchanges CXF files here, not CXP messages",
+    "functional PRF continuity does not imply original CXF seed preservation",
+    "Fenko's exported CXF version marker is 0.0, outside the tested 1.0 profile"
+  ]
+}

@@ -1,7 +1,7 @@
 # Preservación semántica en migraciones de passkeys con CXF y CXP: controles reproducibles y un caso abierto de proveedor
 
 Versión 0.8, borrador exploratorio de 2026-10-02. Conserva por separado los
-resultados de la release v0.7.1 y añade las fases 14 y 15. No reemplaza la
+resultados de la release v0.7.1 y añade las fases 14 a 16. No reemplaza la
 release publicada ni constituye una nueva muestra de proveedores.
 
 ## Resumen
@@ -47,9 +47,13 @@ En un caso seleccionado de proveedor abierto, Fenko Vault 0.12.0, dos
 importaciones CXF repetidas produjeron autenticación WebAuthn válida, pero el
 PRF obtenido en el navegador no coincidió con el control derivado de las
 semillas CXF de origen y la exportación omitió ese estado. Se verificaron 16
-aserciones firmadas y seis vínculos de observación PRF. Este caso no mide
-frecuencia de fallos entre proveedores; CXP entre proveedores y preservación
-positiva de PRF entre navegadores siguen sin evaluar.
+aserciones firmadas y seis vínculos de observación PRF. Un control posterior
+Fenko→Fenko por CXF produjo PRF iguales en dos perfiles de navegador en 2/2
+repeticiones, con 24 firmas y 12 vínculos PRF verificados. La continuidad
+funcional ocurrió pese a la pérdida de las semillas CXF originales: Fenko
+derivó un valor propio de la clave de firma. Ambos casos son seleccionados y
+no miden frecuencia de fallos entre proveedores. CXP entre proveedores y la
+preservación positiva de las semillas CXF originales siguen sin evaluar.
 
 ## 1. Introducción
 
@@ -132,6 +136,18 @@ La comparación del PRF de destino usa un control de software calculado desde
 las semillas CXF de origen y el mapeo normativo. No existe una ceremonia PRF
 WebAuthn de origen en este caso, por lo que no es una prueba de continuidad
 positiva navegador a navegador.
+
+Un addendum v2.1, también informado por el código fuente y fijado antes de
+ejecutar el ensayo, compara dos perfiles independientes de navegador con la
+misma versión Fenko. El perfil A importa una credencial CXF sintética con dos
+semillas HMAC y la exporta por la interfaz CXF antes de cualquier aserción,
+manteniendo el contador en cero. A y B ejecutan tres ceremonias PRF WebAuthn
+con dos entradas, cada una seguida de una aserción que vincula el hash del
+resultado. El perfil B importa el CXF exportado por A. Un verificador aparte
+recalcula firmas y compara los hashes de PRF entre ambos perfiles. Este diseño
+comprueba continuidad funcional en una ruta Fenko→Fenko; el control separado
+de las semillas originales determina si esa continuidad corresponde al estado
+CXF suministrado inicialmente.
 
 ## 4. Modelo de amenazas
 
@@ -244,6 +260,24 @@ otro estado PRF de la clave de firma cuando no dispone de un campo propio [11].
 Los resultados describen esta revisión y esta ruta seleccionada; las dos
 repeticiones no representan dos proveedores ni una tasa de fallos.
 
+### 6.6. Fase 16: continuidad PRF Fenko→Fenko por CXF
+
+En dos repeticiones nuevas, los dos perfiles Fenko importaron la credencial,
+firmaron y devolvieron resultados PRF. Las entradas iguales produjeron el
+mismo hash de resultado en origen y destino; repetir la entrada lo mantuvo y
+cambiarla produjo otro valor. El verificador independiente comprobó 24/24
+aserciones ES256 y 12/12 vínculos firmados de hashes PRF. El oráculo de
+continuidad funcional fue `PASS` en 2/2 repeticiones.
+
+En ambas, el PRF WebAuthn de origen discrepó del control normativo calculado
+desde la semilla CXF inicial. El CXF exportado omitió
+`fido2Extensions.hmacCredentials` y usó el marcador de versión 0.0. La
+inspección del proveedor indica que ambos perfiles derivan el mismo estado
+PRF propio desde la clave de firma importada [11]. Por ello, la igualdad de
+PRF entre perfiles coexiste con la pérdida del estado CXF original. Este
+resultado no prueba conformidad CXF 1.0 ni interoperabilidad con otro
+proveedor.
+
 ## 7. Discusión
 
 El experimento demuestra una capacidad del método: la autenticación funcionó
@@ -265,6 +299,13 @@ un hash observado por el harness, pero no demuestra por sí misma que el cálcul
 interno del proveedor siga el estándar. La fuente del control PRF fue software,
 por lo que este caso no confirma migración PRF entre dos navegadores.
 
+El control Fenko→Fenko confirma una continuidad funcional navegador a
+navegador, pero muestra por qué es necesario identificar qué secreto se
+preservó: dos proveedores que derivan de la misma clave de firma pueden
+devolver el mismo valor aun cuando la extensión CXF de origen se haya
+descartado. La igualdad del output, por sí sola, no valida la representación
+intercambiada ni el algoritmo interno de un proveedor.
+
 ## 8. Limitaciones
 
 - Los cuatro perfiles de la campaña C1 son controles sintéticos; el caso Fenko
@@ -281,6 +322,8 @@ por lo que este caso no confirma migración PRF entre dos navegadores.
   de productos a partir de estos controles.
 - Las dos ejecuciones Fenko comprueban repetibilidad de una revisión y ruta;
   no son una muestra aleatoria ni un ensayo de otras versiones o proveedores.
+- Las dos repeticiones de la fase 16 también usan la misma revisión Fenko en
+  ambos extremos; no prueban interoperabilidad entre implementaciones.
 - No se ejecutó CXP entre dos proveedores. Tampoco hubo PRF WebAuthn de origen
   y destino con las mismas semillas restauradas; ambos oráculos son
   `NOT_EVALUABLE` en el seguimiento.
@@ -299,7 +342,7 @@ y regenera resultados, tablas y manuscrito para compararlos con la release. El
 repositorio incluye comandos de una sola operación para tests, C1, C2, C3,
 interoperabilidad y regeneración de este análisis.
 
-Las fases 14 y 15 quedan fuera de aquella release y tienen informes separados.
+Las fases 14 a 16 quedan fuera de aquella release y tienen informes separados.
 `./research.ps1 phase14` reproduce el intercambio propio y el control CDP;
 `./research.ps1 phase15` construye Fenko desde el commit fijado, ejecuta sus
 tests CXF y el caso en dos perfiles, y vuelve a verificar las transcripciones
@@ -312,6 +355,13 @@ su consistencia se comprueba, pero el informe público no permite reconstruir
 la base de datos privada del proveedor. El borrador v0.8 todavía no forma parte
 de un archivo de release auditado como v0.7.1.
 
+`./research.ps1 phase16` reproduce el round trip Fenko→Fenko y el verificador
+independiente. Los informes son
+`experiments/v2_roundtrip_exploratory/fenko_roundtrip.json` y
+`fenko_roundtrip_verification.json`. Los agregados 24/24, 12/12 y 2/2 se
+recalculan desde las dos filas públicas. El archivo CXF de paso y los perfiles
+temporales se eliminan tras el ensayo.
+
 ## 10. Conclusión
 
 PasskeyTransit distingue compatibilidad sintáctica, autenticación básica y
@@ -321,8 +371,10 @@ que una passkey migrada conserva todas sus garantías. El paso necesario para
 generalizar es ejecutar más rutas identificadas e independientes, manteniendo
 los mismos oráculos y límites de afirmación. El caso externo confirma en una
 ruta concreta que autenticar no garantiza conservar el PRF importado. La
-interoperabilidad CXP de proveedores y la preservación positiva de PRF en una
-migración navegador a navegador siguen pendientes de un entorno accesible.
+fase 16 demuestra continuidad funcional Fenko→Fenko sin conservar las
+semillas CXF originales. La interoperabilidad CXP entre proveedores y la
+preservación positiva del PRF original siguen pendientes de un entorno
+accesible.
 
 ## Referencias
 

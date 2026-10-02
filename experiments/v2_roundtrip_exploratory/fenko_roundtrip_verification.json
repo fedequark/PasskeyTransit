@@ -1,0 +1,105 @@
+{
+  "evidence_class": "independent-same-provider-browser-roundtrip-recalculation",
+  "report_sha256": "ea3133ecdf31973766b304d0c92896afaca939ee7dcdeb07a5b268889a7ead50",
+  "verified": true,
+  "summary": {
+    "repetitions": 2,
+    "signed_assertions_verified": 24,
+    "prf_witness_bindings_verified": 12,
+    "functional_continuity_pass_runs": 2,
+    "source_seed_mismatch_runs": 2,
+    "missing_export_prf_state_runs": 2
+  },
+  "rows": [
+    {
+      "repetition": 1,
+      "source_document_valid": true,
+      "standard_digest_valid": true,
+      "assertion_set_valid": true,
+      "signatures": {
+        "source": {
+          "first": true,
+          "first_witness": true,
+          "repeat": true,
+          "repeat_witness": true,
+          "other": true,
+          "other_witness": true
+        },
+        "destination": {
+          "first": true,
+          "first_witness": true,
+          "repeat": true,
+          "repeat_witness": true,
+          "other": true,
+          "other_witness": true
+        }
+      },
+      "witnesses": {
+        "source": {
+          "first": true,
+          "repeat": true,
+          "other": true
+        },
+        "destination": {
+          "first": true,
+          "repeat": true,
+          "other": true
+        }
+      },
+      "outcomes_valid": true,
+      "statuses_valid": true,
+      "export_summary_valid": true,
+      "import_summary_valid": true,
+      "procedure_valid": true,
+      "sensitive_absent": true,
+      "continuity_status": "PASS",
+      "source_seed_mismatch": true,
+      "exported_prf_state_missing": true
+    },
+    {
+      "repetition": 2,
+      "source_document_valid": true,
+      "standard_digest_valid": true,
+      "assertion_set_valid": true,
+      "signatures": {
+        "source": {
+          "first": true,
+          "first_witness": true,
+          "repeat": true,
+          "repeat_witness": true,
+          "other": true,
+          "other_witness": true
+        },
+        "destination": {
+          "first": true,
+          "first_witness": true,
+          "repeat": true,
+          "repeat_witness": true,
+          "other": true,
+          "other_witness": true
+        }
+      },
+      "witnesses": {
+        "source": {
+          "first": true,
+          "repeat": true,
+          "other": true
+        },
+        "destination": {
+          "first": true,
+          "repeat": true,
+          "other": true
+        }
+      },
+      "outcomes_valid": true,
+      "statuses_valid": true,
+      "export_summary_valid": true,
+      "import_summary_valid": true,
+      "procedure_valid": true,
+      "sensitive_absent": true,
+      "continuity_status": "PASS",
+      "source_seed_mismatch": true,
+      "exported_prf_state_missing": true
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "protocol_id": "passkeytransit-fenko-cxf-browser-roundtrip-v2.1",
+  "fixed_at": "2026-10-02",
+  "design_status": "source-informed-addendum-before-browser-run",
+  "parent_protocol": "passkeytransit-external-provider-v2.0",
+  "provider": {
+    "name": "Fenko Vault",
+    "version": "0.12.0",
+    "source_revision": "2d873fbe25257250de6e322e9d785b97b17a544f"
+  },
+  "route": "synthetic-CXF-to-Fenko-profile-A-to-Fenko-CXF-to-Fenko-profile-B",
+  "repetitions": 2,
+  "source_export_before_source_assertions": true,
+  "inputs": ["fixed", "fixed-repeat", "other-salt"],
+  "required_oracles": [
+    "source-signed-assertion",
+    "destination-signed-assertion",
+    "source-destination-prf-equality",
+    "same-salt-stability",
+    "other-salt-difference",
+    "source-cxf-seed-control",
+    "exported-cxf-extension-state",
+    "signed-prf-observation-witness"
+  ],
+  "claim_limits": {
+    "same_provider_only": true,
+    "cxp_exchange": false,
+    "normative_cxf_conformance": false,
+    "source_cxf_seed_preservation": false,
+    "population_inference": false
+  }
+}
