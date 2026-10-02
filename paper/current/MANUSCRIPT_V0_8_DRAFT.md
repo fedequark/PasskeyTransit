@@ -325,6 +325,13 @@ extensión PRF no está cubierto por la firma WebAuthn; la comparación con el
 HMAC de la semilla es un oráculo separado. Los bytes de la semilla sin UV
 se conservaron, pero no se ejecutó una ceremonia PRF sin UV. Este es un resultado de
 autenticador software, no de migración entre navegadores o apps.
+Como endurecimiento posterior al ensayo, el verificador rechazó una firma
+alterada y un resultado PRF alterado en cada repetición; estos cuatro controles
+evalúan el verificador y no son observaciones adicionales del proveedor.
+El informe retiene las transcripciones públicas sintéticas necesarias para
+recalcular por separado las 12 firmas y los 12 hashes PRF. No retiene CXF,
+claves, semillas ni resultados PRF crudos; por eso, el informe aislado no
+permite comprobar el estado interno de Proton sin repetir el ensayo.
 
 ## 7. Discusión
 
@@ -349,7 +356,7 @@ por lo que este caso no confirma migración PRF entre dos navegadores.
 
 El control Fenko→Fenko confirma una continuidad funcional navegador a
 navegador, pero muestra por qué es necesario identificar qué secreto se
-preservó: dos proveedores que derivan de la misma clave de firma pueden
+preservó: dos instancias que derivan de la misma clave de firma pueden
 devolver el mismo valor aun cuando la extensión CXF de origen se haya
 descartado. La igualdad del output, por sí sola, no valida la representación
 intercambiada ni el algoritmo interno de un proveedor.
@@ -424,10 +431,12 @@ temporales se eliminan tras el ensayo.
 `./research.ps1 phase17` instala el WASM oficial fijado de Proton Pass 2.0.0
 y reproduce dos rutas sintéticas CXF→software→CXF→software, con dos sales
 PRF y un control de semilla modificada por repetición. El driver verifica
-firmas y PRF fuera del módulo externo y guarda solo hashes, conteos y
-resultados de oráculos en
+firmas y PRF fuera del módulo externo y guarda transcripciones públicas,
+hashes, conteos y resultados de oráculos en
 `experiments/phase17_exploratory/proton_cxf_prf.json`. El protocolo exploratorio
 se documenta en `experiments/protocol_v2_proton_software.json`.
+`./research.ps1 phase17-verify` recalcula firmas y hashes PRF desde ese
+informe sin usar el módulo de Proton.
 
 ## 10. Conclusión
 

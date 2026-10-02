@@ -105,7 +105,8 @@ platform-mediated CXF transfer from the public CXP Working Draft wire claim.
 Phase 17 adds an external Proton Pass 2.0.0 software-authenticator control:
 the original CXF HMAC seeds and UV PRF survived its CXF import/export/reimport
 in two selected repetitions, with 12 verified signed assertions and 12
-separately checked PRF results
+separately checked PRF results. A public-report verifier recomputes all 12
+signatures and PRF digests from retained synthetic transcripts,
 including changed-seed controls. This does not establish browser-to-browser
 or two-provider CXP interoperability. See `docs/PHASE_17.md`.
 
@@ -134,6 +135,7 @@ From PowerShell:
 ./research.ps1 phase15
 ./research.ps1 phase16
 ./research.ps1 phase17
+./research.ps1 phase17-verify
 ./research.ps1 verify-release
 ./research.ps1 pilot
 ```

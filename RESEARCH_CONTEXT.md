@@ -94,6 +94,7 @@ Phase 17 uses Proton Pass 2.0.0's official prebuilt WASM as an independent
 software CXF/PRF control. In two synthetic repetitions, both HMAC seed fields
 survived import/export/reimport and the UV PRF matched the standard HMAC
 calculation before and after. Twelve signatures and twelve separate PRF seed
-calculations were checked,
-including four changed-seed controls. No source/destination browser or app
-transfer was run. See `docs/PHASE_17.md`.
+calculations were checked, including four changed-seed controls. The retained
+synthetic public transcripts permit separate verification of all 12 signatures
+and PRF digests. No source/destination browser or app transfer was run. See
+`docs/PHASE_17.md`.

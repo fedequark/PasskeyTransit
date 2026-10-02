@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "phase14", "phase15", "phase16", "phase17", "verify-release", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "phase14", "phase15", "phase16", "phase17", "phase17-verify", "verify-release", "status")]
     [string]$Action = "status"
 )
 
@@ -312,11 +312,20 @@ switch ($Action) {
         }
         $RunStamp = Get-Date -Format "yyyyMMddTHHmmssfff"
         $NodePath = (Get-Command node -ErrorAction Stop).Source
+        $ReportPath = Join-Path $ProjectRoot "datasets\generated\phase17\$RunStamp\proton_cxf_prf.json"
         & $VenvPython (Join-Path $ProjectRoot "tools\run_proton_cxf_prf.py") `
             --node $NodePath `
             --adapter (Join-Path $AdapterRoot "run.mjs") `
-            --output (Join-Path $ProjectRoot "datasets\generated\phase17\$RunStamp\proton_cxf_prf.json")
+            --output $ReportPath
         if ($LASTEXITCODE -ne 0) { throw "Proton CXF/PRF experiment failed." }
+        & $VenvPython (Join-Path $ProjectRoot "tools\verify_proton_public_report.py") --report $ReportPath
+        if ($LASTEXITCODE -ne 0) { throw "Proton public report verification failed." }
+    }
+    "phase17-verify" {
+        Require-Venv
+        & $VenvPython (Join-Path $ProjectRoot "tools\verify_proton_public_report.py") `
+            --report (Join-Path $ProjectRoot "experiments\phase17_exploratory\proton_cxf_prf.json")
+        if ($LASTEXITCODE -ne 0) { throw "Pinned Proton public report verification failed." }
     }
     "phase10" {
         Require-Venv

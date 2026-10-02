@@ -1,7 +1,8 @@
 """Exploratory CXF/PRF run against Proton Pass's pinned, prebuilt WASM module.
 
-Only synthetic credentials are sent to the adapter. Raw CXF and assertions stay
-in process memory; the saved report contains counts, booleans, and digests.
+Only synthetic credentials are sent to the adapter. Raw CXF, signing keys,
+HMAC seeds, and PRF outputs stay in process memory. The saved report retains
+public assertion transcripts, counts, booleans, and digests.
 """
 
 from __future__ import annotations
@@ -34,6 +35,11 @@ def canonical(data: object) -> bytes:
     return json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()
 
 
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
 def first_passkey(document: dict) -> dict:
     for account in document["accounts"]:
         for item in account["items"]:
@@ -57,8 +63,7 @@ def call_adapter(node: Path, adapter: Path, document: dict, salts: list[bytes], 
     if result.returncode != 0:
         raise RuntimeError("Proton adapter failed; no credential bytes were saved")
     response = json.loads(result.stdout)
-    if response.get("version") != PROTON_VERSION:
-        raise AssertionError("unexpected Proton module version")
+    require(response.get("version") == PROTON_VERSION, "unexpected Proton module version")
     return response
 
 
@@ -73,13 +78,13 @@ def verify_observation(observation: dict, document: dict, salt: bytes, challenge
     auth_data = unb64url(observation["authenticator_data"])
     signature = unb64url(observation["signature"])
     client = json.loads(client_bytes)
-    assert client["type"] == "webauthn.get"
-    assert client["challenge"] == b64url(challenge)
-    assert client["origin"] == f"https://{credential['rpId']}"
-    assert unb64url(observation["raw_id"]) == unb64url(credential["credentialId"])
-    assert auth_data[:32] == hashlib.sha256(credential["rpId"].encode()).digest()
-    assert auth_data[32] & 0x01  # user presence
-    assert auth_data[32] & 0x04  # required UV ceremony
+    require(client["type"] == "webauthn.get", "wrong WebAuthn ceremony type")
+    require(client["challenge"] == b64url(challenge), "challenge mismatch")
+    require(client["origin"] == f"https://{credential['rpId']}", "origin mismatch")
+    require(unb64url(observation["raw_id"]) == unb64url(credential["credentialId"]), "credential ID mismatch")
+    require(auth_data[:32] == hashlib.sha256(credential["rpId"].encode()).digest(), "RP hash mismatch")
+    require(bool(auth_data[32] & 0x01), "user presence missing")
+    require(bool(auth_data[32] & 0x04), "user verification missing")
     private = serialization.load_der_private_key(unb64url(credential["key"]), password=None)
     public = private.public_key()
     try:
@@ -88,15 +93,42 @@ def verify_observation(observation: dict, document: dict, salt: bytes, challenge
         raise AssertionError("invalid independent WebAuthn signature") from exc
     actual = unb64url(observation["prf_first"])
     seed = unb64url(credential["fido2Extensions"]["hmacCredentials"]["credWithUV"])
-    assert len(actual) == 32
-    assert actual == expected_prf(seed, salt)
-    return {"signature_verified": True, "uv_flag": True, "prf_matches_cxf_seed": True, "prf_sha256": digest(actual)}
+    require(len(actual) == 32, "wrong PRF output length")
+    require(actual == expected_prf(seed, salt), "PRF output differs from CXF seed calculation")
+    return {
+        "signature_verified": True,
+        "uv_flag": True,
+        "prf_matches_cxf_seed": True,
+        "prf_sha256": digest(actual),
+        "public_transcript": {
+            "rp_id": credential["rpId"],
+            "public_key_spki": b64url(public.public_bytes(
+                serialization.Encoding.DER, serialization.PublicFormat.SubjectPublicKeyInfo,
+            )),
+            "client_data_json": observation["client_data_json"],
+            "authenticator_data": observation["authenticator_data"],
+            "signature": observation["signature"],
+        },
+    }
+
+
+def rejects_tampered_observation(observation: dict, document: dict, salt: bytes, challenge: bytes, field: str) -> bool:
+    altered = copy.deepcopy(observation)
+    value = bytearray(unb64url(altered[field]))
+    require(bool(value), f"empty {field} in negative control")
+    value[-1] ^= 1
+    altered[field] = b64url(bytes(value))
+    try:
+        verify_observation(altered, document, salt, challenge)
+    except AssertionError:
+        return True
+    raise AssertionError(f"tampered {field} was accepted")
 
 
 def verify_round_trip(document: dict, response: dict, salts: list[bytes], challenges: list[bytes]) -> dict:
-    assert response["import_warnings"] == []
-    assert response["export_warnings"] == []
-    assert response["reimport_warnings"] == []
+    require(response["import_warnings"] == [], "Proton import warning")
+    require(response["export_warnings"] == [], "Proton export warning")
+    require(response["reimport_warnings"] == [], "Proton reimport warning")
     exported = json.loads(response["exported_cxf"])
     # Our local validator intentionally accepts a passkey-only CXF profile;
     # Proton also emits a basic-auth credential for the same login item.
@@ -116,20 +148,21 @@ def verify_round_trip(document: dict, response: dict, salts: list[bytes], challe
             source["fido2Extensions"]["hmacCredentials"][field]
             == destination["fido2Extensions"]["hmacCredentials"][field]
         )
-    assert all(retained.values())
+    require(all(retained.values()), "CXF identity, key, or HMAC seed changed")
     observations = []
     for index, pair in enumerate(response["observations"]):
         source_result = verify_observation(pair["source"], document, salts[index], challenges[2 * index])
         destination_result = verify_observation(pair["destination"], exported, salts[index], challenges[2 * index + 1])
-        assert source_result["prf_sha256"] == destination_result["prf_sha256"]
+        require(source_result["prf_sha256"] == destination_result["prf_sha256"], "source and destination PRF differ")
         observations.append({
             "source": source_result,
             "destination": destination_result,
             "same_input_prf_equal": True,
         })
-    assert len(observations) == len(salts)
+    require(len(observations) == len(salts), "observation count mismatch")
     if len(salts) > 1:
-        assert observations[0]["source"]["prf_sha256"] != observations[1]["source"]["prf_sha256"]
+        require(observations[0]["source"]["prf_sha256"] != observations[1]["source"]["prf_sha256"],
+                "different salts produced the same PRF")
     return {
         "source_cxf_sha256": digest(canonical(document)),
         "exported_cxf_sha256": digest(canonical(exported)),
@@ -165,14 +198,25 @@ def run(node: Path, adapter: Path, output: Path) -> dict:
         ]
         control_response = call_adapter(node, adapter, changed, salts[:1], control_challenges)
         control = verify_round_trip(changed, control_response, salts[:1], control_challenges)
-        assert positive["observations"][0]["source"]["prf_sha256"] != control["observations"][0]["source"]["prf_sha256"]
+        require(positive["observations"][0]["source"]["prf_sha256"] != control["observations"][0]["source"]["prf_sha256"],
+                "changed UV seed did not change PRF")
+        negative_controls = {
+            "tampered_signature_rejected": rejects_tampered_observation(
+                response["observations"][0]["source"], document, salts[0], challenges[0], "signature",
+            ),
+            "tampered_prf_rejected": rejects_tampered_observation(
+                response["observations"][0]["source"], document, salts[0], challenges[0], "prf_first",
+            ),
+        }
         runs.append({
             "repeat": repeat + 1,
             "positive": positive,
+            "verifier_negative_controls": negative_controls,
             "changed_seed_control": {
                 "prf_changed": True,
                 "signed_assertions_verified": control["signed_assertions_verified"],
                 "prf_seed_checks_verified": control["prf_seed_checks_verified"],
+                "observations": control["observations"],
             },
         })
 
@@ -198,6 +242,8 @@ def run(node: Path, adapter: Path, output: Path) -> dict:
         "uv_seed_preserved": True,
         "no_uv_seed_bytes_preserved": True,
         "no_uv_ceremony_evaluated": False,
+        "tampered_signature_rejected": sum(run["verifier_negative_controls"]["tampered_signature_rejected"] for run in runs),
+        "tampered_prf_rejected": sum(run["verifier_negative_controls"]["tampered_prf_rejected"] for run in runs),
         "runs": runs,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -214,6 +260,7 @@ def main() -> None:
     result = run(args.node, args.adapter, args.output)
     print(json.dumps({key: result[key] for key in (
         "experiment", "repetitions", "signed_assertions_verified", "prf_seed_checks_verified",
+        "tampered_signature_rejected", "tampered_prf_rejected",
     )}))
 
 

@@ -29,4 +29,7 @@ would not by itself establish the public Working Draft ZIP/JWE framing. See
 V2-09 is a software authenticator result, not a browser or provider-app
 migration. Its no-UV seed bytes survived but no no-UV PRF ceremony was
 evaluated. The PRF extension result itself is not covered by the WebAuthn
-signature; the HMAC checks are independent. See `PHASE_17.md`.
+signature; the HMAC checks are independent. The retained synthetic public
+transcripts permit independent recomputation of all 12 signatures and PRF
+digests. Post-run verifier controls rejected two changed signatures and two
+changed PRF outputs. See `PHASE_17.md`.

@@ -31,8 +31,9 @@ the complete document.
 
 A separate control changed only the `credWithUV` seed. It retained a valid
 signing key and identity while the calculated and observed PRF changed. The
-adapter returns raw synthetic evidence to the driver in memory; the saved
-report contains only digests, counts and booleans.
+adapter returns raw synthetic evidence to the driver in memory. The saved
+report includes public assertion transcripts, digests, counts and booleans,
+but no CXF plaintext, signing keys, HMAC seeds or raw PRF outputs.
 
 ## Observations
 
@@ -44,15 +45,26 @@ report contains only digests, counts and booleans.
 | Changed-seed control signed assertions and separate PRF seed checks | 4/4 each verified; PRF changed in 2/2 |
 | Same-salt source/destination PRF | Equal on both salts in 2/2 repetitions |
 | Different-salt PRF | Different in 2/2 repetitions |
+| Verifier rejects a changed signature | 2/2 repetitions |
+| Verifier rejects a changed PRF output | 2/2 repetitions |
 
 Total: 12/12 independent signature checks and 12/12 separate PRF seed checks,
 including the changed-seed controls. The public result is
 `experiments/phase17_exploratory/proton_cxf_prf.json`.
+`./research.ps1 phase17-verify` independently recomputes the 12 signatures
+and the 12 PRF digests from that retained report and the deterministic
+synthetic fixture labels. The verifier has mutation tests for the signature
+and PRF digest. It can verify these public observations, but the retained
+report alone cannot prove the CXF bytes Proton handled or its internal state;
+that requires rerunning Phase 17.
 
 The PRF extension result is outside the bytes covered by the WebAuthn
 signature. Signature verification and independent HMAC comparison are two
 separate checks of observations returned by the same software call; they do
 not make the PRF output cryptographically signed.
+The last two rows are post-run checks of the independent verifier, not
+additional provider robustness results. Its acceptance checks use explicit
+exceptions and were also executed under Python optimized mode.
 
 ## Claim boundary
 
@@ -75,10 +87,12 @@ From a PowerShell checkout with Node.js 24 and the project virtualenv:
 
 ```powershell
 ./research.ps1 phase17
+./research.ps1 phase17-verify
 ```
 
-The command installs the pinned npm package, executes two synthetic
+The first command installs the pinned npm package, executes two synthetic
 repetitions and changed-seed controls, and writes a new sanitized report
-under `datasets/generated/phase17/`.
+under `datasets/generated/phase17/`. The second verifies the tracked report
+without installing the package.
 
 Primary source: https://github.com/protonpass/proton-pass-common/tree/69a0927f0fe7071243d6c38e404459a69210fdd4

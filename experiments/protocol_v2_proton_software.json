@@ -28,5 +28,14 @@
     "Android provider transfer",
     "public CXP Working Draft ZIP/JWE exchange",
     "full provider application storage"
-  ]
+  ],
+  "post_run_verifier_hardening": {
+    "status": "added after the initial positive run; not part of the frozen v2.0 denominator",
+    "checks": [
+      "the independent verifier rejects a modified signature in each repetition",
+      "the independent verifier rejects a modified PRF result in each repetition",
+      "verification remains active under Python optimized mode",
+      "the retained public transcripts permit separate signature and synthetic PRF-digest recomputation"
+    ]
+  }
 }
