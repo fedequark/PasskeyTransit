@@ -1,0 +1,41 @@
+name: USENIX 2027 paper PDF
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/usenix27-pdf.yml
+      - paper/venues/usenixsecurity27/official_pdf/**
+
+permissions:
+  contents: read
+
+jobs:
+  pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pdfLaTeX and PDF inspection tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base texlive-latex-recommended \
+            texlive-fonts-recommended texlive-latex-extra poppler-utils
+      - name: Compile with the unmodified USENIX style
+        working-directory: paper/venues/usenixsecurity27/official_pdf
+        run: |
+          sha256sum usenix.sty ../template/usenix.sty
+          cmp usenix.sty ../template/usenix.sty
+          pdflatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+          pdflatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+          pdfinfo main.pdf | grep -E 'Pages:|Page size:|PDF version:'
+          pdffonts main.pdf
+          sha256sum main.pdf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: usenix27-pdf
+          path: paper/venues/usenixsecurity27/official_pdf/main.pdf
+          retention-days: 7
