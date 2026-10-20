@@ -1,12 +1,16 @@
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "phase14", "phase15", "phase16", "phase17", "phase17-verify", "verify-release", "status")]
+    [ValidateSet("setup", "test", "pilot", "protocol", "requirements", "cxp-requirements", "webauthn", "cxp", "campaign-c1", "campaign-c2", "campaign-c3", "phase6", "phase7-calibration", "phase7", "phase8", "phase9", "phase10", "phase11", "phase12", "phase13", "phase14", "phase15", "phase16", "phase17", "phase17-verify", "draft-v08", "verify-v08", "verify-release", "status")]
     [string]$Action = "status"
 )
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-$VenvPython = Join-Path $ProjectRoot ".venv\Scripts\python.exe"
+$VenvPython = if ($IsWindows) {
+    Join-Path $ProjectRoot ".venv\Scripts\python.exe"
+} else {
+    Join-Path $ProjectRoot ".venv/bin/python"
+}
 $ProtocolPath = Join-Path $ProjectRoot "experiments\protocol_v1.5.json"
 $PublicationStem = "PasskeyTransit_v0.7"
 
@@ -224,6 +228,7 @@ switch ($Action) {
             --node $NodePath `
             --node-script $NodeScript `
             --output (Join-Path $RunRoot "prf_migration.json")
+        if ($LASTEXITCODE -ne 0) { throw "Browser PRF migration experiment failed." }
     }
     "phase15" {
         Require-Venv
@@ -326,6 +331,24 @@ switch ($Action) {
         & $VenvPython (Join-Path $ProjectRoot "tools\verify_proton_public_report.py") `
             --report (Join-Path $ProjectRoot "experiments\phase17_exploratory\proton_cxf_prf.json")
         if ($LASTEXITCODE -ne 0) { throw "Pinned Proton public report verification failed." }
+    }
+    "draft-v08" {
+        Require-Venv
+        & $VenvPython (Join-Path $ProjectRoot "tools\build_publication.py") `
+            --source (Join-Path $ProjectRoot "paper\current\MANUSCRIPT_V0_8_DRAFT.md") `
+            --docx (Join-Path $ProjectRoot "paper\current\PasskeyTransit_v0.8_DRAFT.docx") `
+            --pdf (Join-Path $ProjectRoot "paper\current\PasskeyTransit_v0.8_DRAFT.pdf") `
+            --title "Preservación semántica en migraciones de passkeys con CXF y CXP" `
+            --subtitle "PasskeyTransit v0.8 Borrador exploratorio con controles reproducibles y un proveedor abierto" `
+            --display-version "v0.8" `
+            --deterministic-pdf `
+            --skip-manifest-update
+        if ($LASTEXITCODE -ne 0) { throw "v0.8 draft publication build failed." }
+    }
+    "verify-v08" {
+        Require-Venv
+        & $VenvPython (Join-Path $ProjectRoot "tools\verify_v08_draft.py")
+        if ($LASTEXITCODE -ne 0) { throw "v0.8 draft evidence verification failed." }
     }
     "phase10" {
         Require-Venv
