@@ -28,7 +28,16 @@ SOURCE_FILES = [
     "pyproject.toml",
     "requirements.lock",
     "experiments/protocol_v1.5.json",
+    "experiments/protocol_v2.json",
+    "experiments/protocol_v2_fenko_roundtrip.json",
+    "experiments/protocol_v2_proton_software.json",
     "experiments/cxp_wire_structural/report.json",
+    "experiments/phase14_ci_replay/2026-10-20/auditable/prf_migration.json",
+    "experiments/v2_exploratory/fenko_provider.json",
+    "experiments/v2_roundtrip_exploratory/fenko_roundtrip.json",
+    "experiments/phase17_exploratory/proton_cxf_prf.json",
+    "interop/proton-cxf-prf/package-lock.json",
+    "interop/proton-cxf-prf/run.mjs",
     "paper/current/results_v0.7.json",
     "paper/current/table_c1_route_strata.csv",
     "paper/current/table_c1_estimands.csv",
@@ -39,6 +48,10 @@ SOURCE_FILES = [
     "paper/venues/usenixsecurity27/official_pdf/usenix.sty",
     "src/passkeytransit/cxp_wire_probe.py",
     "tools/run_cxp_wire_probe.py",
+    "tools/run_proton_cxf_prf.py",
+    "tools/verify_phase14_public_transcript.py",
+    "tools/verify_proton_public_report.py",
+    "tools/verify_provider_reports.py",
     "tools/verify_anonymous_artifact.py",
 ]
 DIRECT_IDENTIFIERS = [
@@ -76,16 +89,18 @@ def build() -> Path:
             files[f"data/raw/{output}"] = _jsonl_without_revision(original.read(source))
     files["README.md"] = (
         "# Anonymous staged review artifact\n\n"
-        "Contains synthetic C1/C2/C3 rows, result tables, protocol, source, "
-        "and a CXP draft-structure probe. Git history, commit IDs in raw rows, "
+        "Contains synthetic C1/C2/C3 rows, result tables, selected public "
+        "browser and provider reports, protocols, source, and a CXP draft "
+        "structure probe. Git history, commit IDs in raw rows, "
         "and original provenance manifests were intentionally omitted.\n\n"
         "Run python verify.py after extraction. With dependencies installed, "
-        "run python tools/run_cxp_wire_probe.py and "
+        "run python tools/verify_provider_reports.py, "
+        "python tools/run_cxp_wire_probe.py and "
         "PYTHONPATH=src python -m pytest tests/test_cxp_wire_probe.py "
         "(set PYTHONPATH appropriately on Windows).\n\n"
-        "This package supports internal review of synthetic controls. "
-        "Provider replay archives and their provenance are not in this "
-        "staged copy. It is not yet a complete submission artifact. "
+        "This package supports internal review of synthetic controls and "
+        "public signature reports. Provider replay ZIPs and CI provenance "
+        "are not in this staged copy. It is not yet a complete submission artifact. "
         "No independent review or external provider interoperability is claimed.\n"
     ).encode()
     files["verify.py"] = (ROOT / "tools/verify_anonymous_artifact.py").read_bytes()
@@ -98,7 +113,7 @@ def build() -> Path:
                 raise ValueError(f"email-like value in {name}: {match!r}")
     manifest = {
         "artifact": "passkeytransit-anonymous-staging-v1",
-        "scope": "synthetic-campaign-and-cxp-structure",
+        "scope": "synthetic-campaign-public-provider-reports-and-cxp-structure",
         "files": {name: _sha(data) for name, data in sorted(files.items())},
         "source_release_raw_rows": "v0.7.1 synthetic evidence, source_commit field removed",
         "limitations": [
