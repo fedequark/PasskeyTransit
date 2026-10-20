@@ -1,0 +1,64 @@
+name: phase14-browser-prf-replay
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/phase14-replay
+    paths:
+      - .github/workflows/phase14-replay.yml
+
+permissions:
+  contents: read
+
+jobs:
+  phase14:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Record runtime versions
+        shell: pwsh
+        run: |
+          python --version
+          node --version
+          (Get-Item 'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe').VersionInfo.ProductVersion
+      - name: Install pinned Python dependencies
+        shell: pwsh
+        run: ./research.ps1 setup
+      - name: Replay Phase 14
+        shell: pwsh
+        run: ./research.ps1 phase14
+      - name: Check both reports
+        shell: pwsh
+        run: |
+          $run = Get-ChildItem datasets/generated/phase14 -Directory |
+            Sort-Object Name | Select-Object -Last 1
+          if (-not $run) { throw 'No Phase 14 run directory' }
+          @'
+          import json
+          import pathlib
+          import sys
+          root = pathlib.Path(sys.argv[1])
+          for name in ('cross_runtime_cxp.json', 'prf_migration.json'):
+              report = json.loads((root / name).read_text(encoding='utf-8'))
+              checks = report.get('checks', {})
+              if report.get('all_checks_pass') is not True or not checks or not all(checks.values()):
+                  raise SystemExit(f'{name}: checks failed or missing')
+              print(f'{name}: {len(checks)} checks passed')
+          '@ | & .venv/Scripts/python.exe - $run.FullName
+      - name: Upload sanitized Phase 14 reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase14-replay-${{ github.run_id }}
+          path: datasets/generated/phase14/**
+          if-no-files-found: warn
+          retention-days: 7
