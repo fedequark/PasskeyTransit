@@ -50,13 +50,29 @@ AUTHENTICATE_PRF = r"""async ({challenge, credentialId, salt}) => {
 }"""
 
 
-def _prf_assertion(page: Any, credential_id: bytes, salt: bytes, spki: bytes) -> tuple[dict[str, Any], dict[str, Any]]:
+def _prf_assertion(page: Any, credential_id: bytes, salt: bytes, spki: bytes) -> tuple[dict[str, Any], dict[str, Any], bytes]:
     challenge = secrets.token_bytes(32)
     assertion = page.evaluate(AUTHENTICATE_PRF, {
         "challenge": b64url(challenge), "credentialId": b64url(credential_id), "salt": b64url(salt),
     })
     verification = _verify_assertion(assertion, spki, challenge)
-    return assertion, verification
+    return assertion, verification, challenge
+
+
+def _public_observation(stage: str, assertion: dict[str, Any], challenge: bytes, salt: bytes) -> dict[str, Any]:
+    """Keep only public WebAuthn evidence; never retain a raw PRF output."""
+    prf_output = assertion.get("prfFirst")
+    return {
+        "stage": stage,
+        "challenge": b64url(challenge),
+        "salt": b64url(salt),
+        "raw_id": assertion["rawId"],
+        "authenticator_data": assertion["authenticatorData"],
+        "client_data_json": assertion["clientDataJSON"],
+        "signature": assertion["signature"],
+        "prf_present": prf_output is not None,
+        "prf_output_sha256": hashlib.sha256(unb64url(prf_output)).hexdigest() if prf_output else None,
+    }
 
 
 def run_prf_migration(browser_path: Path, node_path: Path, node_script: Path, output: Path) -> dict[str, Any]:
@@ -91,9 +107,9 @@ def run_prf_migration(browser_path: Path, node_path: Path, node_script: Path, ou
             spki = unb64url(registration["publicKeySpki"])
             salt = hashlib.sha256(b"passkeytransit-executable-prf-salt-v1").digest()
             other_salt = hashlib.sha256(b"passkeytransit-executable-prf-other-salt-v1").digest()
-            before, before_verification = _prf_assertion(page, credential_id, salt, spki)
-            repeated, repeated_verification = _prf_assertion(page, credential_id, salt, spki)
-            different, different_verification = _prf_assertion(page, credential_id, other_salt, spki)
+            before, before_verification, before_challenge = _prf_assertion(page, credential_id, salt, spki)
+            repeated, repeated_verification, repeated_challenge = _prf_assertion(page, credential_id, salt, spki)
+            different, different_verification, different_challenge = _prf_assertion(page, credential_id, other_salt, spki)
 
             captured = cdp.send("WebAuthn.getCredentials", {"authenticatorId": source_id})["credentials"]
             if len(captured) != 1:
@@ -139,7 +155,7 @@ def run_prf_migration(browser_path: Path, node_path: Path, node_script: Path, ou
                     "userDisplayName": recovered_passkey["userDisplayName"],
                 },
             })
-            after, after_verification = _prf_assertion(page, credential_id, salt, spki)
+            after, after_verification, after_challenge = _prf_assertion(page, credential_id, salt, spki)
             source_result = before.get("prfFirst")
             checks = {
                 "source_registration_prf_enabled": registration["prfEnabled"],
@@ -164,6 +180,18 @@ def run_prf_migration(browser_path: Path, node_path: Path, node_script: Path, ou
                 "node_version": subprocess.check_output([str(node_path), "--version"], text=True).strip(),
                 "rp_id": RP_ID, "credential_id_sha256": hashlib.sha256(credential_id).hexdigest(),
                 "source_prf_output_sha256": hashlib.sha256(unb64url(source_result)).hexdigest() if source_result else None,
+                "public_transcript": {
+                    "schema_version": 1,
+                    "rp_id": RP_ID,
+                    "credential_id": b64url(credential_id),
+                    "public_key_spki": b64url(spki),
+                    "observations": [
+                        _public_observation("source_initial", before, before_challenge, salt),
+                        _public_observation("source_repeat", repeated, repeated_challenge, salt),
+                        _public_observation("source_other_salt", different, different_challenge, other_salt),
+                        _public_observation("destination", after, after_challenge, salt),
+                    ],
+                },
                 "source_cdp_fields": sorted(source_cdp),
                 "checks": checks,
                 "all_checks_pass": all(checks.values()),

@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - codex/phase14-replay
+      - codex/phase14-auditable
     paths:
       - .github/workflows/phase14-replay.yml
 
@@ -54,6 +55,7 @@ jobs:
                   raise SystemExit(f'{name}: checks failed or missing')
               print(f'{name}: {len(checks)} checks passed')
           '@ | & .venv/Scripts/python.exe - $run.FullName
+          & .venv/Scripts/python.exe tools/verify_phase14_public_transcript.py --report (Join-Path $run.FullName 'prf_migration.json')
       - name: Upload sanitized Phase 14 reports
         if: always()
         uses: actions/upload-artifact@v4
