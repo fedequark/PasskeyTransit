@@ -1,0 +1,26 @@
+{
+  "fixture_sha256": "619a761e2aa1ef0ab61233ced90ec243cf0b7afbd4f72b16edda0f5ab46ebaaa",
+  "limitations": [
+    "JWE fixture uses direct AES-GCM, not HPKE",
+    "working draft leaves HPKE-to-JWE binding and challenge-signature fields unspecified",
+    "no CXF plaintext or external provider is decrypted or imported"
+  ],
+  "negative_controls": {
+    "archive_not_offered": "REJECTED",
+    "malformed_payload_encoding": "REJECTED",
+    "version_mismatch": "REJECTED"
+  },
+  "positive": {
+    "challenge_signature": "NOT_EVALUABLE",
+    "cxf_plaintext": "NOT_EVALUABLE",
+    "document_count": 1,
+    "hpke_to_jwe_binding": "NOT_EVALUABLE",
+    "jwe_authentication": "NOT_EVALUABLE",
+    "provider_interoperability": "NOT_EVALUABLE",
+    "request_shape": "PASS",
+    "response_negotiation": "PASS",
+    "zip_jwe_shape": "PASS"
+  },
+  "profile": "synthetic-public-cxp-wd-20241003-structure-only",
+  "source": "https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html"
+}

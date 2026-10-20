@@ -101,6 +101,22 @@ authorization, durable provider storage, and the public CXP ZIP/JWE
 envelope are outside the tested profile. The transaction model is in
 memory and makes no claim about crash durability.
 
+The reference route models an importer that retains supported fields.
+The strict route refuses a credential when it cannot preserve a required
+property. The compatible-lossy route accepts a credential while dropping
+selected extension state; the legacy route has a different loss policy.
+These are controlled policies written for this study, not named vendors.
+Direct, round-trip, and multihop chains expose whether a later capable
+destination can recover a field already lost at an earlier hop.
+
+The source credential, expected CXF fields, and route policy are known
+to the harness. Its representation oracle therefore has ground truth that
+a real RP usually lacks. The browser oracle sees only what a WebAuthn
+ceremony and client extension results expose. This separation prevents a
+missing serialized seed from being counted as a failed browser PRF
+evaluation. The same distinction applies to a payment-format marker
+without a Secure Payment Confirmation ceremony.
+
 \section{Synthetic campaign results}
 Of 6,144 attempts, 1,024 were rejected before ceremony and 5,120 were
 imported. Every executed assertion among the imported attempts was
@@ -126,6 +142,58 @@ Pre-ceremony rejection & 1,024 & 16.67\% \\
 \end{tabular}
 \end{table}
 
+\begin{table*}[t]
+\centering
+\caption{C1 outcomes by route. Each route has 512 designed attempts.
+P: complete observable PASS; V: visible degradation; S: silent
+degradation; NE: not evaluable. Counts are exact for this design.}
+\label{tab:routes}
+\begin{tabular}{llrrrrrr}
+\toprule
+Route & Chain & Imported & Rejected & P & V & S & NE \\
+\midrule
+R01 & ref--strict & 512 & 0 & 256 & 0 & 0 & 256 \\
+R02 & ref--lossy & 512 & 0 & 256 & 256 & 0 & 0 \\
+R03 & ref--legacy & 512 & 0 & 128 & 0 & 384 & 0 \\
+R04 & ref--strict--ref & 512 & 0 & 256 & 0 & 0 & 256 \\
+R05 & ref--lossy--ref & 512 & 0 & 256 & 256 & 0 & 0 \\
+R06 & ref--legacy--ref & 512 & 0 & 128 & 0 & 384 & 0 \\
+R07 & ref--strict--lossy & 512 & 0 & 256 & 256 & 0 & 0 \\
+R08 & ref--lossy--strict & 256 & 256 & 256 & 0 & 0 & 0 \\
+R09 & ref--strict--legacy & 512 & 0 & 128 & 0 & 384 & 0 \\
+R10 & ref--legacy--strict & 128 & 384 & 128 & 0 & 0 & 0 \\
+R11 & ref--lossy--legacy--strict & 128 & 384 & 128 & 0 & 0 & 0 \\
+R12 & ref--strict--lossy--legacy--ref & 512 & 0 & 128 & 192 & 192 & 0 \\
+\midrule
+Total & & 5,120 & 1,024 & 2,304 & 960 & 1,344 & 512 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{C1 outcomes by constructed credential stratum.
+Each stratum has 768 designed attempts over all routes and repetitions.
+Labels F0--F7 are defined in the text.}
+\label{tab:strata}
+\begin{tabular}{lrrrrrr}
+\toprule
+Stratum & Imported & Rejected & P & V & S & NE \\
+\midrule
+F0 basic & 768 & 0 & 768 & 0 & 0 & 0 \\
+F1 PRF with UV & 576 & 192 & 0 & 256 & 192 & 128 \\
+F2 PRF without UV & 576 & 192 & 0 & 256 & 192 & 128 \\
+F3 largeBlob & 640 & 128 & 384 & 0 & 256 & 0 \\
+F4 credBlob & 576 & 192 & 0 & 256 & 192 & 128 \\
+F5 payment marker & 640 & 128 & 384 & 0 & 256 & 0 \\
+F6 combined extensions & 576 & 192 & 0 & 192 & 256 & 128 \\
+F7 optional member & 768 & 0 & 768 & 0 & 0 & 0 \\
+\midrule
+Total & 5,120 & 1,024 & 2,304 & 960 & 1,344 & 512 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
 Among imported attempts, 512 (10.00\%) combined valid login with failure
 of an executed UV or largeBlob browser oracle. PRF or credBlob
 representation loss occurred in 1,792 (35.00\%); this category overlaps
@@ -139,6 +207,35 @@ preservation. C3 exercised 960 in-memory failure sequences and 1,920 events:
 832 rolled back and converged to one copy on retry, while the 128 deliberate
 legacy late-failure controls retained a provisional and duplicated on retry.
 Neither C2 nor C3 is included in the C1 percentages.
+
+Table~\ref{tab:routes} shows the route dependence directly. R03, R06,
+and R09 each contain 384 silent-degradation attempts, despite 512
+imports and valid assertions. In the paired R02/R05 comparison, returning
+to the reference provider leaves the same 256 visible-degradation
+attempts: a later capable endpoint cannot reconstruct dropped source
+state. Strict handling after a lossy hop rejects 256 attempts in R08;
+after a legacy hop it rejects 384 in R10. These are consequences of the
+specified control policies, not failure rates for real providers.
+
+Table~\ref{tab:strata} separates which controls generate the aggregate.
+The basic and optional-member strata each have 768 observable PASS
+attempts. PRF-bearing and credBlob strata have no complete PASS because
+their positive browser behavior cannot be established through the CDP
+injection path even when their serialized representation is retained.
+The 512 false-reassurance cases occur in largeBlob-bearing strata F3
+and F6: 256 in each, with accepted assertions and a failing executed
+browser behavior oracle. These 512 cases are a subset of the broader
+semantic-degradation counts, not an additional category to add to
+Table~\ref{tab:c1}.
+
+The C2 family outcome matters more than its pooled rejection count.
+Eight unknown-optional-member and eight minor-version-increase cases
+were imported but assigned NOT\_EVALUABLE; a credential-ID collision
+was rejected in eight cases while its normative class remained
+ambiguous. C3's 128 failed atomicity and idempotence controls were
+exactly the two late failure points of the legacy model, 64 each.
+Because C3 has no process crash or durable storage, its result cannot
+predict recovery behavior of a password manager.
 
 \section{Executable follow-up controls}
 \subsection{Experimental exchange and browser PRF loss}
@@ -165,6 +262,23 @@ flags, credential identity, and four PRF digest relationships. The archive
 contains no private key, seed, or raw PRF output. Comparing hashes proves
 relations among observed outputs, not the HMAC computation from a seed
 that CDP did not reveal.
+
+\subsection{Public-draft envelope structure probe}
+We added a synthetic shape probe for the CXP Working Draft's visible
+request and response members, offered parameter selection, and the
+illustrated ZIP layout with an index JWE and a document JWE.
+The positive fixture passes those structural checks. Three negative
+responses with a version mismatch, unoffered archive, or malformed
+payload encoding are rejected. Additional tests reject unexpected ZIP
+paths and a plain JSON file substituted for a JWE. The fixture uses
+standard direct-key AES-GCM JWE solely to exercise the container shape.
+It does not claim that this maps HPKE to JWE. The draft does not give a
+complete HPKE-to-JWE binding or include its narrative signed-challenge
+fields in the displayed request and response objects. Consequently
+JWE authentication under negotiated HPKE, challenge verification,
+CXF plaintext recovery, and provider interoperability remain
+NOT\_EVALUABLE in this probe~\cite{cxp}. It is a reproducible parsing
+control, not a CXP conformance or security result.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
@@ -225,18 +339,19 @@ experiments.
 
 \appendix
 \section{Open Science}
-The review package contains source, locked dependencies, protocols,
-synthetic reports, two GitHub Actions ZIP archives for the browser
-control, public signature transcripts, and verification scripts.
-\texttt{python tools/verify\_v08\_draft.py} checks pinned hashes and the
-phase-14, Fenko, and Proton public reports. A clean extraction with newly
-installed locked dependencies passed the same checks on 20 October 2026
-on the same team's Windows host. This was an environment-isolation check,
-not independent replication.
-Provider vaults, private keys, original PRF seeds, and raw PRF outputs
-are excluded. Repeating provider paths requires pinned external revisions.
-An anonymous artifact URL without tracking must be provided before
-submission; the current public repository is identifying.
+The non-anonymous project archive contains source, locked dependencies,
+protocols, synthetic reports, browser-control ZIP archives, public
+signature transcripts, and verification scripts. A clean extraction
+with newly installed locked dependencies passed its checks on 20 October
+2026 on the same team's Windows host. This was an environment-isolation
+check, not independent replication. A separate staged anonymous archive
+contains the synthetic C1/C2/C3 rows, analysis tables, source, and
+structural CXP probe. Its verifier recomputes the 96 C1 cells and checks
+file hashes. It omits provider replay archives and is therefore not yet
+a complete submission artifact. Provider vaults, private keys, original
+PRF seeds, and raw PRF outputs are excluded from both archives. A final
+anonymous artifact with provider evidence and a no-tracking URL remains
+to be prepared before submission.
 
 \section{Ethical considerations}
 All generated credentials and RP accounts in the reported software
