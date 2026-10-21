@@ -61,3 +61,24 @@ replay ni la procedencia original necesaria para atribuir esos informes a sus
 proveedores; por ello aún no respalda íntegramente el manuscrito. Su nombre y contenido
 podrían relacionarse contextualmente con el proyecto público. No hay enlace
 de revisión ni publicación del ZIP.
+
+## Avance del 21 de octubre: procedencia y comparación externa
+
+El paquete local ahora conserva el ZIP original del replay de fase 14. Su
+verificador comprueba que los dos informes incluidos son idénticos a los del
+ZIP. El SHA-256 de ese ZIP coincide con el digest que GitHub Actions muestra
+para el artefacto del run 39446248808. El vínculo identificador con el run
+queda en un archivo local privado, fuera del paquete de revisión. Esto
+fortalece la trazabilidad del control de navegador, pero los ensayos de
+Fenko y Proton aún carecen de archivos de replay equivalentes dentro del
+paquete. Tampoco resuelve el riesgo de identificación contextual.
+
+La comparación con trabajos previos se amplió a abuso interpersonal,
+compromiso de gestores en la nube y exportación propuesta para credenciales
+ligadas al dispositivo. Se distinguió la unidad de análisis propia: cada
+intento de migración controlada y sus oráculos posteriores. Un cotejo
+reproducible del esquema del borrador CXP con los tipos Rust públicos de
+Bitwarden detectó tres campos del borrador ausentes en esos tipos. Es una
+observación del código fuente, no una ejecución de intercambio CXP. Un
+ensayo criptográfico completo sigue pendiente de un perfil HPKE/JWE
+interoperable y una segunda implementación ejecutable.

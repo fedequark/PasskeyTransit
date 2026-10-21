@@ -62,10 +62,23 @@ answer separate questions. Ramat et al. compare passkey user experiences
 across 111 websites~\cite{ramat}; Jannett et al. measure deployment and
 security on passkey-enabled websites~\cite{jannett}. B\"uttner and
 Gruschka compare the security and availability of device-bound and synced
-credentials~\cite{buttner}. Those units are websites or credential models.
+credentials~\cite{buttner}. Daffalla et al. study passkey abuse under
+interpersonal threat models~\cite{daffalla}, while Islam et al. propose
+detection of stolen cloud-stored passkeys~\cite{islam}. Henarejos proposes
+authenticated export and restoration of device-bound credentials and a
+falsifiable evaluation plan~\cite{henarejos}. These studies respectively
+observe relying parties, user-facing management, cloud compromise, or a
+proposed recovery design. None of those reported measurements establishes
+whether a controlled credential retains its extension behavior after a
+specific provider-to-provider import. That is the narrower question here.
+
 Our unit is an attempted migration of a controlled credential, with
 separate post-import oracles for signing, extension behavior, and retry
-state. We do not infer website adoption or provider prevalence from it.
+state. The method makes loss of observability an explicit outcome, rather
+than interpreting a successful assertion as evidence about unexecuted
+properties. The controlled routes expose that distinction, while the
+selected provider cases test only a few concrete code paths. We do not
+infer website adoption, attack prevalence, or provider prevalence.
 
 \section{Study design}
 \subsection{Units, outcomes, and exclusions}
@@ -282,6 +295,16 @@ CXF plaintext recovery, and provider interoperability remain
 NOT\_EVALUABLE in this probe~\cite{cxp}. It is a reproducible parsing
 control, not a CXP conformance or security result.
 
+To identify an external implementation target, we compared the fixture's
+request and response fields with a pinned Bitwarden CXP Rust type
+definition~\cite{bitwardencxp}. That source declares neither the draft's
+\texttt{archive} and \texttt{mode} request fields nor its \texttt{archive}
+response field, and stores the version as an eight-bit value rather than
+the draft's 16-bit type. The comparison is executable from a frozen
+field snapshot. It is source-schema evidence only: Serde may ignore
+unknown fields, and we did not compile the crate or exchange encrypted
+payloads with it. It cannot be counted as provider interoperability.
+
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
 path. Two fresh profiles per repetition imported synthetic basic and
@@ -347,10 +370,13 @@ signature transcripts, and verification scripts. A clean extraction
 with newly installed locked dependencies passed its checks on 20 October
 2026 on the same team's Windows host. This was an environment-isolation
 check, not independent replication. A separate staged anonymous archive
-contains the synthetic C1/C2/C3 rows, analysis tables, source, and
-structural CXP probe. Its verifier recomputes the 96 C1 cells and checks
-file hashes. It omits provider replay archives and is therefore not yet
-a complete submission artifact. Provider vaults, private keys, original
+contains the synthetic C1/C2/C3 rows, analysis tables, source, the
+structural CXP probe, selected public provider reports, and the original
+Phase 14 browser-control replay ZIP. Its verifier recomputes the 96 C1
+cells, checks file hashes, and matches the replay's two reports byte for
+byte. Identifying GitHub run metadata is retained in a local private
+sidecar. Provider-run replay archives are absent, so this is not yet a
+complete submission artifact. Provider vaults, private keys, original
 PRF seeds, and raw PRF outputs are excluded from both archives. A final
 anonymous artifact with provider evidence and a no-tracking URL remains
 to be prepared before submission.
@@ -371,6 +397,10 @@ and revision scope rather than a general vendor security defect.
 \bibitem{ramat} B. Ramat, D. Kartchner, M. Clark, and K. Seamons. Passkeys in the Wild: A Systematic Study of FIDO2 User Experience Consistency Across Websites. SOUPS, pp. 21--39, 2026. \url{https://www.usenix.org/conference/soups2026/presentation/ramat}.
 \bibitem{jannett} L. Jannett, A. Mayer, M. Westers, V. Mladenov, C. Mainka, and J. Schwenk. The State of Passkeys: Studying the Adoption and Security of Passkeys on the Web. USENIX Security, pp. 5039--5058, 2026. \url{https://www.usenix.org/conference/usenixsecurity26/presentation/jannett}.
 \bibitem{buttner} A. B{\"u}ttner and N. Gruschka. Device-Bound vs. Synced Credentials: A Comparative Evaluation of Passkey Authentication. ICISSP, 2025. \url{https://arxiv.org/abs/2501.07380}.
+\bibitem{daffalla} A. Daffalla et al. A Framework for Abusability Analysis: The Case of Passkeys in Interpersonal Threat Models. USENIX Security, pp. 7819--7838, 2025. \url{https://www.usenix.org/conference/usenixsecurity25/presentation/daffalla}.
+\bibitem{islam} M. Islam et al. Detecting Compromise of Passkey Storage on the Cloud. USENIX Security, pp. 7743--7762, 2025. \url{https://www.usenix.org/conference/usenixsecurity25/presentation/islam}.
+\bibitem{henarejos} P. Henarejos. Vaulted Passkeys: A Device-Bound Proposal for Authenticated Credential Export and Import. arXiv:2608.13806, 2026. \url{https://arxiv.org/abs/2608.13806}.
+\bibitem{bitwardencxp} Bitwarden. Credential Exchange Protocol Rust types, pinned commit \texttt{32da4c8b0a4abdd0b46fae79c31e0fdb50150396}, 2026. \url{https://github.com/bitwarden/credential-exchange/blob/32da4c8b0a4abdd0b46fae79c31e0fdb50150396/credential-exchange-protocol/src/lib.rs}.
 \bibitem{fenko} FenkoHQ. Passkey Vault 0.12.0, pinned commit \texttt{2d873fbe25257250de6e322e9d785b97b17a544f}. \url{https://github.com/FenkoHQ/passkey-vault}.
 \bibitem{proton} Proton. Proton Pass common 2.0.0, pinned commit \texttt{69a0927f0fe7071243d6c38e404459a69210fdd4}. \url{https://github.com/protonpass/proton-pass-common}.
 \end{thebibliography}

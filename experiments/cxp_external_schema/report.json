@@ -1,0 +1,14 @@
+{
+  "draft_version_storage_bits": 16,
+  "interpretation": "Pinned Rust types do not declare the archive and mode request fields or archive response field shown in the 2024 working draft. Serde may ignore unknown fields; this check does not establish a runtime rejection, HPKE/JWE interoperability, or a provider transfer.",
+  "request_fields_absent_from_upstream_types": [
+    "archive",
+    "mode"
+  ],
+  "response_fields_absent_from_upstream_types": [
+    "archive"
+  ],
+  "source": "https://github.com/bitwarden/credential-exchange/blob/32da4c8b0a4abdd0b46fae79c31e0fdb50150396/credential-exchange-protocol/src/lib.rs",
+  "source_scope": "public Rust serde type definitions; no library execution or cryptographic exchange",
+  "upstream_version_storage_bits": 8
+}

@@ -5,6 +5,8 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import io
+import zipfile
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -15,6 +17,19 @@ def verify(root: Path) -> dict[str, object]:
         source = root / name
         if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != expected:
             raise ValueError(f"missing or modified artifact member: {name}")
+    replay_bytes = (root / "data/replay/phase14-original.zip").read_bytes()
+    with zipfile.ZipFile(io.BytesIO(replay_bytes)) as replay:
+        members = replay.namelist()
+        if replay.testzip() is not None or len(members) != 2:
+            raise ValueError("invalid Phase 14 replay archive")
+        expected_reports = {"cross_runtime_cxp.json", "prf_migration.json"}
+        if {name.rsplit("/", 1)[-1] for name in members} != expected_reports:
+            raise ValueError("unexpected Phase 14 replay members")
+        for member in members:
+            basename = member.rsplit("/", 1)[-1]
+            report = root / "experiments/phase14_ci_replay/2026-10-20/auditable" / basename
+            if replay.read(member) != report.read_bytes():
+                raise ValueError(f"Phase 14 replay report mismatch: {basename}")
 
     observed: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
     attempts = 0
@@ -81,6 +96,7 @@ def verify(root: Path) -> dict[str, object]:
     return {
         "status": "PASS",
         "hashed_members": len(manifest["files"]),
+        "phase14_replay_reports_byte_equal": 2,
         "c1_attempts": attempts,
         "c1_groups": len(observed),
         "c1_totals": expected,

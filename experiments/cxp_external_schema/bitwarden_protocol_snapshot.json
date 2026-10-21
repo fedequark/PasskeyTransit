@@ -1,0 +1,9 @@
+{
+  "source": "https://github.com/bitwarden/credential-exchange/blob/32da4c8b0a4abdd0b46fae79c31e0fdb50150396/credential-exchange-protocol/src/lib.rs",
+  "commit": "32da4c8b0a4abdd0b46fae79c31e0fdb50150396",
+  "blob_sha": "dfcecfdede397b4f040a17503b62cb83b3111c43",
+  "source_scope": "public Rust serde type definitions; no library execution or cryptographic exchange",
+  "export_request_fields": ["version", "hpke", "importer", "credentialTypes", "knownExtensions"],
+  "export_response_fields": ["version", "hpke", "exporter", "payload"],
+  "version_storage_bits": 8
+}
