@@ -145,7 +145,7 @@ def build() -> Path:
                 raise ValueError(f"email-like value in {name}: {match!r}")
     manifest = {
         "artifact": "passkeytransit-anonymous-staging-v1",
-        "scope": "synthetic-campaign-public-provider-reports-and-cxp-structure",
+        "scope": "synthetic-campaign-public-reports-phase14-replay-and-cxp-structure",
         "files": {name: _sha(data) for name, data in sorted(files.items())},
         "source_release_raw_rows": "v0.7.1 synthetic evidence, source_commit field removed",
         "limitations": [

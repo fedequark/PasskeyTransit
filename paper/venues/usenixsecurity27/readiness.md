@@ -27,18 +27,18 @@ El tema encaja en seguridad web, protocolo y medición. El límite mayor es cien
 
 La siguiente versión de envío deberá (1) verificar cada cita y metadato bibliográfico, (2) incorporar la reproducción aislada y el replay auditable sin confundirlos con réplica independiente, (3) preparar artefacto anónimo y enlace estable, (4) revisar con autores responsables cada línea generada o traducida con asistencia de IA, y (5) ampliar el manuscrito antes de considerar un envío. La disponibilidad de un enlace anónimo y los ORCID dependen de decisiones del autor; no se inventan. Las revisiones independientes están pausadas por decisión del autor.
 
-## Avance del 20 de octubre: PDF con estilo oficial
+## Avance del 20 y 21 de octubre: PDF con estilo oficial
 
 El borrador inglés ahora precisa los ocho estratos, las dos aserciones de C1, los
 controles C2 y C3, el límite de los hashes PRF y el carácter interno de la
 reproducción en entorno limpio. Se cotejaron los metadatos bibliográficos de
 Ramat, Jannett y Büttner con sus publicaciones originales.
 
-El [run 39453355833](https://github.com/fedequark/PasskeyTransit/actions/runs/39453355833)
+El [run 39607446937](https://github.com/fedequark/PasskeyTransit/actions/runs/39607446937)
 compiló con pdfLaTeX y comparó byte a byte la copia de usenix.sty con la
 plantilla oficial. El PDF descargado tiene cinco páginas U.S. letter, dos
 columnas y fuentes Type 1 incrustadas; SHA-256:
-8a0a8dc54caa59c824aa66ad149d7564e95d61f9e063ea8c86116b580782a2c5.
+14c67ca3c4daef0b72b8036e74b50d7a22304981e948697aaf3b35ae9c894a6c.
 Se renderizaron e inspeccionaron las cinco páginas sin detectar texto cortado
 ni superpuesto. El archivo está en compiled/main.pdf.
 
