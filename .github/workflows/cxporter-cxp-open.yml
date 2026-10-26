@@ -10,6 +10,9 @@ on:
       - interop/cxporter_cxp_probe/main.go
       - tools/run_cxporter_cxp_passkey.py
       - tools/verify_cxporter_cxp_public_report.py
+      - interop/cxp_poc2_cross_probe/pt-cross.ts
+      - tools/run_cxp_poc2_cross.py
+      - tools/verify_cxp_poc2_cross_report.py
 
 permissions:
   contents: read
@@ -57,4 +60,24 @@ jobs:
         with:
           name: cxporter-cxp-open-report
           path: tmp/cxporter-ci/report.json
+          retention-days: 14
+      - name: Fetch pinned second open importer
+        run: |
+          git init tmp/vendor_cxp_poc2
+          git -C tmp/vendor_cxp_poc2 remote add origin https://github.com/ShaminAkarsha/cxp_poc2.git
+          git -C tmp/vendor_cxp_poc2 fetch --depth=1 origin fee19d9ac392ffe0153bea8b917aa0a66f12b272
+          git -C tmp/vendor_cxp_poc2 checkout --detach FETCH_HEAD
+          test "$(git -C tmp/vendor_cxp_poc2 rev-parse HEAD)" = fee19d9ac392ffe0153bea8b917aa0a66f12b272
+          npm install -g pnpm@11.25.0
+          (cd tmp/vendor_cxp_poc2 && pnpm install --frozen-lockfile --ignore-scripts)
+      - name: Replay cross-implementation rejection
+        run: |
+          python tools/run_cxp_poc2_cross.py --binary tmp/cxporter-passkey-probe --go-source tmp/vendor_cxporter --ts-source tmp/vendor_cxp_poc2 --output tmp/cxporter-ci/cross_import_rejection.json
+          (cd tmp/vendor_cxp_poc2 && pnpm typecheck)
+          python tools/verify_cxp_poc2_cross_report.py --report tmp/cxporter-ci/cross_import_rejection.json
+          sha256sum tmp/cxporter-ci/cross_import_rejection.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxporter-poc2-cross-report
+          path: tmp/cxporter-ci/cross_import_rejection.json
           retention-days: 14
