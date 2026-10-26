@@ -1,0 +1,23 @@
+{
+  "all_checks_pass": true,
+  "checks": {
+    "node_rejects_modified_index_jwe_ciphertext": true,
+    "node_rejects_wrong_recipient_key": true,
+    "python_zip_jwe_export_node_import_equal": true
+  },
+  "document_sha256": "7e28618938c089449c7a800e6cc131fccc12adfa3a0e9268bae4ba92f0389154",
+  "evidence_class": "project-authored-cross-runtime-experimental-cxp-zip-jwe",
+  "limitations": [
+    "both implementations belong to this project; no external provider CXP exchange",
+    "private experimental JOSE key-management algorithm",
+    "Node importer checks this ZIP subset, not general ZIP validity or provider state",
+    "no browser or mobile credential-provider execution"
+  ],
+  "node_version": "v24.18.0",
+  "profile": "passkeytransit-cxp-zip-jwe-v1",
+  "source_sha256": {
+    "node_importer": "c7256f1175e6e9c726b33da26092578f58f33ccd23b39d6a82665f0227211382",
+    "python_exporter": "f650dcce583c2b04367be717e76258669fe7553a716f6ca7a944569b9afd2ecf",
+    "runner": "34800f67f34609ebd6edac80f832390f3ac65ca6d9e5a56625960b46003ed0e1"
+  }
+}

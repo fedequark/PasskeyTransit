@@ -305,6 +305,15 @@ eight-bit; 256 fits the draft field width but is not a published version.
 The dropped fields are type-parser gaps, not encrypted transfers or
 provider interoperability.
 
+We then defined an explicitly private HPKE-to-JWE test profile: HPKE
+wraps a fresh content key for each compact JWE in a two-member ZIP; JWE
+AES-GCM authenticates the file contents~\cite{hpke,jwe}. A Python exporter
+and separately written Node importer recovered one synthetic CXF document
+with its HMAC fields. Nine local and three cross-runtime controls passed,
+including modified ciphertext, wrapped-key, and wrong-recipient rejection.
+The draft does not define this binding, and both programs are ours; this
+result cannot establish provider CXP interoperability.
+
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
 path. Two fresh profiles per repetition imported synthetic basic and
@@ -366,7 +375,8 @@ synthetic reports, replay ZIPs, and verifiers. A clean extraction passed
 on the same team's Windows host on 20 October 2026; this is not
 independent replication. A staged anonymous archive includes synthetic
 C1/C2/C3 rows, analysis tables, the structural CXP probe, the executed
-Rust and Go type-parser reports, the original Phase 14 browser replay ZIP, and a
+Rust and Go type-parser reports, experimental ZIP/JWE run reports, the
+original Phase 14 browser replay ZIP, and a
 local Fenko/Proton replay bundle. Verifiers recompute 96 C1 cells, check
 member hashes and public signatures, and match the Phase 14 reports byte
 for byte. GitHub run metadata stays in a private sidecar. The provider
@@ -385,6 +395,7 @@ and revisions only.
 \bibitem{cxf} FIDO Alliance. Credential Exchange Format v1.0 Proposed Standard Errata, 2026. \url{https://fidoalliance.org/specs/cx/cxf-v1.0-ps-errata-20260309.html}.
 \bibitem{cxp} FIDO Alliance. Credential Exchange Protocol v1.0 Working Draft, 3 October 2024. \url{https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html}.
 \bibitem{hpke} R. Barnes et al. Hybrid Public Key Encryption. RFC 9180, 2022. \url{https://www.rfc-editor.org/rfc/rfc9180}.
+\bibitem{jwe} M. Jones and J. Hildebrand. JSON Web Encryption. RFC 7516, 2015. \url{https://www.rfc-editor.org/rfc/rfc7516}.
 \bibitem{webauthn} W3C. Web Authentication Level 3, Recommendation, 25 August 2026. \url{https://www.w3.org/TR/2026/REC-webauthn-3-20260825/}.
 \bibitem{ramat} B. Ramat, D. Kartchner, M. Clark, and K. Seamons. Passkeys in the Wild: A Systematic Study of FIDO2 User Experience Consistency Across Websites. SOUPS, pp. 21--39, 2026. \url{https://www.usenix.org/conference/soups2026/presentation/ramat}.
 \bibitem{jannett} L. Jannett, A. Mayer, M. Westers, V. Mladenov, C. Mainka, and J. Schwenk. The State of Passkeys: Studying the Adoption and Security of Passkeys on the Web. USENIX Security, pp. 5039--5058, 2026. \url{https://www.usenix.org/conference/usenixsecurity26/presentation/jannett}.

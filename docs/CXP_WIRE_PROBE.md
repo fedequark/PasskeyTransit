@@ -13,7 +13,7 @@ The positive probe checks request and response members, offered suite and archiv
 
 The draft's narrative mentions a signed challenge, but its displayed request and response schemas omit the challenge and signature members. It also requires JWE files encrypted with the selected HPKE parameters without giving a complete mapping from HPKE encapsulation to JWE protected header, content key, or archive member. The draft points to a CXF ZIP archive, while the current CXF Proposed Standard describes JSON data structures and does not define that archive layout. Consequently the probe reports JWE authentication under HPKE, challenge verification, CXF plaintext recovery, and provider interoperability as NOT_EVALUABLE. The fixture cannot be imported by an external provider.
 
-The structural probe can catch clear envelope mistakes before any future provider run. A later cryptographic experiment must pin an explicit interoperable HPKE-to-JWE profile or use a revised specification, obtain a second implementation, and record a wire transcript with positive and negative decryption controls.
+The structural probe catches clear envelope mistakes before a provider run. A separate [experimental ZIP/JWE profile](CXP_ZIP_JWE_EXPERIMENT.md) now encrypts and decrypts synthetic files with positive and negative controls. That private mapping still needs agreement by an external provider or a revised specification before it can support a CXP interoperability claim.
 
 ## Open-source implementation candidate: Bitwarden type definitions
 
@@ -23,7 +23,7 @@ On 2026-10-21 we inspected the public Bitwarden `credential-exchange-protocol` R
 
 The pinned Rust crate was compiled in GitHub Actions with a committed Cargo lockfile and fed the synthetic request and response. [Run 40324657477](https://github.com/fedequark/PasskeyTransit/actions/runs/40324657477) passed; its JSON output is `experiments/cxp_external_schema/runtime_report.json`. The parser accepted both objects, but serialization omitted request fields `archive` and `mode` and response field `archive`. It rejected version 256, which fits the draft's 16-bit field but is **not** a published protocol version. This is a future-width limitation, not a current conformance failure. The report verifier checks those exact outcomes. The source revision and fixture are pinned, and the workflow uses `cargo run --locked`.
 
-This is an executed **type-parser** result, not a provider transfer or a decryption test. The omitted fields illustrate semantic loss during this parse/serialize route; they do not establish how a provider application would handle the original wire object. The crate README describes type definitions, not a complete exchange engine. HPKE/JWE decryption and public provider interoperability remain NOT_EVALUABLE. A later cryptographic experiment needs an agreed HPKE-to-JWE profile, positive and tampered encrypted payloads, and a second complete implementation.
+This is an executed **type-parser** result, not a provider transfer or a decryption test. The omitted fields illustrate semantic loss during this parse/serialize route; they do not establish how a provider application would handle the original wire object. The crate README describes type definitions, not a complete exchange engine. HPKE/JWE decryption in these external parsers and public provider interoperability remain NOT_EVALUABLE. The separate project-defined cryptographic profile does not change that external-provider result.
 
 ## Second open type parser: Go
 

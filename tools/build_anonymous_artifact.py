@@ -41,11 +41,15 @@ SOURCE_FILES = [
     "experiments/cxp_external_schema/runtime_report.json",
     "experiments/cxp_external_schema/go_runtime_report.json",
     "experiments/cxp_external_schema/comparison.json",
+    "experiments/cxp_zip_jwe_experimental/report.json",
+    "experiments/cxp_zip_jwe_experimental/cross_runtime.json",
     "interop/bitwarden_cxp_types/Cargo.lock",
     "interop/bitwarden_cxp_types/Cargo.toml",
     "interop/bitwarden_cxp_types/src/main.rs",
     "interop/go_cxp_types/go.mod",
     "interop/go_cxp_types/main.go",
+    "interop/node_cxp_zip_jwe.mjs",
+    "docs/CXP_ZIP_JWE_EXPERIMENT.md",
     "experiments/phase14_ci_replay/2026-10-20/auditable/cross_runtime_cxp.json",
     "experiments/phase14_ci_replay/2026-10-20/auditable/prf_migration.json",
     "experiments/v2_exploratory/fenko_provider.json",
@@ -67,6 +71,9 @@ SOURCE_FILES = [
     "tools/verify_cxp_runtime_report.py",
     "tools/verify_go_cxp_runtime_report.py",
     "tools/compare_cxp_type_parsers.py",
+    "tools/run_cxp_zip_jwe_profile.py",
+    "tools/run_cxp_zip_jwe_cross_runtime.py",
+    "tools/verify_cxp_zip_jwe_reports.py",
     "tools/run_proton_cxf_prf.py",
     "tools/verify_phase14_public_transcript.py",
     "tools/verify_proton_public_report.py",
@@ -149,12 +156,14 @@ def build() -> Path:
         "# Anonymous staged review artifact\n\n"
         "Contains synthetic C1/C2/C3 rows, result tables, selected public "
         "browser and provider reports, protocols, source, and a CXP draft "
-        "structure probe. Git history, commit IDs in raw rows, "
+        "structure probe, and an experimental HPKE/JWE ZIP round trip. "
+        "Git history, commit IDs in raw rows, "
         "and original provenance manifests were intentionally omitted. The "
         "original Phase 14 replay ZIP is included and checked byte-for-byte "
         "against its two reports.\n\n"
         "Run python verify.py after extraction. With dependencies installed, "
         "run python tools/verify_provider_reports.py, "
+        "python tools/verify_cxp_zip_jwe_reports.py, "
         "python tools/run_cxp_wire_probe.py and "
         "PYTHONPATH=src python -m pytest tests/test_cxp_wire_probe.py "
         "(set PYTHONPATH appropriately on Windows).\n\n"
@@ -175,12 +184,12 @@ def build() -> Path:
                 raise ValueError(f"email-like value in {name}: {match!r}")
     manifest = {
         "artifact": "passkeytransit-anonymous-staging-v1",
-        "scope": "synthetic-campaign-public-reports-phase14-and-local-provider-replays-cxp-type-parser",
+        "scope": "synthetic-campaign-replays-external-type-parsers-experimental-zip-jwe",
         "files": {name: _sha(data) for name, data in sorted(files.items())},
         "source_release_raw_rows": "v0.7.1 synthetic evidence, source_commit field removed",
         "limitations": [
             "provider replay is same-team local execution without external CI attestation",
-            "no encrypted CXP provider transfer or HPKE/JWE decryption is evidenced",
+            "HPKE/JWE decryption is project-authored experimental; no external provider CXP transfer is evidenced",
             "contextual linkage to an already public project cannot be ruled out",
             "no third-party replication claimed",
         ],
