@@ -329,18 +329,14 @@ represented secret are separate claims. Two repetitions are not a
 product-level reliability estimate.
 
 \subsection{Positive software control: Proton}
-The Proton Pass common 2.0.0 software authenticator~\cite{proton}
-provided a selected positive control. In two exploratory repetitions,
-the runner imported CXF, exported it, and reimported into a second
-software authenticator. Both HMAC seeds survived. With user verification,
-the expected PRF was reproduced for two salts before and after reimport.
-A modified-seed control changed the result while the credential still
-signed. The public verifier rechecked 12 signatures and 12 PRF digest
-comparisons, including four modified-seed controls. The isolated report
-cannot reconstruct the HMAC from a withheld seed; that requires repeating
-the pinned software run. This route used pinned WASM, not a
-browser passkey provider or the installed Proton Pass application; no
-no-UV ceremony was run.
+In two exploratory repetitions, the Proton Pass common 2.0.0 software
+authenticator~\cite{proton} imported, exported and reimported CXF. Both
+HMAC seeds survived; with UV, the expected PRF recurred for two salts.
+Changing the seed changed PRF while signing still worked. The public
+verifier checked 12 signatures and PRF digests, including four changed-seed
+controls. Computing HMAC from the withheld seed requires replay. This
+pinned WASM route used neither an installed provider app nor a no-UV
+ceremony.
 
 \section{Discussion and limitations}
 The browser loss control and Fenko case show different ways a signing
