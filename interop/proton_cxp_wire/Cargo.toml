@@ -1,0 +1,9 @@
+[package]
+name = "passkeytransit-proton-cxp-wire"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+proton-pass-common = { git = "https://github.com/protonpass/proton-pass-common", rev = "b22db5ca6fef03d0e9467c0305f9af8a2826be35", features = ["cxp"] }
+proton-pass-types = { git = "https://github.com/protonpass/proton-pass-common", rev = "b22db5ca6fef03d0e9467c0305f9af8a2826be35" }

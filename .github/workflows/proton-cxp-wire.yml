@@ -1,0 +1,40 @@
+name: Proton CXP wire interoperability
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/proton-cxp-wire.yml
+      - interop/proton_cxp_wire/**
+      - src/passkeytransit/hpke_chacha.py
+      - tools/run_proton_cxp_wire.py
+
+permissions:
+  contents: read
+
+jobs:
+  proton-cxp-wire:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Build pinned Proton CXP exporter adapter
+        run: cargo build --manifest-path interop/proton_cxp_wire/Cargo.toml
+      - name: Exchange and decrypt synthetic direct-HPKE CXP response
+        env:
+          PYTHONPATH: src
+        run: |
+          python -m pip install 'cryptography>=45,<51'
+          python tools/run_proton_cxp_wire.py interop/proton_cxp_wire/target/debug/passkeytransit-proton-cxp-wire > proton-cxp-wire-report.json
+          python -c 'import json; r=json.load(open("proton-cxp-wire-report.json")); print(r["scope"], r["status"], r["controls"])'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proton-cxp-wire-report
+          path: proton-cxp-wire-report.json
+          retention-days: 7
