@@ -151,7 +151,7 @@ y `fea15a29a06fff6aa14d889965726b76a90d7ff4a2f8681e63112cba79b8423b`.
 
 El artefacto anónimo local incorporó código, informe y verificador del nuevo
 perfil; una extracción limpia volvió a pasar con 117 miembros verificados.
-SHA-256 del ZIP: `688f7039d9ee7475059a67feab8b43706df0f316785fdb0227c11ffb9cdf059b`.
+SHA-256 del ZIP: `37c8d71906dda2b23dd80977566a12836e6aa507d90aabe333bb5d60c9975cfb`.
 El perfil **no** demuestra que un gestor externo acepte ese mapeo HPKE/JWE.
 La auditoría de código abierto documentada en
 `docs/CXP_EXTERNAL_PROVIDER_GATE.md` muestra que el parser de Bitwarden
@@ -191,3 +191,24 @@ contextual. El [run PDF 40334103538](https://github.com/fedequark/PasskeyTransit
 compiló la versión actual con la plantilla oficial. El PDF tiene cinco
 páginas U.S. letter, inspeccionadas visualmente, y SHA-256
 `5200a94756f7fe6fe2cdc64b3ca68261a7cca45165d517d5756c90ca0347e18f`.
+
+## Avance del 26 de octubre: ZIP CXP con JOSE externo
+
+Se construyó otro ZIP CXP experimental de dos miembros, ambos JWEs
+`HPKE-3-KE` según el borrador JOSE -22. La librería Go independiente
+`jwx/v4` descifró índice y documento; el adaptador Python del proyecto
+comprobó selección de suite, archivo, identificador de exportador,
+vínculo a la solicitud, índice y forma CXF. Cinco controles pasaron,
+incluidos JWE alterado, destinatario incorrecto, exportador cambiado y
+archivo no negociado. El [run de CI 40335331441](https://github.com/fedequark/PasskeyTransit/actions/runs/40335331441)
+pasó; el [run final 40335869966](https://github.com/fedequark/PasskeyTransit/actions/runs/40335869966)
+también pasó. SHA-256 del informe:
+`cd0f9ba6a5afc80557b3d87239c09f7b658d72262b77b09b7dc2c272eb397561`.
+El ZIP, el índice y el adaptador CXP son nuestros; el gestor externo
+completo y una aserción posterior siguen `NOT_EVALUABLE`.
+
+La extracción limpia del artefacto anónimo actual verificó 132 miembros
+con hash y los cinco nuevos controles. El [run PDF 40335870754](https://github.com/fedequark/PasskeyTransit/actions/runs/40335870754)
+compiló la versión actual del paper con la plantilla oficial: cinco
+páginas U.S. letter inspeccionadas visualmente. SHA-256 del PDF:
+`2e2c85a98a7874e0ab699fa9d6893d0a665485ff70e58530be4b51ef47fc16d0`.
