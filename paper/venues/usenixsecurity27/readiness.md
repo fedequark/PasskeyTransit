@@ -34,11 +34,11 @@ controles C2 y C3, el límite de los hashes PRF y el carácter interno de la
 reproducción en entorno limpio. Se cotejaron los metadatos bibliográficos de
 Ramat, Jannett y Büttner con sus publicaciones originales.
 
-El [run 40326297876](https://github.com/fedequark/PasskeyTransit/actions/runs/40326297876)
+El [run 40327351880](https://github.com/fedequark/PasskeyTransit/actions/runs/40327351880)
 compiló con pdfLaTeX y comparó byte a byte la copia de usenix.sty con la
 plantilla oficial. El PDF descargado tiene cinco páginas U.S. letter, dos
 columnas y fuentes Type 1 incrustadas; SHA-256:
-e8ce28abf88748ae945e1bc74a5caff0f3557f58b3789e955b3581b7470ededc.
+b13476715f4d4026ba4e2b25e6a0ca8a713d48d054de68ea50a2b8ac5a179467.
 Se renderizaron e inspeccionaron las cinco páginas sin detectar texto cortado
 ni superpuesto. El archivo está en compiled/main.pdf.
 
@@ -85,19 +85,29 @@ interoperable y una segunda implementación ejecutable.
 
 ## Avance del 26 de octubre: parser externo y replays locales
 
-El [run 40324657477](https://github.com/fedequark/PasskeyTransit/actions/runs/40324657477)
+El [run 40327351891](https://github.com/fedequark/PasskeyTransit/actions/runs/40327351891)
 compiló los tipos Rust CXP públicos de Bitwarden en la revisión fijada
 `32da4c8b0a4abdd0b46fae79c31e0fdb50150396`. La solicitud y la respuesta
 sintéticas se interpretaron, pero una serialización posterior omitió
 `archive` y `mode` de la solicitud y `archive` de la respuesta. Una versión
 256, representable por el campo de 16 bits pero sin ser una versión publicada,
 fue rechazada por el tipo de 8 bits. Es una limitación de amplitud futura,
-no un fallo de conformidad actual. El resultado caracteriza ese parser; no prueba intercambio entre
-gestores, autenticación JWE ni descifrado HPKE.
-El [run con lockfile 40325899097](https://github.com/fedequark/PasskeyTransit/actions/runs/40325899097)
-repitió el resultado. Su informe y `Cargo.lock` descargados coinciden byte
-por byte con los archivos conservados: SHA-256 `3563eb040f2919d5567065454658264a93003577756a7cf3e7a66838d90317cf`
-y `e071af0ce194b76820c71251dbecaa050004bd6b0052be69a943fa8a071b83a5`, respectivamente.
+no un fallo de conformidad actual. El resultado caracteriza ese parser; no
+prueba intercambio entre gestores, autenticación JWE ni descifrado HPKE.
+
+Una segunda biblioteca abierta de tipos, [`go-cxp`](https://github.com/nvinuesa/go-cxp)
+en la revisión `94659f317ac62470a149cb3ecb769ed5d03d18a1`, pasó la misma
+fixture en [CI 40327351875](https://github.com/fedequark/PasskeyTransit/actions/runs/40327351875).
+Conservó `archive` en solicitud y respuesta, pero descartó `mode` en la
+solicitud. La comparación ejecutada de dos parsers no constituye un ensayo
+de transferencia entre proveedores.
+
+Los informes descargados de ambos runs coinciden byte por byte con los
+archivos conservados: SHA-256 Rust
+`f7ef0dc9d857d73d58c203397362ffc7ea39a2d3fde8f39ab2aca91577dbbf2c`
+y Go `481c7951fb75af86b13ea23ef369f9d8c5ce4d8f2f3c5929b2d2589d98346c10`.
+El `Cargo.lock` de Rust coincide también, SHA-256
+`e071af0ce194b76820c71251dbecaa050004bd6b0052be69a943fa8a071b83a5`.
 
 Se repitieron localmente los casos sintéticos de Fenko (importación y vuelta
 entre perfiles) y Proton. Un paquete local conserva los informes y los
@@ -106,13 +116,21 @@ extracción limpia se verificaron 40 firmas y 18 vínculos PRF de Fenko,
 12 firmas y 12 relaciones PRF de Proton. El paquete no contiene bóvedas,
 claves privadas ni semillas PRF; tampoco tiene atestación de ejecución
 independiente o de CI. El artefacto anónimo local ahora incluye este paquete
-y el informe del parser, y su verificador de filas volvió a pasar. Continúa
+y ambos informes de parser, y su verificador de filas volvió a pasar. Continúa
 sin enlace anónimo estable y con riesgo de identificación contextual.
+El ZIP de replays locales tiene SHA-256
+`dceb35572eca3ebf6ccd43554a785f8e3192cac2b6d6dca34ddac9c9a000dd65`;
+el ZIP anónimo local, `56cb564cc64a1f41172708c163dbb28d2f96d9f6963a7ac9797f98fd1f69ebda`.
+La matriz diferencial de los dos parsers se genera desde ambos informes
+verificados y se vuelve a calcular al verificar el ZIP anónimo; conserva
+la distinción entre campos obligatorios descartados y la limitación futura
+del campo de versión. SHA-256 de la matriz:
+`0dca7c4fc2874281f5c26b76c81e31b2be02ec084cb0ab205bba49aba9dda2cf`.
 
-El [run PDF 40326297876](https://github.com/fedequark/PasskeyTransit/actions/runs/40326297876)
+El [run PDF 40327351880](https://github.com/fedequark/PasskeyTransit/actions/runs/40327351880)
 compiló el manuscrito revisado con la plantilla oficial. El PDF tiene cinco
 páginas U.S. letter y SHA-256
-`e8ce28abf88748ae945e1bc74a5caff0f3557f58b3789e955b3581b7470ededc`.
+`b13476715f4d4026ba4e2b25e6a0ca8a713d48d054de68ea50a2b8ac5a179467`.
 Se inspeccionaron visualmente las cinco páginas. El
-[run de verificación 40325899114](https://github.com/fedequark/PasskeyTransit/actions/runs/40325899114)
+[run de verificación 40327351777](https://github.com/fedequark/PasskeyTransit/actions/runs/40327351777)
 también pasó.

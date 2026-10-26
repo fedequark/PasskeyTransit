@@ -1,0 +1,32 @@
+{
+  "field_observations": {
+    "request.archive": {
+      "draft_field": "required",
+      "go_preserved": true,
+      "rust_preserved": false
+    },
+    "request.mode": {
+      "draft_field": "required",
+      "go_preserved": false,
+      "rust_preserved": false
+    },
+    "response.archive": {
+      "draft_field": "required",
+      "go_preserved": true,
+      "rust_preserved": false
+    }
+  },
+  "fixture": "experiments/cxp_external_schema/fixture.json",
+  "hpke_jwe_decryption": "NOT_EVALUABLE",
+  "provider_interoperability": "NOT_EVALUABLE",
+  "scope": "synthetic JSON type-parser round trips; no provider exchange or payload decryption",
+  "sources": {
+    "go": "94659f317ac62470a149cb3ecb769ed5d03d18a1",
+    "rust": "32da4c8b0a4abdd0b46fae79c31e0fdb50150396"
+  },
+  "version_256": {
+    "go_rejected": true,
+    "interpretation": "fits draft 16-bit field but is not a published protocol version",
+    "rust_rejected": true
+  }
+}

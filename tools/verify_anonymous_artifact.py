@@ -6,6 +6,7 @@ import csv
 import hashlib
 import json
 import io
+import sys
 import zipfile
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -50,6 +51,12 @@ def verify(root: Path) -> dict[str, object]:
         raise ValueError("unexpected Go CXP parser result")
     if go_report.get("provider_interoperability") != "NOT_EVALUABLE":
         raise ValueError("Go CXP parser report overclaims interoperability")
+    sys.path.insert(0, str(root / "tools"))
+    from compare_cxp_type_parsers import compare
+
+    saved_comparison = json.loads((root / "experiments/cxp_external_schema/comparison.json").read_text())
+    if saved_comparison != compare():
+        raise ValueError("CXP parser comparison differs from the two reports")
 
     observed: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
     attempts = 0
@@ -120,6 +127,7 @@ def verify(root: Path) -> dict[str, object]:
         "provider_replay_hashed_members": len(provider_manifest["files"]),
         "external_cxp_parser_scope": parser_report["scope"],
         "second_cxp_parser_scope": go_report["scope"],
+        "cxp_parser_comparison_recomputed": True,
         "c1_attempts": attempts,
         "c1_groups": len(observed),
         "c1_totals": expected,

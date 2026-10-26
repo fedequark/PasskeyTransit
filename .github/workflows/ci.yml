@@ -18,6 +18,7 @@ jobs:
       - run: ./research.ps1 protocol
       - run: ./research.ps1 requirements
       - run: ./research.ps1 cxp-requirements
+      - run: .venv/Scripts/python.exe tools/compare_cxp_type_parsers.py
       - run: ./research.ps1 phase7-calibration
 
   external-cxf:
