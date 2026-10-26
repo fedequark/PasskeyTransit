@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -10,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "paper/venues/usenixsecurity27/official_pdf/main.tex"
 DATA = ROOT / "paper/current/table_c1_route_strata.csv"
+RESULTS = ROOT / "paper/current/results_v0.7.json"
 FIELDS = ("imported", "rejected", "semantic_pass", "degraded_visible", "degraded_silent", "not_evaluable")
 
 
@@ -37,3 +39,20 @@ def test_route_table_matches_frozen_matrix():
 
 def test_stratum_table_matches_frozen_matrix():
     assert _observed(r"^(F\d) [^&]+ & (.+?) \\\\$") == _expected("feature_stratum")
+
+
+def test_abstract_distinguishes_executed_largeblob_from_uv():
+    """Guard the C1 behavioral claim after an earlier UV/largeBlob conflation."""
+    c1 = json.loads(RESULTS.read_text(encoding="utf-8"))["c1"]
+    oracles = c1["oracle_statuses"]
+    largeblob_failures = oracles["large_blob"].get("FAIL", 0)
+    uv_failures = oracles["uv"].get("FAIL", 0)
+    assert largeblob_failures == c1["estimands"]["false_reassurance_rate"]["numerator"]
+
+    source = " ".join(SOURCE.read_text(encoding="utf-8").split())
+    claim = (
+        f"yet {largeblob_failures} imported attempts failed the executed browser "
+        "largeBlob oracle; the user-verification oracle had no failures."
+    )
+    assert uv_failures == 0
+    assert claim in source
