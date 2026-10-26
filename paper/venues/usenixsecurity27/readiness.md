@@ -232,7 +232,7 @@ no ejecutamos la compilación del módulo con un adaptador independiente.
 El ZIP anónimo local se regeneró con la corrección del paper. Una extracción
 limpia verificó 132 miembros y los controles previos; SHA-256 del ZIP:
 `426ab4312ed6f1170e9c0c033ba119beb00e54e45b40e26b9938832d608c7de9`.
-El PDF final debe recompilarse para verificar de nuevo la paginación.
+La recompilación y paginación finales se registran en el hito siguiente.
 
 ## Avance del 26 de octubre: CXP directo con implementación externa Proton
 

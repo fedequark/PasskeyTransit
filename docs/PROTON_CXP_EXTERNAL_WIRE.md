@@ -46,3 +46,10 @@ between two independent provider apps, vault persistence, or an RP assertion.
 The passkey fixture uses Proton's library CXF import/export path, not a
 deployed account or Android provider transfer. Software assertions were
 verified by a local oracle, not by a deployed RP.
+
+| Published working draft | Proton 2.0.0 path exercised here | Consequence |
+|---|---|---|
+| [§3.2](https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html#sctn-export-request) request includes `archive` and `mode` | [`handshake.rs`](https://github.com/protonpass/proton-pass-common/blob/2.0.0/proton-pass-common/src/cxp/handshake.rs) builds neither field | These fields are not negotiated in the tested request. |
+| [§3.3](https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html#sctn-export-response) response includes selected `archive` | [`cxp/mod.rs`](https://github.com/protonpass/proton-pass-common/blob/2.0.0/proton-pass-common/src/cxp/mod.rs) constructs a response without it | No draft archive selection can be checked. |
+| [§3.4](https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html#sctn-credential-payload) payload is a ZIP of separately encrypted JWE files | Proton directly HPKE-seals one CXF JSON string | A draft ZIP/JWE importer need not accept this payload. |
+| HPKE suite fields allow X25519/HKDF-SHA256/ChaCha20-Poly1305 | [`hpke.rs`](https://github.com/protonpass/proton-pass-common/blob/2.0.0/proton-pass-common/src/cxp/hpke.rs) uses that suite | The primitives interoperate in both directions; this alone does not repair the envelope differences. |
