@@ -370,11 +370,14 @@ signatures; provider interoperability and mobile transfer remain open.
 \section{Open Science}
 The staged archive contains source, synthetic rows, CXP type-parser and
 ZIP/JWE reports, and Phase 14 and Fenko/Proton replays. Verifiers
-recompute 96 C1 cells, hashes, signatures, and Phase 14 report equality.
-A clean extraction passed on the authors' host, without independent
-replication or external CI attestation of provider replays. Vaults,
+recompute 96 C1 cells, hashes, signatures, and replay report equality.
+Pinned Fenko browser and Proton software replays also passed on clean
+GitHub Actions runners; both original artifact ZIPs and three reports
+are retained and checked byte-for-byte. This same-team CI execution is
+not independent replication or a provider-app CXP transfer. Vaults,
 private keys, original PRF seeds, and raw PRF outputs are excluded.
-GitHub provenance remains private; an anonymous URL is pending.
+Identifying GitHub run mapping stays outside the archive; an anonymous
+URL is pending.
 
 \section{Ethical considerations}
 All reported software credentials and RP accounts were synthetic; the

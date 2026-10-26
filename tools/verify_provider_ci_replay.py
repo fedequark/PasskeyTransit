@@ -14,7 +14,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CI = ROOT / "experiments/provider_replays/2026-10-26/ci"
+CI = ROOT / "experiments/provider_replays/2026-10-26/ci/40344602464"
 sys.path[:0] = [str(ROOT / "src"), str(ROOT / "tools")]
 
 from passkeytransit.fenko_verify import verify_fenko_report  # noqa: E402

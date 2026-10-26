@@ -10,7 +10,7 @@ Fecha de consulta: 2026-10-20. Venue de referencia para preparar un borrador en 
 | Paper: 2027-01-26 AoE; artefactos: 2027-01-29 AoE | [CFP, calendario](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Plazos futuros; no se enviará automáticamente. |
 | PDF U.S. letter, dos columnas, 10 pt, 12 pt leading, plantilla USENIX, cuerpo máximo de 13 páginas | [CFP, formato](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | El borrador inglés compiló con pdfLaTeX y el estilo oficial intacto; PDF de cinco páginas inspeccionado. Falta desarrollar el contenido para un envío. |
 | Apéndice Open Science obligatorio; apéndice de ética recomendado | [CFP, política de ciencia abierta](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Ambos están redactados provisionalmente; el enlace anónimo del artefacto falta. |
-| Revisión anónima; enlaces de artefactos sin identidad ni rastreo | [CFP, envío anónimo](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Hay una copia local sin identificadores directos con replays locales de proveedores. Falta un enlace anónimo; el repositorio público y detalles contextuales podrían identificar al autor. |
+| Revisión anónima; enlaces de artefactos sin identidad ni rastreo | [CFP, envío anónimo](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Hay una copia local sin identificadores directos con replays locales y de CI de proveedores. Falta un enlace anónimo; el repositorio público y detalles contextuales podrían identificar al autor. |
 | Sin categoría de replication submission; se juzga novedad, rigor y contribución de seguridad | [CFP, alcance](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | El trabajo se plantea como método y oráculos, no como réplica. El valor incremental frente a trabajos de passkeys debe defenderse mejor. |
 | IA permitida con responsabilidad humana por todo el contenido, datos, código y citas | [CFP, política de IA](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Requiere lectura y aprobación humana completa antes de un envío. |
 | Si se acepta, al menos un autor debe registrarse a precio completo y presentar | [CFP, asistencia](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | La tarifa 2027 no está fijada en la convocatoria consultada; no se asume un importe. |
@@ -270,3 +270,31 @@ limpia con 143 miembros con hash. SHA-256:
 `c76ef792a50a849b64176d94fb428ff2ce7354b4d403c3f82b96546b3c78208d`.
 Sigue sin URL anónima estable ni revisión independiente, que permanece
 pausada por el autor.
+
+## Avance del 26 de octubre: replays de proveedores en CI limpio
+
+El [run 40344602464](https://github.com/fedequark/PasskeyTransit/actions/runs/40344602464)
+pasó en Ubuntu 24.04 con el commit de proyecto
+`dfbeee710445d140ad7b1ad462baf26aa359b4e0`. El job Fenko compiló la
+extensión desde la revisión fijada `2d873fbe25257250de6e322e9d785b97b17a544f`,
+ejecutó su prueba CXF y sus chequeos de tipos, e hizo importación y vuelta
+entre perfiles en Chromium. El job Proton instaló el paquete 2.0.0 con
+dependencias fijadas y repitió el control de software CXF/PRF.
+
+Se conservaron los ZIP originales de ambos jobs y los tres informes extraídos.
+Los SHA-256 de los ZIP coinciden con los digests de GitHub: Fenko
+`b9004d22569304d68424166ffba6c96ad8b57a96cfe1995cfc5e4973d88593e7`
+y Proton `f68347ec426bbf402a47ab2dfb6695c2f81bd3e3364fb12efe9861123b545fd7`.
+`tools/verify_provider_ci_replay.py` verificó la igualdad byte a byte de
+los tres informes y recalculó 40 firmas y 18 vínculos PRF de Fenko,
+12 firmas y 12 relaciones PRF de Proton.
+
+El ZIP anónimo **local** incorporó ambos ZIP originales y los informes,
+dejando el vínculo identificador con GitHub en un sidecar externo. Una
+extracción limpia verificó 148 miembros con hash y repitió esos chequeos;
+SHA-256 del ZIP: `e04b1b1285d13bd4a615dd585d11ecbb9054bdb1ec05b3f0b44e6cadfcf75328`.
+El job de Chrome del runner falló porque no cargó la extensión; el resultado
+que se conserva utiliza el Chromium incluido por Playwright. El run anterior
+con instalación del navegador sin progreso se canceló para evitar cómputo
+innecesario. CI demuestra repetición automatizada por el mismo equipo en otro
+entorno, no réplica independiente ni CXP entre dos apps de proveedores.

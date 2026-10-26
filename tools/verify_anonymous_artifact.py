@@ -43,6 +43,43 @@ def verify(root: Path) -> dict[str, object]:
             if hashlib.sha256(replay.read(member)).hexdigest() != expected:
                 raise ValueError(f"local provider replay member mismatch: {member}")
 
+    for provider, reports in {
+        "fenko": ("fenko_provider.json", "fenko_roundtrip.json"),
+        "proton": ("proton_cxf_prf.json",),
+    }.items():
+        ci_bytes = (root / f"data/replay/{provider}-ci-original.zip").read_bytes()
+        with zipfile.ZipFile(io.BytesIO(ci_bytes)) as replay:
+            if replay.testzip() is not None or set(replay.namelist()) != set(reports):
+                raise ValueError(f"invalid {provider} CI replay archive")
+            for report in reports:
+                if replay.read(report) != (root / "data/replay/ci" / report).read_bytes():
+                    raise ValueError(f"{provider} CI report differs from original ZIP: {report}")
+
+    sys.path.insert(0, str(root / "src"))
+    from passkeytransit.fenko_verify import verify_fenko_report
+    from passkeytransit.fenko_roundtrip_verify import verify_fenko_roundtrip
+
+    ci_fenko = verify_fenko_report(
+        root / "data/replay/ci/fenko_provider.json", root / "experiments/protocol_v2.json"
+    )["summary"]
+    ci_roundtrip = verify_fenko_roundtrip(
+        root / "data/replay/ci/fenko_roundtrip.json",
+        root / "experiments/protocol_v2_fenko_roundtrip.json",
+    )["summary"]
+    sys.path.insert(0, str(root / "tools"))
+    from verify_proton_public_report import verify_report as verify_proton_public
+
+    ci_proton = verify_proton_public(json.loads(
+        (root / "data/replay/ci/proton_cxf_prf.json").read_text(encoding="utf-8")
+    ))
+    ci_counts = (
+        ci_fenko["signed_assertions_verified"], ci_fenko["prf_witness_bindings_verified"],
+        ci_roundtrip["signed_assertions_verified"], ci_roundtrip["prf_witness_bindings_verified"],
+        ci_proton["public_signatures_verified"], ci_proton["public_prf_digests_verified"],
+    )
+    if ci_counts != (16, 6, 24, 12, 12, 12):
+        raise ValueError(f"unexpected provider CI public verifier counts: {ci_counts}")
+
     parser_report = json.loads((root / "experiments/cxp_external_schema/runtime_report.json").read_text())
     if parser_report.get("provider_interoperability") != "NOT_EVALUABLE":
         raise ValueError("external CXP parser report overclaims interoperability")
@@ -137,6 +174,12 @@ def verify(root: Path) -> dict[str, object]:
         "hashed_members": len(manifest["files"]),
         "phase14_replay_reports_byte_equal": 2,
         "provider_replay_hashed_members": len(provider_manifest["files"]),
+        "provider_ci_original_zips_checked": 2,
+        "provider_ci_report_byte_matches": 3,
+        "provider_ci_fenko_signatures_verified": ci_counts[0] + ci_counts[2],
+        "provider_ci_fenko_prf_bindings_verified": ci_counts[1] + ci_counts[3],
+        "provider_ci_proton_signatures_verified": ci_counts[4],
+        "provider_ci_proton_prf_bindings_verified": ci_counts[5],
         "external_cxp_parser_scope": parser_report["scope"],
         "second_cxp_parser_scope": go_report["scope"],
         "cxp_parser_comparison_recomputed": True,

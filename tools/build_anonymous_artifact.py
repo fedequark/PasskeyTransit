@@ -20,6 +20,11 @@ RELEASE = ROOT / "releases/v0.7.1/passkeytransit-v0.7.1-replication.zip"
 PHASE14_DIR = ROOT / "experiments/phase14_ci_replay/2026-10-20/auditable"
 PHASE14_ARCHIVE = PHASE14_DIR / "phase14-auditable-39446248808.zip"
 PROVIDER_ARCHIVE = ROOT / "experiments/provider_replays/2026-10-26/provider-replay-local.zip"
+PROVIDER_CI = ROOT / "experiments/provider_replays/2026-10-26/ci/40344602464"
+PROVIDER_CI_REPORTS = {
+    "fenko": ("fenko_provider.json", "fenko_roundtrip.json"),
+    "proton": ("proton_cxf_prf.json",),
+}
 RAW_NAMES = {
     "c1_attempts.jsonl": "evidence/20260923T162254713/full/c1_phase7_full_attempts.jsonl",
     "c2_attempts.jsonl": "evidence/20260923T162316380/c2/c2_phase6_attempts.jsonl",
@@ -173,6 +178,28 @@ def build() -> Path:
                 if not match.lower().endswith((b"@example.test", b"@example.com")):
                     raise ValueError(f"email-like value in provider replay: {member}")
     files["data/replay/provider-local.zip"] = provider_bytes
+    ci_provenance = json.loads((PROVIDER_CI / "private_provenance.json").read_text(encoding="utf-8"))
+    for provider, reports in PROVIDER_CI_REPORTS.items():
+        record = ci_provenance["artifacts"][provider]
+        ci_bytes = (PROVIDER_CI / provider / "github-artifact.zip").read_bytes()
+        if _sha(ci_bytes) != record["github_archive_sha256"]:
+            raise ValueError(f"provider CI archive differs from GitHub digest: {provider}")
+        with zipfile.ZipFile(io.BytesIO(ci_bytes)) as replay:
+            if replay.testzip() is not None or set(replay.namelist()) != set(reports):
+                raise ValueError(f"invalid provider CI archive: {provider}")
+            for report in reports:
+                payload = replay.read(report)
+                source = PROVIDER_CI / provider / report
+                if payload != source.read_bytes() or _sha(payload) != record["reports"][report]:
+                    raise ValueError(f"provider CI report differs: {provider}/{report}")
+                files[f"data/replay/ci/{report}"] = payload
+                for pattern in DIRECT_IDENTIFIERS:
+                    if pattern.search(report.encode()) or pattern.search(payload):
+                        raise ValueError(f"direct identifier in provider CI report: {report}")
+                for match in EMAIL.findall(payload):
+                    if not match.lower().endswith((b"@example.test", b"@example.com")):
+                        raise ValueError(f"email-like value in provider CI report: {report}")
+        files[f"data/replay/{provider}-ci-original.zip"] = ci_bytes
     files["README.md"] = (
         "# Anonymous staged review artifact\n\n"
         "Contains synthetic C1/C2/C3 rows, result tables, selected public "
@@ -196,9 +223,11 @@ def build() -> Path:
         "PYTHONPATH=src python -m pytest tests/test_cxp_wire_probe.py "
         "(set PYTHONPATH appropriately on Windows).\n\n"
         "This package supports internal review of synthetic controls and "
-        "public signature reports. The Phase 14 replay ZIP and a local "
-        "Fenko/Proton replay bundle are included. Provider runs lack external "
-        "CI attestation, and no stable anonymous link exists. This is "
+        "public signature reports. The Phase 14 replay ZIP, a local "
+        "Fenko/Proton replay bundle, and both original clean-CI provider "
+        "ZIPs are included. The provider CI run is same-team execution, "
+        "not an independent replication; its identifying run mapping is "
+        "held outside this archive. No stable anonymous link exists. This is "
         "not yet a complete submission artifact. "
         "No independent review or external provider CXP transfer is claimed.\n"
     ).encode()
@@ -216,7 +245,8 @@ def build() -> Path:
         "files": {name: _sha(data) for name, data in sorted(files.items())},
         "source_release_raw_rows": "v0.7.1 synthetic evidence, source_commit field removed",
         "limitations": [
-            "provider replay is same-team local execution without external CI attestation",
+            "local provider replay has no CI provenance; separate same-team clean-CI provider replays are retained",
+            "clean CI execution does not establish independent replication or installed provider-app transfer",
             "HPKE/JWE decryption is project-authored experimental; no external provider CXP transfer is evidenced",
             "Proton direct-HPKE library exchange does not implement draft CXP ZIP/JWE or durable provider import",
             "contextual linkage to an already public project cannot be ruled out",
@@ -247,6 +277,9 @@ def build() -> Path:
         "github_artifact_id": phase14_provenance["artifact_id"],
         "github_digest_confirmed": phase14_provenance["artifact_sha256"],
         "github_metadata_checked_on": "2026-10-21",
+        "provider_ci_workflow_run_url": ci_provenance["workflow_run_url"],
+        "provider_ci_head_sha": ci_provenance["head_sha"],
+        "provider_ci_artifacts": ci_provenance["artifacts"],
         "distribution": "local-private-sidecar-only",
     }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return target

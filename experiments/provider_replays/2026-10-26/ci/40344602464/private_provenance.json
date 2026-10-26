@@ -1,0 +1,25 @@
+{
+  "workflow_run_url": "https://github.com/fedequark/PasskeyTransit/actions/runs/40344602464",
+  "head_sha": "dfbeee710445d140ad7b1ad462baf26aa359b4e0",
+  "workflow_conclusion": "success",
+  "fenko_source_commit": "2d873fbe25257250de6e322e9d785b97b17a544f",
+  "proton_package": "@protontech/pass-rust-core@2.0.0",
+  "artifacts": {
+    "fenko": {
+      "github_artifact_id": 12660113701,
+      "github_archive_sha256": "b9004d22569304d68424166ffba6c96ad8b57a96cfe1995cfc5e4973d88593e7",
+      "reports": {
+        "fenko_provider.json": "02675762d51ec87d1bdbaa7d975383eb5ca69a99623dc73a6b70f5cdd81b8e3b",
+        "fenko_roundtrip.json": "9e85f8b9f514552212b4e39425c5a4748ede71c42b0a8b4690655b1fc4ef95a3"
+      }
+    },
+    "proton": {
+      "github_artifact_id": 12661117545,
+      "github_archive_sha256": "f68347ec426bbf402a47ab2dfb6695c2f81bd3e3364fb12efe9861123b545fd7",
+      "reports": {
+        "proton_cxf_prf.json": "ca21fcb682108065f68eaf9d27fe0c493e361494f30384191f92eb554b326b16"
+      }
+    }
+  },
+  "scope": "Same-team, clean GitHub Actions Ubuntu replays of pinned source. No independent investigator, installed provider-app transfer, or draft CXP ZIP/JWE interoperability claim."
+}
