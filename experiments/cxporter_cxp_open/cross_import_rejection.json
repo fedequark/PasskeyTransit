@@ -1,7 +1,7 @@
 {
-  "adapter_sha256": "a49384a3d8f800ec9d49620bcce70a8d9bd70c47390d0f9931e5ea2e700c8b02",
+  "adapter_sha256": "5b605ec4797f22013d9041dc759ef6bc28b9588678b5a2e843c2a1b734a6fd05",
   "classification": "two open implementations; cxporter exporter to cxp_poc2 experimental importer",
-  "interoperability": "FAIL_JWE_ALGORITHM_MISMATCH",
+  "interoperability": "FAIL_RESPONSE_SCHEMA_AND_JWE_ALGORITHM",
   "limitations": [
     "cxp_poc2 is a research PoC, not an installed credential provider",
     "this rejects before CXF reconstruction; it does not test persistent vault import or RP use",
@@ -11,10 +11,12 @@
     {
       "cross_import_error": "JweError: JWE decryption failed: \"alg\" (Algorithm) Header Parameter value not allowed",
       "cross_import_rejected": true,
-      "cxporter_archive_sha256": "362231190056ee2daa33fd41ac6b890cfd02d6b6a3540bf7f669955ff0fa3b6f",
+      "cxporter_archive_sha256": "da5ee9820566ef9e819f90d6c323eff5334b22b3d1a06c74ba7b19d2eb1e5cdc",
       "cxporter_jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
       "repetition": 0,
       "response_archive_field_present": false,
+      "response_schema_error": "CxpValidationError: Malformed ExportResponse: $.archive: Invalid input: expected string, received undefined",
+      "response_schema_rejected": true,
       "second_source_commit": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
       "self_import_items": 1,
       "self_import_passkey_state_preserved": true
@@ -22,10 +24,12 @@
     {
       "cross_import_error": "JweError: JWE decryption failed: \"alg\" (Algorithm) Header Parameter value not allowed",
       "cross_import_rejected": true,
-      "cxporter_archive_sha256": "3b23eb86b70b224b853ba28ff31ef743e96688d3f321f6e6191fed062a6a34bf",
+      "cxporter_archive_sha256": "fe6b2308bab3eb01bfe08d2a7c17a5de1735310e2107b37756522d0d1e304412",
       "cxporter_jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
       "repetition": 1,
       "response_archive_field_present": false,
+      "response_schema_error": "CxpValidationError: Malformed ExportResponse: $.archive: Invalid input: expected string, received undefined",
+      "response_schema_rejected": true,
       "second_source_commit": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
       "self_import_items": 1,
       "self_import_passkey_state_preserved": true

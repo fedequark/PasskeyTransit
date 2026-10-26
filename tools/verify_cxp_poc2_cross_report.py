@@ -15,6 +15,7 @@ from pathlib import Path
 GO_COMMIT = "96bab31fdadcfd295542bba86b8ec8bd2355294a"
 TS_COMMIT = "fee19d9ac392ffe0153bea8b917aa0a66f12b272"
 EXPECTED_ERROR = 'JweError: JWE decryption failed: "alg" (Algorithm) Header Parameter value not allowed'
+EXPECTED_SCHEMA_ERROR = "CxpValidationError: Malformed ExportResponse: $.archive: Invalid input: expected string, received undefined"
 
 
 def require(condition: bool, message: str) -> None:
@@ -30,7 +31,7 @@ def verify(report: dict) -> dict:
     require(report["adapter_sha256"] == hashlib.sha256(adapter.read_bytes()).hexdigest(),
             "adapter hash differs")
     require(report["status"] == "EXPECTED_REJECTION" and
-            report["interoperability"] == "FAIL_JWE_ALGORITHM_MISMATCH",
+            report["interoperability"] == "FAIL_RESPONSE_SCHEMA_AND_JWE_ALGORITHM",
             "cross-implementation outcome differs")
     require(len(report["runs"]) == 2, "wrong repetition count")
     for repetition, run in enumerate(report["runs"]):
@@ -43,6 +44,9 @@ def verify(report: dict) -> dict:
         require(run["cxporter_jwe_alg"] == "HPKE-Base-X25519-SHA256-AES256GCM",
                 "external JWE algorithm differs")
         require(run["response_archive_field_present"] is False, "response schema finding differs")
+        require(run["response_schema_rejected"] is True and
+                run["response_schema_error"] == EXPECTED_SCHEMA_ERROR,
+                "second parser's archive-field rejection differs")
         digest = run["cxporter_archive_sha256"]
         require(len(digest) == 64 and all(c in "0123456789abcdef" for c in digest),
                 "invalid archive digest")
@@ -51,7 +55,8 @@ def verify(report: dict) -> dict:
 
 
 def negative_controls(report: dict) -> None:
-    for field, value in (("cross_import_rejected", False), ("cross_import_error", "")):
+    for field, value in (("cross_import_rejected", False), ("cross_import_error", ""),
+                         ("response_schema_rejected", False)):
         changed = copy.deepcopy(report)
         changed["runs"][0][field] = value
         try:

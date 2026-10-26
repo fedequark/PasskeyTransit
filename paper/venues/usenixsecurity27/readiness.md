@@ -353,6 +353,9 @@ un segundo importador experimental (`cxp_poc2`, revisión
 ZIP y conservó el estado de una passkey sintética. Al recibir luego el ZIP
 de `cxporter` para su propia clave de destinatario, rechazó en dos repeticiones
 el `alg` del primer JWE. No llegó a reconstruir CXF ni a una aserción RP.
+El parser de la respuesta completa también rechazó antes la ausencia de
+`archive`; el ensayo del JWE pasó por alto solo ese parser para aislar el
+segundo fallo.
 El rechazo demuestra incompatibilidad entre esos dos perfiles de código;
 no demuestra cuál satisface el borrador ni mide dos apps instaladas.
 El ZIP original del informe CI tiene SHA-256

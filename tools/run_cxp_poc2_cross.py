@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 GO_COMMIT = "96bab31fdadcfd295542bba86b8ec8bd2355294a"
 TS_COMMIT = "fee19d9ac392ffe0153bea8b917aa0a66f12b272"
 EXPECTED_ERROR = 'JweError: JWE decryption failed: "alg" (Algorithm) Header Parameter value not allowed'
+EXPECTED_SCHEMA_ERROR = "CxpValidationError: Malformed ExportResponse: $.archive: Invalid input: expected string, received undefined"
 
 
 def revision(path: Path) -> str:
@@ -57,6 +58,8 @@ def run(binary: Path, go_source: Path, ts_source: Path, output: Path) -> dict:
             raise ValueError("cross-import rejection differs from expected algorithm mismatch")
         if observed["response_archive_field_present"] is not False:
             raise ValueError("response schema result differs from cxporter control")
+        if observed["response_schema_rejected"] is not True or observed["response_schema_error"] != EXPECTED_SCHEMA_ERROR:
+            raise ValueError("second parser did not reject the missing archive field")
         if observed["cxporter_jwe_alg"] != "HPKE-Base-X25519-SHA256-AES256GCM":
             raise ValueError("cxporter JWE algorithm changed")
         runs.append({"repetition": repetition, **observed})
@@ -64,7 +67,7 @@ def run(binary: Path, go_source: Path, ts_source: Path, output: Path) -> dict:
         "source_commits": {"cxporter": GO_COMMIT, "cxp_poc2": TS_COMMIT},
         "adapter_sha256": hashlib.sha256(adapter.read_bytes()).hexdigest(),
         "classification": "two open implementations; cxporter exporter to cxp_poc2 experimental importer",
-        "interoperability": "FAIL_JWE_ALGORITHM_MISMATCH",
+        "interoperability": "FAIL_RESPONSE_SCHEMA_AND_JWE_ALGORITHM",
         "status": "EXPECTED_REJECTION",
         "runs": runs,
         "limitations": [

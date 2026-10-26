@@ -7,6 +7,7 @@ import { createHash } from "node:crypto";
 import { readZip } from "../crypto/archive.js";
 import { generateKeyPair, MTI_SUITE, serializePublicKey } from "../crypto/hpke.js";
 import { openPayload, sealPayload, INDEX_PATH } from "../cxp/payload.js";
+import { parseExportResponseJson } from "../cxp/schema.js";
 import { encodeB64url, decodeB64url, isPasskey, parseCxfHeader } from "../cxf/index.js";
 import { getPolicy } from "../policy/index.js";
 
@@ -43,6 +44,14 @@ const output = execFileSync(binary, [], {
   maxBuffer: 2 << 20,
 });
 const response = JSON.parse(output.toString("utf8"));
+let responseSchemaRejected = false;
+let responseSchemaError = "";
+try {
+  parseExportResponseJson(JSON.stringify(response));
+} catch (error) {
+  responseSchemaRejected = true;
+  responseSchemaError = error instanceof Error ? error.name + ": " + error.message : String(error);
+}
 const archive = decodeB64url(response.payload);
 const index = readZip(archive).get(INDEX_PATH);
 if (!index) throw new Error("cxporter archive index absent");
@@ -66,6 +75,8 @@ console.log(JSON.stringify({
   cross_import_error: rejection,
   cxporter_jwe_alg: header.alg,
   response_archive_field_present: "archive" in response,
+  response_schema_rejected: responseSchemaRejected,
+  response_schema_error: responseSchemaError,
   cxporter_archive_sha256: createHash("sha256").update(archive).digest("hex"),
 }));
 if (!rejected) throw new Error("cross importer unexpectedly accepted cxporter export");
