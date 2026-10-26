@@ -354,42 +354,33 @@ cannot support claims about storage durability, and the synthetic campaign
 cannot support product prevalence or superiority claims.
 
 \section{Conclusion}
-Passkey migration needs separate oracles for identity, signing,
-extension behavior, and transaction semantics. PasskeyTransit records
-when an interface makes a property unobservable. Its designed campaign
-and selected software controls demonstrate that valid authentication can
-coexist with a changed or missing property. The public replay lets readers
-recompute browser-control signatures without private credential material.
-Provider interoperability and verified mobile transfer require separate
-experiments.
+PasskeyTransit uses distinct oracles for identity, signing, extensions,
+and transaction semantics, marking properties an interface cannot expose.
+The synthetic campaign and selected controls show valid authentication
+alongside changed or missing properties. Public replays verify observed
+signatures; provider interoperability and mobile transfer remain open.
 
 \appendix
 \section{Open Science}
-The non-anonymous project archive contains source, locked dependencies,
-protocols, synthetic reports, browser-control ZIP archives, public
-signature transcripts, and verification scripts. A clean extraction
-with newly installed locked dependencies passed its checks on 20 October
-2026 on the same team's Windows host. This was an environment-isolation
-check, not independent replication. A separate staged anonymous archive
-contains the synthetic C1/C2/C3 rows, analysis tables, source, the
-structural CXP probe, executed Rust type-parser report, the original
-Phase 14 browser-control replay ZIP, and a same-team local Fenko/Proton
-replay bundle. Its verifiers recompute the 96 C1 cells, check member
-hashes and public signatures, and match the Phase 14 reports byte for
-byte. Identifying GitHub run metadata is retained in a local private
-sidecar. The provider replay has exact runner snapshots but no external
-CI attestation. Provider vaults, private keys, original
-PRF seeds, and raw PRF outputs are excluded from both archives. A final
-anonymous artifact with provider evidence and a no-tracking URL remains
-to be prepared before submission.
+The project archive contains source, locked dependencies, protocols,
+synthetic reports, replay ZIPs, and verifiers. A clean extraction passed
+on the same team's Windows host on 20 October 2026; this is not
+independent replication. A staged anonymous archive includes synthetic
+C1/C2/C3 rows, analysis tables, the structural CXP probe, the executed
+Rust type-parser report, the original Phase 14 browser replay ZIP, and a
+local Fenko/Proton replay bundle. Verifiers recompute 96 C1 cells, check
+member hashes and public signatures, and match the Phase 14 reports byte
+for byte. GitHub run metadata stays in a private sidecar. The provider
+replay has exact runner snapshots but no external CI attestation. Neither
+archive contains vaults, private keys, original PRF seeds, or raw PRF
+outputs. A stable anonymous review URL remains to be prepared.
 
 \section{Ethical considerations}
-All generated credentials and RP accounts in the reported software
-experiments were synthetic. The browser control used virtual
-authenticators and a localhost RP. No real user passkey or private vault
-is distributed. The excluded Android observation is not presented as
-independently verified evidence. We report provider behavior with route
-and revision scope rather than a general vendor security defect.
+All reported software credentials and RP accounts were synthetic; the
+browser control used virtual authenticators and a localhost RP. No real
+passkey or private vault is distributed. The excluded Android observation
+is not independently verified. Provider findings apply to tested routes
+and revisions only.
 
 \begin{thebibliography}{16}
 \bibitem{cxf} FIDO Alliance. Credential Exchange Format v1.0 Proposed Standard Errata, 2026. \url{https://fidoalliance.org/specs/cx/cxf-v1.0-ps-errata-20260309.html}.
