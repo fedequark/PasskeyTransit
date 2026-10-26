@@ -477,3 +477,25 @@ Windows, SHA-256
 El [run 40362009612](https://github.com/fedequark/PasskeyTransit/actions/runs/40362009612)
 reconstruyó exactamente ese hash en Ubuntu 24.04 y verificó el paquete
 extraído. Sigue siendo reproducción automatizada del mismo equipo.
+
+## Avance del 26 de octubre: control positivo de importación hasta RP
+
+El PoC `cxp_poc2` fijado en `fee19d9` completó cuatro trayectos con
+credenciales sintéticas: transferencia directa e indirecta bajo políticas
+`spec-minimal` y `hardened`. En cada trayecto su RP local verificó el
+registro, el acceso con Provider A antes de importar, el acceso con Provider B
+después de importar y un nuevo acceso con A. B importó una passkey y el RP
+conservó un solo ID de credencial. El informe local y el del
+[run 40363074055](https://github.com/fedequark/PasskeyTransit/actions/runs/40363074055)
+son byte a byte iguales (SHA-256
+`abbf5fc26fda44ae6cf5ed6c32bfd4e838a4a730e54c02ec1d4bb5b79df93b90`).
+Este control demuestra la capacidad interna del importador experimental para
+usar la credencial ante un RP de software. No procesa el ciphertext original
+de `cxporter` ni constituye migración entre aplicaciones proveedoras.
+
+El manuscrito incorpora esa distinción. El paquete anónimo actualizado
+(177 miembros con hash, SHA-256
+`5d8a492aa626fe19cf586ab1dc1b8a9611cdc053b982af616b551e28fb0f0c18`)
+conserva ambos reportes y el probe. Su `verify.py` pasó sobre una extracción
+en Windows y el [run 40363849463](https://github.com/fedequark/PasskeyTransit/actions/runs/40363849463)
+reprodujo el mismo ZIP en Ubuntu.
