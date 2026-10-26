@@ -139,6 +139,9 @@ def run(binary: Path, node: Path, authenticator: Path, output: Path) -> dict:
         document_header, document_plaintext = _open_jwe(document_jwe, private, 1)
         index = json.loads(index_plaintext)
         item = json.loads(document_plaintext)
+        index_has_header_documents = (
+            isinstance(index.get("header"), dict) and isinstance(index.get("documents"), list)
+        )
         original_item = source["accounts"][0]["items"][0]
         if index["accounts"][0]["items"][0]["id"] != item["id"]:
             raise ValueError("index and decrypted document refer to different items")
@@ -183,6 +186,7 @@ def run(binary: Path, node: Path, authenticator: Path, output: Path) -> dict:
                 index_header["epk"]["x"] == document_header["epk"]["x"]
             ),
             "response_archive_field_present": "archive" in response,
+            "index_has_header_documents": index_has_header_documents,
             "controls": controls,
             "signed_assertions_verified": verified["signed_assertions_verified"],
             "prf_seed_checks_verified": verified["prf_seed_checks_verified"],
@@ -204,6 +208,7 @@ def run(binary: Path, node: Path, authenticator: Path, output: Path) -> dict:
             "its ExportResponse omits the draft-required archive field",
             "its HPKE-Base-X25519-SHA256-AES256GCM JWE algorithm is not the JOSE HPKE-3-KE profile tested elsewhere",
             "the importer and CXF source document are project-authored; no second provider imports this ZIP",
+            "the decrypted index does not have the {header, documents} shape expected by the selected second research importer",
         ],
     }
     output.parent.mkdir(parents=True, exist_ok=True)

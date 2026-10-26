@@ -7,12 +7,13 @@
     "cxporter is a CLI exporter, not an installed passkey provider app or persistent destination vault",
     "its ExportResponse omits the draft-required archive field",
     "its HPKE-Base-X25519-SHA256-AES256GCM JWE algorithm is not the JOSE HPKE-3-KE profile tested elsewhere",
-    "the importer and CXF source document are project-authored; no second provider imports this ZIP"
+    "the importer and CXF source document are project-authored; no second provider imports this ZIP",
+    "the decrypted index does not have the {header, documents} shape expected by the selected second research importer"
   ],
   "prf_seed_checks_verified": 8,
   "runs": [
     {
-      "archive_sha256": "708c87f4dcd5f6ae9244b15eb04e01792f0cf8ebc46aa850835773cf23e28abd",
+      "archive_sha256": "4c91cdaa6e93d039b648b63af308b26508ed17b5f5d8e65667cbe210e24704ee",
       "controls": {
         "changed_document_ciphertext_rejected": true,
         "changed_index_ciphertext_rejected": true,
@@ -24,6 +25,7 @@
         "zip_jwe_shape": true
       },
       "decrypted_item_sha256": "ac63f8208327ee8707173cfca51afc637f69bf04308e0c8ac923cca81f8936f6",
+      "index_has_header_documents": false,
       "index_sha256": "b035e82631855159a5ca153ae163518ca06ecd6433ae3481fc85bf189424df3f",
       "jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
       "prf_seed_checks_verified": 4,
@@ -89,12 +91,12 @@
       ],
       "repetition": 0,
       "response_archive_field_present": false,
-      "response_sha256": "9efb5fadf33e63a29a8241d211b61f06c166c984f4169f119998709a461ba7f9",
+      "response_sha256": "bf996c51f05ecf1dcf2d51ea5d5b6451df171c601e31e5eeebcbd6bb6089a86b",
       "same_ephemeral_key_across_members": true,
       "signed_assertions_verified": 4
     },
     {
-      "archive_sha256": "1b03e4892423a0e22b4e0366dc8d4425dbd7ca42f7b86f6a094c93a5b323e1a8",
+      "archive_sha256": "cf268d81a54e763eaef9058f636de0975c0a94926d393d057a7f7e4bd7ad034c",
       "controls": {
         "changed_document_ciphertext_rejected": true,
         "changed_index_ciphertext_rejected": true,
@@ -106,6 +108,7 @@
         "zip_jwe_shape": true
       },
       "decrypted_item_sha256": "3c5056d4ea40f84231286131da67352921d38cbbf2c0458a9ef810f03029dc6f",
+      "index_has_header_documents": false,
       "index_sha256": "1ce006e8359bcac7a47c903533936247472ed28be7574c3dc259a58bdfa38064",
       "jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
       "prf_seed_checks_verified": 4,
@@ -171,7 +174,7 @@
       ],
       "repetition": 1,
       "response_archive_field_present": false,
-      "response_sha256": "8ac83d1c0864b9812ee71ff6cbb5bf4a7617845ac3d561011ee77598ef827086",
+      "response_sha256": "5355975556b9c954d2da15a20bf5d1e788caa94ca0d7375eddb3ff35bf8b0fda",
       "same_ephemeral_key_across_members": true,
       "signed_assertions_verified": 4
     }

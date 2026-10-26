@@ -99,6 +99,7 @@ def verify_report(report: dict) -> dict:
         require(run["repetition"] == repeat, "repetition index mismatch")
         require(run["jwe_alg"] == EXPECTED_ALG, "JWE algorithm mismatch")
         require(run["response_archive_field_present"] is False, "archive field finding mismatch")
+        require(run["index_has_header_documents"] is False, "index shape finding mismatch")
         require(set(run["controls"]) == EXPECTED_CONTROLS and all(run["controls"].values()),
                 "online controls incomplete")
         require(len(run["public_observations"]) == 2, "salt count mismatch")
