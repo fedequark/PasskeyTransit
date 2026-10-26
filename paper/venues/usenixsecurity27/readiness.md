@@ -529,3 +529,24 @@ El [PDF run 40366050767](https://github.com/fedequark/PasskeyTransit/actions/run
 compiló el texto final en seis páginas U.S. letter; inspeccioné las páginas
 cinco y seis. SHA-256 de `compiled/main.pdf`:
 `8b76cd698610f7d10a350bd1f6e814b0f06dff25b20723c39f4c10a603640bb5`.
+
+## Avance del 26 de octubre: auditoría Android CXF abierta
+
+Se fijaron revisiones de Keyguard y Monica y se cotejaron sus rutas de
+importación de passkeys con tres XML originales de sus propios CI: 62 pruebas
+sin fallos. El código de Keyguard omite `fido2Extensions` en su modelo y
+mapeos de importación y exportación; la pérdida de semilla PRF es una
+**inferencia de código**, no un ensayo de transferencia. Monica rechaza
+explícitamente una passkey CXF con `hmacCredentials` no nulo, y una prueba
+unitaria upstream comprueba esa decisión. El
+[run de auditoría 40368217675](https://github.com/fedequark/PasskeyTransit/actions/runs/40368217675)
+repitió la comprobación de fuentes fijadas y de los XML en Ubuntu.
+
+El artefacto anónimo local incluye el informe, las tres suites XML y sus
+verificadores: 190 miembros con hash, SHA-256
+`d94265699463d2f19be15de167a14cf1b5e5f58dbfef8476214d93b5136678a9`.
+Pasó verificación tras extracción en Windows y reproducción idéntica en
+[Ubuntu run 40368662799](https://github.com/fedequark/PasskeyTransit/actions/runs/40368662799).
+No hay transferencia Keyguard–Monica ni aserción RP posterior a ella. Por
+ello, esta auditoría no cambia el estado `NOT_EVALUABLE` de interoperabilidad
+entre proveedores en la matriz de claims.
