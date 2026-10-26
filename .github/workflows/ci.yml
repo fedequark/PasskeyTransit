@@ -35,3 +35,18 @@ jobs:
           targets: wasm32-wasip1
       - run: pwsh ./research.ps1 setup
       - run: pwsh ./research.ps1 phase11
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: interop/jose_hpke_go/go.mod
+          cache-dependency-path: interop/jose_hpke_go/go.sum
+      - name: Verify external JOSE HPKE crypto interoperability
+        env:
+          GOEXPERIMENT: jsonv2
+          GOTOOLCHAIN: local
+        run: |
+          mkdir -p tmp
+          cd interop/jose_hpke_go
+          go build -o ../../tmp/jose-hpke-go .
+          cd ../..
+          .venv/bin/python tools/run_jose_hpke_go_interop.py tmp/jose-hpke-go "$(command -v go)" tmp/jose-hpke-ci.json
+          .venv/bin/python tools/verify_jose_hpke_go_interop.py

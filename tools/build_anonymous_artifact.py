@@ -43,13 +43,18 @@ SOURCE_FILES = [
     "experiments/cxp_external_schema/comparison.json",
     "experiments/cxp_zip_jwe_experimental/report.json",
     "experiments/cxp_zip_jwe_experimental/cross_runtime.json",
+    "experiments/jose_hpke_go_interop/report.json",
     "interop/bitwarden_cxp_types/Cargo.lock",
     "interop/bitwarden_cxp_types/Cargo.toml",
     "interop/bitwarden_cxp_types/src/main.rs",
     "interop/go_cxp_types/go.mod",
     "interop/go_cxp_types/main.go",
     "interop/node_cxp_zip_jwe.mjs",
+    "interop/jose_hpke_go/go.mod",
+    "interop/jose_hpke_go/go.sum",
+    "interop/jose_hpke_go/main.go",
     "docs/CXP_ZIP_JWE_EXPERIMENT.md",
+    "docs/JOSE_HPKE_EXTERNAL_CRYPTO.md",
     "experiments/phase14_ci_replay/2026-10-20/auditable/cross_runtime_cxp.json",
     "experiments/phase14_ci_replay/2026-10-20/auditable/prf_migration.json",
     "experiments/v2_exploratory/fenko_provider.json",
@@ -74,6 +79,8 @@ SOURCE_FILES = [
     "tools/run_cxp_zip_jwe_profile.py",
     "tools/run_cxp_zip_jwe_cross_runtime.py",
     "tools/verify_cxp_zip_jwe_reports.py",
+    "tools/run_jose_hpke_go_interop.py",
+    "tools/verify_jose_hpke_go_interop.py",
     "tools/run_proton_cxf_prf.py",
     "tools/verify_phase14_public_transcript.py",
     "tools/verify_proton_public_report.py",
@@ -156,7 +163,8 @@ def build() -> Path:
         "# Anonymous staged review artifact\n\n"
         "Contains synthetic C1/C2/C3 rows, result tables, selected public "
         "browser and provider reports, protocols, source, and a CXP draft "
-        "structure probe, and an experimental HPKE/JWE ZIP round trip. "
+        "structure probe, an experimental HPKE/JWE ZIP round trip, and a "
+        "separate external JOSE-library cryptographic test. "
         "Git history, commit IDs in raw rows, "
         "and original provenance manifests were intentionally omitted. The "
         "original Phase 14 replay ZIP is included and checked byte-for-byte "
@@ -164,6 +172,7 @@ def build() -> Path:
         "Run python verify.py after extraction. With dependencies installed, "
         "run python tools/verify_provider_reports.py, "
         "python tools/verify_cxp_zip_jwe_reports.py, "
+        "python tools/verify_jose_hpke_go_interop.py, "
         "python tools/run_cxp_wire_probe.py and "
         "PYTHONPATH=src python -m pytest tests/test_cxp_wire_probe.py "
         "(set PYTHONPATH appropriately on Windows).\n\n"
@@ -172,7 +181,7 @@ def build() -> Path:
         "Fenko/Proton replay bundle are included. Provider runs lack external "
         "CI attestation, and no stable anonymous link exists. This is "
         "not yet a complete submission artifact. "
-        "No independent review or external provider interoperability is claimed.\n"
+        "No independent review or external provider CXP transfer is claimed.\n"
     ).encode()
     files["verify.py"] = (ROOT / "tools/verify_anonymous_artifact.py").read_bytes()
     for name, data in files.items():

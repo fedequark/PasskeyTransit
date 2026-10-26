@@ -53,22 +53,17 @@ method with selected software cases, not a survey of deployed products.
 CXF can encode FIDO2 HMAC state~\cite{cxf}. The CXP working draft defines a
 transport profile~\cite{cxp}; our single-document CXP/HPKE binding is an
 experimental project implementation and does not cover its full ZIP/JWE
-wire format. HPKE follows RFC~9180~\cite{hpke}. A WebAuthn PRF result is
+wire format~\cite{jwe}. HPKE follows RFC~9180~\cite{hpke}. A WebAuthn PRF result is
 returned through client extension results, outside the ordinary signed
 assertion bytes~\cite{webauthn}. Consequently, signature and PRF oracles
-answer separate questions. Ramat et al. compare passkey user experiences
-across 111 websites~\cite{ramat}; Jannett et al. measure deployment and
-security on passkey-enabled websites~\cite{jannett}. B\"uttner and
-Gruschka compare the security and availability of device-bound and synced
-credentials~\cite{buttner}. Daffalla et al. study passkey abuse under
-interpersonal threat models~\cite{daffalla}, while Islam et al. propose
-detection of stolen cloud-stored passkeys~\cite{islam}. Henarejos proposes
-authenticated export and restoration of device-bound credentials and a
-falsifiable evaluation plan~\cite{henarejos}. These studies respectively
-observe relying parties, user-facing management, cloud compromise, or a
-proposed recovery design. None of those reported measurements establishes
-whether a controlled credential retains its extension behavior after a
-specific provider-to-provider import. That is the narrower question here.
+answer separate questions. Ramat et al. study experiences across 111
+websites~\cite{ramat}; Jannett et al. measure deployment~\cite{jannett};
+B\"uttner and Gruschka compare device-bound and synced
+credentials~\cite{buttner}. Daffalla et al. study interpersonal
+abuse~\cite{daffalla}; Islam et al. study cloud storage
+compromise~\cite{islam}; Henarejos proposes authenticated device-bound
+restoration~\cite{henarejos}. None measures whether a controlled
+credential retains extension behavior after a specific provider import.
 
 Our unit is an attempted migration of a controlled credential, with
 separate post-import oracles for signing, extension behavior, and retry
@@ -303,14 +298,14 @@ eight-bit; 256 fits the draft field width but is not a published version.
 The dropped fields are type-parser gaps, not encrypted transfers or
 provider interoperability.
 
-We then defined an explicitly private HPKE-to-JWE test profile: HPKE
-wraps a fresh content key for each compact JWE in a two-member ZIP; JWE
-AES-GCM authenticates the file contents~\cite{hpke,jwe}. A Python exporter
-and separately written Node importer recovered one synthetic CXF document
-with its HMAC fields. Nine local and four cross-runtime controls passed,
-including modified ciphertext, wrapped-key, and wrong-recipient rejection.
-The draft does not define this binding, and both programs are ours; this
-result cannot establish provider CXP interoperability.
+Our private HPKE-to-JWE profile wrapped fresh content keys in a two-member
+ZIP. Python and Node recovered synthetic CXF with HMAC fields; nine local
+and four cross-runtime controls passed. Separately, a Python
+\texttt{HPKE-3-KE} JWE exchanged the same synthetic document in both
+directions with independent Go \texttt{jwx/v4} code, passing five
+controls~\cite{josehpke,jwx}. The former uses a private mapping; the
+latter tests only JOSE cryptography. Neither establishes provider CXP
+import or credential-state preservation.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
@@ -383,7 +378,7 @@ passkey or private vault is distributed. The excluded Android observation
 is not independently verified. Provider findings apply to tested routes
 and revisions only.
 
-\begin{thebibliography}{16}
+\begin{thebibliography}{18}
 \bibitem{cxf} FIDO Alliance. Credential Exchange Format v1.0 Proposed Standard Errata, 2026. \url{https://fidoalliance.org/specs/cx/cxf-v1.0-ps-errata-20260309.html}.
 \bibitem{cxp} FIDO Alliance. Credential Exchange Protocol v1.0 Working Draft, 3 October 2024. \url{https://fidoalliance.org/specs/cx/cxp-v1.0-wd-20241003.html}.
 \bibitem{hpke} R. Barnes et al. Hybrid Public Key Encryption. RFC 9180, 2022. \url{https://www.rfc-editor.org/rfc/rfc9180}.
@@ -395,9 +390,11 @@ and revisions only.
 \bibitem{daffalla} A. Daffalla et al. A Framework for Abusability Analysis: The Case of Passkeys in Interpersonal Threat Models. USENIX Security, pp. 7819--7838, 2025. \url{https://www.usenix.org/conference/usenixsecurity25/presentation/daffalla}.
 \bibitem{islam} M. Islam et al. Detecting Compromise of Passkey Storage on the Cloud. USENIX Security, pp. 7743--7762, 2025. \url{https://www.usenix.org/conference/usenixsecurity25/presentation/islam}.
 \bibitem{henarejos} P. Henarejos. Vaulted Passkeys: A Device-Bound Proposal for Authenticated Credential Export and Import. arXiv:2608.13806, 2026. \url{https://arxiv.org/abs/2608.13806}.
-\bibitem{bitwardencxp} Bitwarden. Credential Exchange Protocol Rust types, pinned commit \texttt{32da4c8b0a4abdd0b46fae79c31e0fdb50150396}, 2026. \url{https://github.com/bitwarden/credential-exchange/blob/32da4c8b0a4abdd0b46fae79c31e0fdb50150396/credential-exchange-protocol/src/lib.rs}.
+\bibitem{bitwardencxp} Bitwarden. Credential Exchange Protocol Rust types, pinned commit \texttt{32da4c8b0a4abdd0b46fae79c31e0fdb50150396}, 2026. \url{https://github.com/bitwarden/credential-exchange/tree/32da4c8b0a4abdd0b46fae79c31e0fdb50150396}.
 \bibitem{gocxp} N. Vinuesa. \texttt{go-cxp}, pinned commit \texttt{94659f317ac62470a149cb3ecb769ed5d03d18a1}, 2026. \url{https://github.com/nvinuesa/go-cxp}.
 \bibitem{fenko} FenkoHQ. Passkey Vault 0.12.0, pinned commit \texttt{2d873fbe25257250de6e322e9d785b97b17a544f}. \url{https://github.com/FenkoHQ/passkey-vault}.
 \bibitem{proton} Proton. Proton Pass common 2.0.0, pinned commit \texttt{69a0927f0fe7071243d6c38e404459a69210fdd4}. \url{https://github.com/protonpass/proton-pass-common}.
+\bibitem{josehpke} T. Reddy et al. Use of HPKE with JWE, Internet-Draft \texttt{draft-ietf-jose-hpke-encrypt-22}, 2026. \url{https://datatracker.ietf.org/doc/draft-ietf-jose-hpke-encrypt/22/}.
+\bibitem{jwx} lestrrat-go. \texttt{jwx/v4}, v4.6.0, 2026. \url{https://github.com/lestrrat-go/jwx/tree/v4.6.0}.
 \end{thebibliography}
 \end{document}

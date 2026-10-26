@@ -1,0 +1,28 @@
+{
+  "all_checks_pass": true,
+  "checks": {
+    "external_go_rejects_modified_ciphertext": true,
+    "external_go_rejects_wrong_recipient": true,
+    "external_go_to_python_plaintext_equal": true,
+    "python_rejects_wrong_recipient": true,
+    "python_to_external_go_plaintext_equal": true
+  },
+  "document_sha256": "f7801fbbef45a990a5e0d6a30d64dbad914ef735967da66553bee2d2330480c8",
+  "evidence_class": "jose-hpke-3-ke-external-library-cryptographic-interop",
+  "go_library": "github.com/lestrrat-go/jwx/v4@v4.6.0",
+  "go_version": "go version go1.26.10 windows/amd64",
+  "jose_draft": "draft-ietf-jose-hpke-encrypt-22",
+  "limitations": [
+    "JOSE draft -22 is work in progress and library semantics may change",
+    "Go library performs JWE cryptography only, not CXP ZIP or provider storage",
+    "both directions use a synthetic CXF document; no external provider passkey import",
+    "no browser assertion, exporter identity, or durable replay protection"
+  ],
+  "source_sha256": {
+    "go_adapter": "3a44273dc2f80c193d60bf0e401cfc3adf0d41891b5ca09b6101f5be54b01264",
+    "go_mod": "09799bdf5f1c3f6a56905b6b46a2dd7cfb7b8cef89a3b8919e10333e370b9b0a",
+    "go_sum": "a49e821a34fe1dd715804f19e5d5108bf152233725ecf5b94ab0ff74e7b71b25",
+    "python_jose": "339c77a1a8a61307926a9205b98389613afbf58748fcef52fbdbf289654ed9a1",
+    "runner": "af30594a367cba31c5bc6cd7dc111df37aca8bfa4532fc244d19216dd045b02b"
+  }
+}
