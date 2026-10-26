@@ -44,6 +44,7 @@ SOURCE_FILES = [
     "experiments/cxp_zip_jwe_experimental/report.json",
     "experiments/cxp_zip_jwe_experimental/cross_runtime.json",
     "experiments/jose_hpke_go_interop/report.json",
+    "experiments/cxp_jose_zip_go/report.json",
     "interop/bitwarden_cxp_types/Cargo.lock",
     "interop/bitwarden_cxp_types/Cargo.toml",
     "interop/bitwarden_cxp_types/src/main.rs",
@@ -55,6 +56,7 @@ SOURCE_FILES = [
     "interop/jose_hpke_go/main.go",
     "docs/CXP_ZIP_JWE_EXPERIMENT.md",
     "docs/JOSE_HPKE_EXTERNAL_CRYPTO.md",
+    "docs/CXP_JOSE_ZIP_EXPERIMENT.md",
     "experiments/phase14_ci_replay/2026-10-20/auditable/cross_runtime_cxp.json",
     "experiments/phase14_ci_replay/2026-10-20/auditable/prf_migration.json",
     "experiments/v2_exploratory/fenko_provider.json",
@@ -81,6 +83,8 @@ SOURCE_FILES = [
     "tools/verify_cxp_zip_jwe_reports.py",
     "tools/run_jose_hpke_go_interop.py",
     "tools/verify_jose_hpke_go_interop.py",
+    "tools/run_cxp_jose_zip_go.py",
+    "tools/verify_cxp_jose_zip_go.py",
     "tools/run_proton_cxf_prf.py",
     "tools/verify_phase14_public_transcript.py",
     "tools/verify_proton_public_report.py",
@@ -164,7 +168,8 @@ def build() -> Path:
         "Contains synthetic C1/C2/C3 rows, result tables, selected public "
         "browser and provider reports, protocols, source, and a CXP draft "
         "structure probe, an experimental HPKE/JWE ZIP round trip, and a "
-        "separate external JOSE-library cryptographic test. "
+        "separate external JOSE-library cryptographic test and a "
+        "project CXP-shaped ZIP using that library. "
         "Git history, commit IDs in raw rows, "
         "and original provenance manifests were intentionally omitted. The "
         "original Phase 14 replay ZIP is included and checked byte-for-byte "
@@ -173,6 +178,7 @@ def build() -> Path:
         "run python tools/verify_provider_reports.py, "
         "python tools/verify_cxp_zip_jwe_reports.py, "
         "python tools/verify_jose_hpke_go_interop.py, "
+        "python tools/verify_cxp_jose_zip_go.py, "
         "python tools/run_cxp_wire_probe.py and "
         "PYTHONPATH=src python -m pytest tests/test_cxp_wire_probe.py "
         "(set PYTHONPATH appropriately on Windows).\n\n"

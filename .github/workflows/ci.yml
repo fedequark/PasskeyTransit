@@ -50,3 +50,5 @@ jobs:
           cd ../..
           .venv/bin/python tools/run_jose_hpke_go_interop.py tmp/jose-hpke-go "$(command -v go)" tmp/jose-hpke-ci.json
           .venv/bin/python tools/verify_jose_hpke_go_interop.py
+          .venv/bin/python tools/run_cxp_jose_zip_go.py tmp/jose-hpke-go "$(command -v go)" tmp/cxp-jose-zip-ci.json
+          .venv/bin/python tools/verify_cxp_jose_zip_go.py

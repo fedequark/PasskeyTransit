@@ -63,6 +63,9 @@ def verify(root: Path) -> dict[str, object]:
     from verify_jose_hpke_go_interop import verify as verify_jose_hpke
 
     jose_result = verify_jose_hpke(root)
+    from verify_cxp_jose_zip_go import verify as verify_cxp_jose_zip
+
+    cxp_jose_result = verify_cxp_jose_zip(root)
 
     observed: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
     attempts = 0
@@ -137,6 +140,7 @@ def verify(root: Path) -> dict[str, object]:
         "cxp_zip_jwe_profile_controls": zip_jwe_result["local_controls"],
         "cxp_zip_jwe_cross_runtime_controls": zip_jwe_result["cross_runtime_controls"],
         "external_jose_hpke_crypto_controls": jose_result["controls"],
+        "cxp_jose_zip_external_crypto_controls": cxp_jose_result["controls"],
         "c1_attempts": attempts,
         "c1_groups": len(observed),
         "c1_totals": expected,

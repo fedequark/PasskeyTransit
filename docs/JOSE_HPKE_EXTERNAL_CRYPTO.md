@@ -31,4 +31,4 @@ The local Go archive was obtained from the [official Go release page](https://go
 
 ## Remaining gate
 
-Build a CXP ZIP/transport profile using the JOSE draft mapping, then have an external provider import the synthetic credential and produce a later assertion at a controlled RP. The JOSE test narrows the cryptographic gap; it does not establish that a provider accepts any CXP payload or preserves PRF state.
+A [CXP-shaped ZIP experiment](CXP_JOSE_ZIP_EXPERIMENT.md) now places these JOSE JWEs in a two-member archive and checks transport binding. The next gate is an external credential provider that imports the synthetic credential and produces a later assertion at a controlled RP. The JOSE tests narrow the cryptographic gap; they do not establish that a provider accepts a CXP payload or preserves PRF state.

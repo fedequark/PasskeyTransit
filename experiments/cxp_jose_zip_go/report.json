@@ -1,0 +1,29 @@
+{
+  "all_checks_pass": true,
+  "checks": {
+    "altered_exporter_rejected": true,
+    "jose_zip_synthetic_cxf_recovered_with_external_go_crypto": true,
+    "modified_index_jwe_rejected": true,
+    "unoffered_archive_rejected": true,
+    "wrong_recipient_rejected": true
+  },
+  "document_sha256": "198c6148aa8c9450f6fe31429ddea694a4d9b5e8b4a13b057e5a669a550b8724",
+  "evidence_class": "project-cxp-zip-using-external-jose-library-cryptography",
+  "go_library": "github.com/lestrrat-go/jwx/v4@v4.6.0",
+  "go_version": "go version go1.26.10 windows/amd64",
+  "limitations": [
+    "CXP ZIP/index/transport binding is project-authored and not specified by JOSE draft -22",
+    "Go library decrypts JWE members but does not import a passkey into a credential provider",
+    "synthetic CXF content only; no RP assertion, PRF evaluation, or provider identity authentication",
+    "no durable replay cache or platform transfer flow"
+  ],
+  "profile": "passkeytransit-cxp-jose-hpke-zip-v1",
+  "source_sha256": {
+    "go_adapter": "3a44273dc2f80c193d60bf0e401cfc3adf0d41891b5ca09b6101f5be54b01264",
+    "go_mod": "09799bdf5f1c3f6a56905b6b46a2dd7cfb7b8cef89a3b8919e10333e370b9b0a",
+    "go_sum": "a49e821a34fe1dd715804f19e5d5108bf152233725ecf5b94ab0ff74e7b71b25",
+    "jose": "339c77a1a8a61307926a9205b98389613afbf58748fcef52fbdbf289654ed9a1",
+    "profile": "2c046c87ba1295b73f0d6113354d0c73440b5b1d0ef28602407355f4a2239519",
+    "runner": "8f50ba345d056705dd112431e2a1faea7b7b215bb2a659147aba11dc936f9a36"
+  }
+}

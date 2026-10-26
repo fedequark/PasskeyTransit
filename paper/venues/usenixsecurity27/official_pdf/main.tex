@@ -303,8 +303,10 @@ ZIP. Python and Node recovered synthetic CXF with HMAC fields; nine local
 and four cross-runtime controls passed. Separately, a Python
 \texttt{HPKE-3-KE} JWE exchanged the same synthetic document in both
 directions with independent Go \texttt{jwx/v4} code, passing five
-controls~\cite{josehpke,jwx}. The former uses a private mapping; the
-latter tests only JOSE cryptography. Neither establishes provider CXP
+controls~\cite{josehpke,jwx}. A further project ZIP placed such JWEs in
+an index and document; Go decrypted both, while our adapter checked
+negotiation (five controls). The first ZIP uses a private mapping; the
+second has a project-defined CXP binding. Neither establishes provider
 import or credential-state preservation.
 
 \subsection{Selected provider case: Fenko}
