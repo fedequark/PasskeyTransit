@@ -309,3 +309,11 @@ compiló la versión condensada con el estilo oficial sin modificar. El PDF
 tiene cinco páginas U.S. letter; se inspeccionó la última para descartar una
 referencia huérfana. SHA-256:
 `a6e5254613d87550492c5c22f938b5a3ad7e5907e31e9a8c1534bb8c2c2c61ff`.
+
+El [run de reproducción 40348206066](https://github.com/fedequark/PasskeyTransit/actions/runs/40348206066)
+reconstruyó el paquete anónimo local en Ubuntu 24.04 y obtuvo el mismo
+SHA-256 `9fa07f23c72eb97261fb27063a06a6389e5c71a0032d9f82ef81671489cc2035`
+que Windows. El verificador extraído pasó con 146 miembros, igualdad de
+los tres informes con los ZIP originales y 52 firmas y 30 vínculos PRF de
+proveedores. El workflow es manual para evitar runs repetidos y no publica
+un artefacto que pudiera confundirse con un enlace anónimo de revisión.
