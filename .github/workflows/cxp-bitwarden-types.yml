@@ -2,6 +2,9 @@ name: CXP Bitwarden type probe
 
 on:
   workflow_dispatch:
+  push:
+    branches: [codex/usenix27-pdf]
+    paths: [.github/workflows/cxp-bitwarden-types.yml]
 
 jobs:
   probe:
