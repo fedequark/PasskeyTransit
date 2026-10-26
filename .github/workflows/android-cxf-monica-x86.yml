@@ -29,12 +29,12 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Build x86_64 JNI library
+      - name: Build x86_64 JNI library and install all Gradle split targets
         working-directory: tmp/vendor_monica_build/Monica for Android
         run: |
           rustup toolchain install stable --profile minimal
           rustup default stable
-          rustup target add x86_64-linux-android
+          rustup target add x86_64-linux-android aarch64-linux-android armv7-linux-androideabi
           cargo install cargo-ndk --version 4.1.2 --locked
           cd rust-jni
           cargo ndk -t x86_64 -o ../app/src/main/jniLibs build --release --locked
