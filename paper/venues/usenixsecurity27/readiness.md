@@ -336,5 +336,11 @@ externo abierto con importador propio, sin segunda app proveedora ni almacén
 persistente. El reporte conserva firmas y hashes públicos, pero el descifrado
 del ZIP requiere repetir el run. La reproducción en CI es del mismo equipo.
 El paquete anónimo local actualizado tiene 152 miembros con hash y SHA-256
-`7450819f738bf689e10e8ccd5cfcfe96f8e02a5d221a1efc2090b761ea5c1c3b`;
+`f09558cfe6e9cca45debd8e31b3cda792e2600f9dd7f0f85b22cb7c86921c090`;
 su verificador pasó en una extracción limpia de Windows.
+
+El [run PDF 40352354965](https://github.com/fedequark/PasskeyTransit/actions/runs/40352354965)
+compiló el manuscrito actualizado con el estilo oficial. Tiene cinco
+páginas U.S. letter; la última se inspeccionó visualmente y las 19
+referencias terminan allí. SHA-256 del PDF:
+`0a116c8c319e59d79021c247a1f4499d4b3a6da3d9ff53b0443d60ce786ee8fb`.
