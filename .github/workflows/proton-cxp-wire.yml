@@ -11,6 +11,8 @@ on:
       - src/passkeytransit/hpke_chacha.py
       - tools/run_proton_cxp_wire.py
       - tools/run_proton_cxp_passkey.py
+      - interop/proton-cxf-prf/package-lock.json
+      - interop/proton-cxf-prf/run.mjs
 
 permissions:
   contents: read
@@ -25,6 +27,9 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - name: Build pinned Proton CXP exporter adapter
         run: cargo build --manifest-path interop/proton_cxp_wire/Cargo.toml
       - name: Exchange and decrypt synthetic direct-HPKE CXP response
@@ -32,9 +37,10 @@ jobs:
           PYTHONPATH: src
         run: |
           python -m pip install 'cryptography>=45,<51'
+          cd interop/proton-cxf-prf && npm ci && cd ../..
           python tools/run_proton_cxp_wire.py interop/proton_cxp_wire/target/debug/passkeytransit-proton-cxp-wire > proton-cxp-wire-report.json
           python -c 'import json; r=json.load(open("proton-cxp-wire-report.json")); print(r["scope"], r["status"], r["controls"])'
-          python tools/run_proton_cxp_passkey.py interop/proton_cxp_wire/target/debug/passkeytransit-proton-cxp-wire > proton-cxp-passkey-report.json
+          python tools/run_proton_cxp_passkey.py interop/proton_cxp_wire/target/debug/passkeytransit-proton-cxp-wire "$(command -v node)" interop/proton-cxf-prf/run.mjs > proton-cxp-passkey-report.json
           python -c 'import json; r=json.load(open("proton-cxp-passkey-report.json")); print(r["scope"], r["status"], r["controls"])'
       - uses: actions/upload-artifact@v4
         with:

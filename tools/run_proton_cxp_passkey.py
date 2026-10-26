@@ -15,6 +15,7 @@ from passkeytransit.hpke import HpkeError, public_jwk
 from passkeytransit.model import generate_synthetic_passkey
 
 from run_proton_cxp_wire import IMPORTER, _open
+from run_proton_cxf_prf import call_adapter, verify_round_trip
 
 
 def _first_passkey(document: dict) -> dict:
@@ -30,6 +31,8 @@ def _first_passkey(document: dict) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("exporter", type=Path)
+    parser.add_argument("node", type=Path)
+    parser.add_argument("authenticator_adapter", type=Path)
     args = parser.parse_args()
     source = build_passkey_document(
         generate_synthetic_passkey(20261026, 1),
@@ -63,6 +66,14 @@ def main() -> None:
         "hmac_state_preserved": source_credential["fido2Extensions"]["hmacCredentials"]
         == destination_credential["fido2Extensions"]["hmacCredentials"],
     }
+    salts = [hashlib.sha256(f"proton-cxp-salt:{i}".encode()).digest() for i in range(2)]
+    challenges = [hashlib.sha256(f"proton-cxp-challenge:{i}".encode()).digest() for i in range(4)]
+    authentication = call_adapter(
+        args.node, args.authenticator_adapter, recovered["document"], salts, challenges
+    )
+    verified = verify_round_trip(recovered["document"], authentication, salts, challenges)
+    controls["destination_assertions_verified"] = verified["signed_assertions_verified"] == 4
+    controls["destination_prf_verified"] = verified["prf_seed_checks_verified"] == 4
     try:
         _open(private_key, request.replace(b'"passkey"', b'"basic-auth"'), response)
     except HpkeError:
@@ -75,8 +86,14 @@ def main() -> None:
         "source_cxf_sha256": hashlib.sha256(json.dumps(source, sort_keys=True).encode()).hexdigest(),
         "recovered_cxf_sha256": recovered["plaintext_sha256"],
         "controls": controls,
+        "signed_assertions_verified": verified["signed_assertions_verified"],
+        "prf_seed_checks_verified": verified["prf_seed_checks_verified"],
         "status": "PASS" if all(controls.values()) else "FAIL",
-        "limitations": ["Proton library import/export, not app vault storage", "no ZIP/JWE", "no RP assertion"],
+        "limitations": [
+            "Proton library import/export and software authenticator, not app vault storage",
+            "no ZIP/JWE",
+            "no deployed RP assertion",
+        ],
     }
     print(json.dumps(report, indent=2, sort_keys=True))
     if report["status"] != "PASS":
