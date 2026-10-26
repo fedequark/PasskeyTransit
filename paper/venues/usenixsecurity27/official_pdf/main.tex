@@ -272,31 +272,21 @@ relations among observed outputs, not the HMAC computation from a seed
 that CDP did not reveal.
 
 \subsection{Public-draft envelope structure probe}
-We added a synthetic shape probe for the CXP Working Draft's visible
-request and response members, offered parameter selection, and the
-illustrated ZIP layout with an index JWE and a document JWE.
-The positive fixture passes those structural checks. Three negative
-responses with a version mismatch, unoffered archive, or malformed
-payload encoding are rejected. Additional tests reject unexpected ZIP
-paths and a plain JSON file substituted for a JWE. The fixture uses
-standard direct-key AES-GCM JWE solely to exercise the container shape.
-It does not claim that this maps HPKE to JWE. The draft does not give a
-complete HPKE-to-JWE binding or include its narrative signed-challenge
-fields in the displayed request and response objects. Consequently
-JWE authentication under negotiated HPKE, challenge verification,
-CXF plaintext recovery, and provider interoperability remain
-NOT\_EVALUABLE in this probe~\cite{cxp}. It is a reproducible parsing
-control, not a CXP conformance or security result.
+Our synthetic CXP draft shape probe passed visible request/response,
+offer-selection, and index/document JWE ZIP checks. It rejected three
+malformed responses, unexpected ZIP paths, and JSON substituted for JWE.
+Its direct-key AES-GCM fixture tests container shape only. The displayed
+draft objects omit narrative signed-challenge fields and a complete
+HPKE-to-JWE binding. Negotiated HPKE authentication, challenge checks,
+CXF recovery, and provider exchange are NOT\_EVALUABLE in this parsing
+probe~\cite{cxp}.
 
-We compiled pinned Bitwarden Rust~\cite{bitwardencxp} and
-\texttt{go-cxp} Go~\cite{gocxp} message types in CI and passed both the
-same synthetic request and response. Both parsed. Rust serialization
-dropped request \texttt{archive} and \texttt{mode} and response
-\texttt{archive}; Go retained both \texttt{archive} fields but dropped
-request \texttt{mode}. Both rejected 256 because their version types are
-eight-bit; 256 fits the draft field width but is not a published version.
-The dropped fields are type-parser gaps, not encrypted transfers or
-provider interoperability.
+Pinned Bitwarden Rust~\cite{bitwardencxp} and \texttt{go-cxp}
+Go~\cite{gocxp} types both parsed a synthetic request/response in CI.
+Rust serialization dropped request \texttt{archive}/\texttt{mode} and
+response \texttt{archive}; Go dropped request \texttt{mode}. Both rejected
+256 with eight-bit version types, despite the draft's wider field. These
+are parser gaps, not encrypted transfers.
 
 Project Python and Node recovered synthetic CXF from a private two-member
 HPKE/JWE ZIP (nine local and four cross-runtime controls). Independent Go
@@ -310,16 +300,14 @@ passed on the Proton-to-Python path. Proton's direct payload lacks the
 draft's required ZIP/JWE structure~\cite{cxp}, and no provider vault
 import or deployed RP assertion was tested.
 
-We also ran the pinned open \texttt{cxporter} exporter~\cite{cxporter}
-against two synthetic CXF passkeys. Its ZIP held encrypted index and
-document JWEs; a project Python importer decrypted both, checked key,
-identity, user handle and HMAC state, and rejected wrong-recipient and
-altered-ciphertext controls. Proton's software authenticator then signed
-eight assertions and reproduced eight expected PRF outputs; a public
-verifier rechecked their signatures and digest bindings. This is an
-external exporter to project importer test, not two-provider exchange.
-The export response omits the draft-required \texttt{archive} field,
-and its JWE algorithm differs from the separate JOSE control~\cite{cxp}.
+The open \texttt{cxporter} exporter~\cite{cxporter} produced index and
+document JWEs for two synthetic passkeys. Our Python importer decrypted
+them, checked identity, key, user handle and HMAC state, and rejected wrong
+recipients and altered ciphertext. Proton software then yielded eight
+verified signatures and PRF results. This external exporter to project
+importer test is not two-provider exchange: its response omits the
+draft-required \texttt{archive} and uses a different JWE algorithm than
+our JOSE control~\cite{cxp}.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
