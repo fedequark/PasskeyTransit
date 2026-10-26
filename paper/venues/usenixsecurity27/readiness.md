@@ -519,3 +519,13 @@ no contienen claves privadas. El importador CXP propio de `cxp_poc2` no
 participa en esta ruta y mantiene su rechazo del mensaje original. Por eso
 el resultado prueba usabilidad del material CXF recuperado mediante un
 adaptador explícito, no interoperabilidad CXP entre proveedores.
+
+El paquete anónimo vigente contiene los informes local y CI del adaptador:
+183 miembros con hash y SHA-256
+`7741927f50a733f8d0b9e4ac80ca93216b88029300634b79bd5f0713cc69104d`.
+Pasó verificación tras extracción en Windows y la reproducción idéntica en
+[Ubuntu run 40366050590](https://github.com/fedequark/PasskeyTransit/actions/runs/40366050590).
+El [PDF run 40366050767](https://github.com/fedequark/PasskeyTransit/actions/runs/40366050767)
+compiló el texto final en seis páginas U.S. letter; inspeccioné las páginas
+cinco y seis. SHA-256 de `compiled/main.pdf`:
+`8b76cd698610f7d10a350bd1f6e814b0f06dff25b20723c39f4c10a603640bb5`.
