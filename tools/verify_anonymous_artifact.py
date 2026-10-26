@@ -31,6 +31,21 @@ def verify(root: Path) -> dict[str, object]:
             if replay.read(member) != report.read_bytes():
                 raise ValueError(f"Phase 14 replay report mismatch: {basename}")
 
+    provider_bytes = (root / "data/replay/provider-local.zip").read_bytes()
+    with zipfile.ZipFile(io.BytesIO(provider_bytes)) as replay:
+        if replay.testzip() is not None:
+            raise ValueError("invalid local provider replay archive")
+        provider_manifest = json.loads(replay.read("manifest.json"))
+        if set(replay.namelist()) != set(provider_manifest["files"]) | {"manifest.json"}:
+            raise ValueError("unexpected local provider replay members")
+        for member, expected in provider_manifest["files"].items():
+            if hashlib.sha256(replay.read(member)).hexdigest() != expected:
+                raise ValueError(f"local provider replay member mismatch: {member}")
+
+    parser_report = json.loads((root / "experiments/cxp_external_schema/runtime_report.json").read_text())
+    if parser_report.get("provider_interoperability") != "NOT_EVALUABLE":
+        raise ValueError("external CXP parser report overclaims interoperability")
+
     observed: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
     attempts = 0
     with (root / "data/raw/c1_attempts.jsonl").open(encoding="utf-8") as stream:
@@ -97,6 +112,8 @@ def verify(root: Path) -> dict[str, object]:
         "status": "PASS",
         "hashed_members": len(manifest["files"]),
         "phase14_replay_reports_byte_equal": 2,
+        "provider_replay_hashed_members": len(provider_manifest["files"]),
+        "external_cxp_parser_scope": parser_report["scope"],
         "c1_attempts": attempts,
         "c1_groups": len(observed),
         "c1_totals": expected,

@@ -24,7 +24,7 @@ jobs:
       - name: Parse and round-trip synthetic CXP objects
         run: |
           set -o pipefail
-          cargo run --manifest-path interop/bitwarden_cxp_types/Cargo.toml -- experiments/cxp_external_schema/fixture.json | tee experiments/cxp_external_schema/runtime_report.json
+          cargo run --locked --manifest-path interop/bitwarden_cxp_types/Cargo.toml -- experiments/cxp_external_schema/fixture.json | tee experiments/cxp_external_schema/runtime_report.json
           python tools/verify_cxp_runtime_report.py experiments/cxp_external_schema/runtime_report.json
       - uses: actions/upload-artifact@v4
         with:

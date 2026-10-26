@@ -299,9 +299,12 @@ definition~\cite{bitwardencxp}. That source declares neither the draft's
 \texttt{archive} and \texttt{mode} request fields nor its \texttt{archive}
 response field, and stores the version as an eight-bit value rather than
 the draft's 16-bit type. The comparison is executable from a frozen
-field snapshot. It is source-schema evidence only: Serde may ignore
-unknown fields, and we did not compile the crate or exchange encrypted
-payloads with it. It cannot be counted as provider interoperability.
+field snapshot. We compiled the pinned crate with locked dependencies in
+CI and parsed synthetic request and response objects. Both parsed, but
+serialization dropped the request's \texttt{archive} and \texttt{mode}
+fields and the response's \texttt{archive} field. A draft-valid version
+of 256 was rejected. This is a type-parser round-trip gap, not a provider
+transfer or encrypted-payload result; it cannot establish interoperability.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
@@ -369,12 +372,13 @@ with newly installed locked dependencies passed its checks on 20 October
 2026 on the same team's Windows host. This was an environment-isolation
 check, not independent replication. A separate staged anonymous archive
 contains the synthetic C1/C2/C3 rows, analysis tables, source, the
-structural CXP probe, selected public provider reports, and the original
-Phase 14 browser-control replay ZIP. Its verifier recomputes the 96 C1
-cells, checks file hashes, and matches the replay's two reports byte for
+structural CXP probe, executed Rust type-parser report, the original
+Phase 14 browser-control replay ZIP, and a same-team local Fenko/Proton
+replay bundle. Its verifiers recompute the 96 C1 cells, check member
+hashes and public signatures, and match the Phase 14 reports byte for
 byte. Identifying GitHub run metadata is retained in a local private
-sidecar. Provider-run replay archives are absent, so this is not yet a
-complete submission artifact. Provider vaults, private keys, original
+sidecar. The provider replay has exact runner snapshots but no external
+CI attestation. Provider vaults, private keys, original
 PRF seeds, and raw PRF outputs are excluded from both archives. A final
 anonymous artifact with provider evidence and a no-tracking URL remains
 to be prepared before submission.

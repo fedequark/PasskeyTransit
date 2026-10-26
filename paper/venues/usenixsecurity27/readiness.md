@@ -82,3 +82,24 @@ Bitwarden detectó tres campos del borrador ausentes en esos tipos. Es una
 observación del código fuente, no una ejecución de intercambio CXP. Un
 ensayo criptográfico completo sigue pendiente de un perfil HPKE/JWE
 interoperable y una segunda implementación ejecutable.
+
+## Avance del 26 de octubre: parser externo y replays locales
+
+El [run 40324657477](https://github.com/fedequark/PasskeyTransit/actions/runs/40324657477)
+compiló los tipos Rust CXP públicos de Bitwarden en la revisión fijada
+`32da4c8b0a4abdd0b46fae79c31e0fdb50150396`. La solicitud y la respuesta
+sintéticas se interpretaron, pero una serialización posterior omitió
+`archive` y `mode` de la solicitud y `archive` de la respuesta. Una versión
+256, válida para el entero de 16 bits del borrador, fue rechazada por el tipo
+de 8 bits. El resultado caracteriza ese parser; no prueba intercambio entre
+gestores, autenticación JWE ni descifrado HPKE.
+
+Se repitieron localmente los casos sintéticos de Fenko (importación y vuelta
+entre perfiles) y Proton. Un paquete local conserva los informes y los
+snapshots exactos de runners, protocolos y dependencias. Desde una
+extracción limpia se verificaron 40 firmas y 18 vínculos PRF de Fenko,
+12 firmas y 12 relaciones PRF de Proton. El paquete no contiene bóvedas,
+claves privadas ni semillas PRF; tampoco tiene atestación de ejecución
+independiente o de CI. El artefacto anónimo local ahora incluye este paquete
+y el informe del parser, y su verificador de filas volvió a pasar. Continúa
+sin enlace anónimo estable y con riesgo de identificación contextual.

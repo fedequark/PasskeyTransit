@@ -1,0 +1,16 @@
+{
+  "draft_valid_version_256_rejected": true,
+  "hpke_jwe_decryption": "NOT_EVALUABLE",
+  "provider_interoperability": "NOT_EVALUABLE",
+  "request_fields_dropped_on_roundtrip": [
+    "archive",
+    "mode"
+  ],
+  "request_parse": "PASS",
+  "response_fields_dropped_on_roundtrip": [
+    "archive"
+  ],
+  "response_parse": "PASS",
+  "scope": "Bitwarden open Rust CXP type deserialization and serialization only",
+  "source_commit": "32da4c8b0a4abdd0b46fae79c31e0fdb50150396"
+}

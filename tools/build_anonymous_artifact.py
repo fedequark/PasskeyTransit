@@ -19,6 +19,7 @@ OUT = ROOT / "paper/venues/usenixsecurity27/anonymous_artifact"
 RELEASE = ROOT / "releases/v0.7.1/passkeytransit-v0.7.1-replication.zip"
 PHASE14_DIR = ROOT / "experiments/phase14_ci_replay/2026-10-20/auditable"
 PHASE14_ARCHIVE = PHASE14_DIR / "phase14-auditable-39446248808.zip"
+PROVIDER_ARCHIVE = ROOT / "experiments/provider_replays/2026-10-26/provider-replay-local.zip"
 RAW_NAMES = {
     "c1_attempts.jsonl": "evidence/20260923T162254713/full/c1_phase7_full_attempts.jsonl",
     "c2_attempts.jsonl": "evidence/20260923T162316380/c2/c2_phase6_attempts.jsonl",
@@ -36,6 +37,11 @@ SOURCE_FILES = [
     "experiments/cxp_wire_structural/report.json",
     "experiments/cxp_external_schema/bitwarden_protocol_snapshot.json",
     "experiments/cxp_external_schema/report.json",
+    "experiments/cxp_external_schema/fixture.json",
+    "experiments/cxp_external_schema/runtime_report.json",
+    "interop/bitwarden_cxp_types/Cargo.lock",
+    "interop/bitwarden_cxp_types/Cargo.toml",
+    "interop/bitwarden_cxp_types/src/main.rs",
     "experiments/phase14_ci_replay/2026-10-20/auditable/cross_runtime_cxp.json",
     "experiments/phase14_ci_replay/2026-10-20/auditable/prf_migration.json",
     "experiments/v2_exploratory/fenko_provider.json",
@@ -54,6 +60,7 @@ SOURCE_FILES = [
     "src/passkeytransit/cxp_wire_probe.py",
     "tools/run_cxp_wire_probe.py",
     "tools/run_cxp_schema_gap.py",
+    "tools/verify_cxp_runtime_report.py",
     "tools/run_proton_cxf_prf.py",
     "tools/verify_phase14_public_transcript.py",
     "tools/verify_proton_public_report.py",
@@ -116,6 +123,22 @@ def build() -> Path:
                 if not match.lower().endswith((b"@example.test", b"@example.com")):
                     raise ValueError("email-like value in Phase 14 replay member")
     files["data/replay/phase14-original.zip"] = phase14_bytes
+    provider_bytes = PROVIDER_ARCHIVE.read_bytes()
+    with zipfile.ZipFile(io.BytesIO(provider_bytes)) as replay:
+        if replay.testzip() is not None or "manifest.json" not in replay.namelist():
+            raise ValueError("local provider replay is invalid")
+        provider_manifest = json.loads(replay.read("manifest.json"))
+        for member in replay.namelist():
+            payload = replay.read(member)
+            if member != "manifest.json" and _sha(payload) != provider_manifest["files"][member]:
+                raise ValueError(f"local provider replay member differs: {member}")
+            for pattern in DIRECT_IDENTIFIERS:
+                if pattern.search(member.encode()) or pattern.search(payload):
+                    raise ValueError(f"direct identifier in provider replay: {member}")
+            for match in EMAIL.findall(payload):
+                if not match.lower().endswith((b"@example.test", b"@example.com")):
+                    raise ValueError(f"email-like value in provider replay: {member}")
+    files["data/replay/provider-local.zip"] = provider_bytes
     files["README.md"] = (
         "# Anonymous staged review artifact\n\n"
         "Contains synthetic C1/C2/C3 rows, result tables, selected public "
@@ -130,8 +153,9 @@ def build() -> Path:
         "PYTHONPATH=src python -m pytest tests/test_cxp_wire_probe.py "
         "(set PYTHONPATH appropriately on Windows).\n\n"
         "This package supports internal review of synthetic controls and "
-        "public signature reports. The Phase 14 replay ZIP is included, but "
-        "external CI provenance and provider-run replay ZIPs are not. This is "
+        "public signature reports. The Phase 14 replay ZIP and a local "
+        "Fenko/Proton replay bundle are included. Provider runs lack external "
+        "CI attestation, and no stable anonymous link exists. This is "
         "not yet a complete submission artifact. "
         "No independent review or external provider interoperability is claimed.\n"
     ).encode()
@@ -145,11 +169,12 @@ def build() -> Path:
                 raise ValueError(f"email-like value in {name}: {match!r}")
     manifest = {
         "artifact": "passkeytransit-anonymous-staging-v1",
-        "scope": "synthetic-campaign-public-reports-phase14-replay-and-cxp-structure",
+        "scope": "synthetic-campaign-public-reports-phase14-and-local-provider-replays-cxp-type-parser",
         "files": {name: _sha(data) for name, data in sorted(files.items())},
         "source_release_raw_rows": "v0.7.1 synthetic evidence, source_commit field removed",
         "limitations": [
-            "only the Phase 14 replay ZIP is included; external CI provenance and provider-run archives are absent",
+            "provider replay is same-team local execution without external CI attestation",
+            "no encrypted CXP provider transfer or HPKE/JWE decryption is evidenced",
             "contextual linkage to an already public project cannot be ruled out",
             "no third-party replication claimed",
         ],
