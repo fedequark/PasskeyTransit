@@ -474,4 +474,6 @@ El paquete anónimo local actualizado conserva ambos informes del control
 de índice: 172 miembros con hash, extracción y `verify.py` aprobados en
 Windows, SHA-256
 `0dd2378ef508b0c4387d950db21e7882bfc87e654218f36a6c22257d060307cc`.
-Falta la reconstrucción Linux de este hash.
+El [run 40362009612](https://github.com/fedequark/PasskeyTransit/actions/runs/40362009612)
+reconstruyó exactamente ese hash en Ubuntu 24.04 y verificó el paquete
+extraído. Sigue siendo reproducción automatizada del mismo equipo.
