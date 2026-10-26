@@ -14,6 +14,10 @@ We selected the experimental [`ShaminAkarsha/cxp_poc2`](https://github.com/Shami
 
 This is a measured failure between two open research implementations at a specific encryption-profile boundary. The importer does not reach the CXF document or a relying party in this cross-check. Each implementation fills unspecified details in the CXP working draft differently; the result alone does not prove a normative violation by either one. Neither project in this cross-check is an installed provider app.
 
+There is also a **latent index-shape difference** behind the two observed rejection stages. The project importer decrypted `cxporter`'s index and recorded that it lacks the `{header, documents}` object required by the selected `cxp_poc2` `openPayload` implementation. `cxporter`'s pinned `archive.go` writes an `IndexDocument` with `accounts` and item metadata; `cxp_poc2`'s pinned `payload.ts` explicitly checks for `header` and `documents`. We did not make the second importer reach that branch, so this is a source-and-plaintext compatibility finding, not a third observed import rejection. No claim is made that either index layout is required by the draft.
+
+The index-shape check passed in [run 40355464186](https://github.com/fedequark/PasskeyTransit/actions/runs/40355464186). Its original report ZIP has SHA-256 `09255d0f0f29ce913de06c05f98981efc574d66f2c3d094662a4ad23edd43b65` and replaces the earlier cxporter CI ZIP in the staged artifact.
+
 The same cross-check passed in [clean CI run 40353576594](https://github.com/fedequark/PasskeyTransit/actions/runs/40353576594). The original cross-report artifact ZIP has SHA-256 `cd1d9abc381e2e2ea0d1b4387da1d64c2d24eb11e4e09696438d95b9b2ada9c3` and its retained report was verified against the ZIP bytes.
 
 The additional full-response parser control passed in [run 40354422120](https://github.com/fedequark/PasskeyTransit/actions/runs/40354422120). Its original ZIP, SHA-256 `1536898b57077d6a5902750d36baf4768512c29cecdd606b1fc937a0c227cab7`, is the version staged in the anonymous artifact.

@@ -44,3 +44,7 @@ NOT_EVALUABLE for a successful two-provider CXP exchange. The local and
 clean-CI reports are in `experiments/cxporter_cxp_open/`; the original CI
 report ZIPs and executable adapters are retained. Two repetitions are
 repeatability checks, not reliability or prevalence estimates.
+The decrypted `cxporter` index also lacks the `{header, documents}` shape
+expected by the selected PoC importer. This is a further source-and-plaintext
+compatibility gap behind the observed schema/JWE failures, not a separately
+executed importer rejection.

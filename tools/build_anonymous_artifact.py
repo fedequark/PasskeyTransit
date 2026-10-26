@@ -26,8 +26,8 @@ PROVIDER_CI_REPORTS = {
     "fenko": ("fenko_provider.json", "fenko_roundtrip.json"),
     "proton": ("proton_cxf_prf.json",),
 }
-CXPORTER_CI_ARCHIVE = ROOT / "experiments/cxporter_cxp_open/ci/40350620050/github-artifact.zip"
-CXPORTER_CI_SHA256 = "e880f5a48b530caff22e7149e6b436d2a1c0451de5ca0d86a0e7c1898454cd09"
+CXPORTER_CI_ARCHIVE = ROOT / "experiments/cxporter_cxp_open/ci/40355464186/github-artifact.zip"
+CXPORTER_CI_SHA256 = "09255d0f0f29ce913de06c05f98981efc574d66f2c3d094662a4ad23edd43b65"
 CROSS_CI_ARCHIVE = ROOT / "experiments/cxporter_cxp_open/ci/40354422120/github-artifact.zip"
 CROSS_CI_SHA256 = "1536898b57077d6a5902750d36baf4768512c29cecdd606b1fc937a0c227cab7"
 RAW_NAMES = {
@@ -357,7 +357,7 @@ def build() -> Path:
         "provider_ci_workflow_run_url": ci_provenance["workflow_run_url"],
         "provider_ci_head_sha": ci_provenance["head_sha"],
         "provider_ci_artifacts": ci_provenance["artifacts"],
-        "cxporter_ci_workflow_run_url": "https://github.com/fedequark/PasskeyTransit/actions/runs/40350620050",
+        "cxporter_ci_workflow_run_url": "https://github.com/fedequark/PasskeyTransit/actions/runs/40355464186",
         "cxporter_ci_artifact_sha256": CXPORTER_CI_SHA256,
         "cxp_poc2_cross_ci_workflow_run_url": "https://github.com/fedequark/PasskeyTransit/actions/runs/40354422120",
         "cxp_poc2_cross_ci_artifact_sha256": CROSS_CI_SHA256,

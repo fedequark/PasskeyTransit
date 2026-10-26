@@ -372,10 +372,21 @@ compiló el manuscrito con los dos controles negativos en cinco páginas
 U.S. letter. Se inspeccionó visualmente la última: las veinte referencias
 quedan completas en la página cinco. SHA-256 del PDF:
 `6d4a6cdcbcd841971a165a49da24a1aab2f8a03975d2d39694be2d45e4e4b5ef`.
-El nuevo paquete anónimo local contiene 158 archivos con hash, pasó tras
+El paquete anónimo de ese hito contenía 158 archivos con hash, pasó tras
 extracción limpia en Windows y tiene SHA-256
 `7ca49ca3324d3ce0e1594927f1acd8fad58a01618034c0f56726f5f98f5840ad`.
 El [run de reproducción 40355053855](https://github.com/fedequark/PasskeyTransit/actions/runs/40355053855)
 obtuvo exactamente ese hash en Ubuntu 24.04. La extracción verificó los
 158 miembros, el ZIP original del segundo importador y los dos rechazos
 registrados. Es una repetición automatizada del mismo equipo.
+
+El [run 40355464186](https://github.com/fedequark/PasskeyTransit/actions/runs/40355464186)
+añadió un control del índice descifrado: en ambas repeticiones carece del
+objeto `{header, documents}` que espera el segundo importador. Como éste
+rechaza antes por esquema y JWE, se clasifica como diferencia de forma
+inferida de fuente y plaintext, no como un tercer fallo de importación
+observado. El nuevo ZIP original del informe tiene SHA-256
+`09255d0f0f29ce913de06c05f98981efc574d66f2c3d094662a4ad23edd43b65`.
+El paquete anónimo local actualizado conserva 158 archivos con hash y tiene
+SHA-256 `3017684d625a12c816b969bde931eb07c69ee4968f79303db67b3dcb4a1e13b6`;
+pasó la extracción y verificación local en Windows.
