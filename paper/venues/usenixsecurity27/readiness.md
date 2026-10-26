@@ -444,4 +444,6 @@ El paquete anónimo local contiene el vector, adaptadores, verificadores e
 informes CI; tiene 165 miembros con hash, pasó extracción y verificación
 local en Windows y tiene SHA-256
 `e629d46e6e36b18f9ec70847731f8e7f41ed4d7d6322813fed74a287fdfcd34a`.
-La reproducción Linux de este hash está pendiente del workflow actualizado.
+El [run 40360147948](https://github.com/fedequark/PasskeyTransit/actions/runs/40360147948)
+reconstruyó exactamente ese SHA-256 en Ubuntu 24.04 y verificó el paquete
+extraído. Es una repetición automatizada del mismo equipo.
