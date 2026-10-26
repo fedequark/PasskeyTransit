@@ -1,0 +1,55 @@
+name: Open Android CXF emulator smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/android-cxf-emulator-smoke.yml
+      - tools/android_cxf_emulator_smoke.sh
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - name: Fetch pinned Keyguard release APK
+        run: |
+          mkdir -p tmp
+          curl --fail --location --retry 3 \
+            https://github.com/AChep/keyguard-app/releases/download/r20261024.1/androidApp-none-release.apk \
+            --output tmp/keyguard-r20261024.1.apk
+          echo '58c018583b5e1d1b0e22dcdd21a9de29fde44988934a37c194cba92905b79763  tmp/keyguard-r20261024.1.apk' | sha256sum --check
+      - uses: actions/download-artifact@v4
+        with:
+          name: monica-x86_64-debug
+          repository: fedequark/PasskeyTransit
+          run-id: 40371271466
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: tmp
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis_playstore
+          arch: x86_64
+          profile: pixel_7
+          disable-animations: true
+          script: bash tools/android_cxf_emulator_smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-cxf-emulator-smoke
+          path: tmp/android-cxf-emulator-smoke
+          if-no-files-found: ignore
+          retention-days: 14
