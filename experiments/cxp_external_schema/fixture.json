@@ -1,0 +1,43 @@
+{
+  "request": {
+    "archive": [
+      "deflate"
+    ],
+    "credentialTypes": [
+      "passkey"
+    ],
+    "hpke": [
+      {
+        "aead": 1,
+        "kdf": 1,
+        "kem": 32,
+        "key": {
+          "crv": "X25519",
+          "kty": "OKP",
+          "x": "v8Ys840DcFNkwCm9adPUpC9whGA7e-DdUQCVghHAXR8"
+        },
+        "mode": "base"
+      }
+    ],
+    "importer": "importer.example.test",
+    "mode": "indirect",
+    "version": 0
+  },
+  "response": {
+    "archive": "deflate",
+    "exporter": "exporter.example.test",
+    "hpke": {
+      "aead": 1,
+      "kdf": 1,
+      "kem": 32,
+      "key": {
+        "crv": "X25519",
+        "kty": "OKP",
+        "x": "v8Ys840DcFNkwCm9adPUpC9whGA7e-DdUQCVghHAXR8"
+      },
+      "mode": "base"
+    },
+    "payload": "UEsDBBQAAAAIAAAAQ1mvb-51aAAAAHMAAAAUAAAAQ1hQLUV4cG9ydC9pbmRleC5qd2VLrfTKSHJPzvTP9MpOjPDM9HH2yknK9QXxnXxDPE2CDPz8PPMM9PQcA12dkLGem7lpcUFktmmId1h4Sa6_sZdRUUpyYVlpSrpbZZKHR6p3ul66R5GBv2-lmXNppGOEWaljYLG_d1Q6AFBLAwQUAAAACAAAAENZ3Ar1Wl4AAABpAAAAIAAAAENYUC1FeHBvcnQvZG9jdW1lbnRzL2ZpeHR1cmUuandlS630ykhyT870z_TKTozwzPRx9spJyvUF8Z18QzxNggz8_DzzDPT0HNM9nZGxXrKJUZZvUFFxYkB6cZSLa2ZWrkuSaWCkq16Bi09poXtwsGViWWlEaVZOfFCgW3E6AFBLAQIUABQAAAAIAAAAQ1mvb-51aAAAAHMAAAAUAAAAAAAAAAAAAACAAQAAAABDWFAtRXhwb3J0L2luZGV4Lmp3ZVBLAQIUABQAAAAIAAAAQ1ncCvVaXgAAAGkAAAAgAAAAAAAAAAAAAACAAZoAAABDWFAtRXhwb3J0L2RvY3VtZW50cy9maXh0dXJlLmp3ZVBLBQYAAAAAAgACAJAAAAA2AQAAAAA",
+    "version": 0
+  }
+}

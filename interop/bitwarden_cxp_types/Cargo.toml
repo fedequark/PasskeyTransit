@@ -1,0 +1,9 @@
+[package]
+name = "passkeytransit-bitwarden-cxp-types-probe"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+credential-exchange-protocol = { path = "../../tmp/bitwarden-cxp/credential-exchange-protocol" }
+serde_json = "1"
