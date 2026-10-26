@@ -24,5 +24,6 @@ def test_python_export_node_import_and_tamper_controls(tmp_path: Path) -> None:
     assert result["checks"] == {
         "python_zip_jwe_export_node_import_equal": True,
         "node_rejects_modified_index_jwe_ciphertext": True,
+        "node_rejects_modified_zip_central_crc": True,
         "node_rejects_wrong_recipient_key": True,
     }

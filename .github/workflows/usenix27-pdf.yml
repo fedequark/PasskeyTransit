@@ -18,21 +18,18 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Install pdfLaTeX and PDF inspection tools
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            texlive-latex-base texlive-latex-recommended \
-            texlive-fonts-recommended texlive-latex-extra poppler-utils
+      - name: Verify the unmodified USENIX style
+        run: cmp paper/venues/usenixsecurity27/official_pdf/usenix.sty paper/venues/usenixsecurity27/template/usenix.sty
       - name: Compile with the unmodified USENIX style
+        uses: xu-cheng/latex-action@6549dc21effb2730855a1281407ecfcececc6c1b # v4
+        with:
+          root_file: main.tex
+          working_directory: paper/venues/usenixsecurity27/official_pdf
+          texlive_version: 2026
+      - name: Inspect the compiled PDF
         working-directory: paper/venues/usenixsecurity27/official_pdf
         run: |
-          sha256sum usenix.sty ../template/usenix.sty
-          cmp usenix.sty ../template/usenix.sty
-          pdflatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
-          pdflatex -interaction=nonstopmode -halt-on-error -file-line-error main.tex
-          pdfinfo main.pdf | grep -E 'Pages:|Page size:|PDF version:'
-          pdffonts main.pdf
+          file main.pdf
           sha256sum main.pdf
       - uses: actions/upload-artifact@v4
         with:

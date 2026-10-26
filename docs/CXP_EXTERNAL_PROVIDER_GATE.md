@@ -1,0 +1,21 @@
+# External provider CXP execution gate
+
+Checked 2026-10-26. This note distinguishes runnable **message types**, a project-defined encrypted test profile, and a complete external credential provider. The acceptance target is an independently maintained exporter and importer that process an agreed CXP wire exchange, decrypt the payload, import a synthetic passkey, and demonstrate a later assertion at an RP. A private profile accepted only by PasskeyTransit does not meet that target.
+
+| Candidate | Source pinned or inspected | Executable evidence | Remaining gap |
+|---|---|---|---|
+| Bitwarden Rust CXP types | [`32da4c8...`](https://github.com/bitwarden/credential-exchange/tree/32da4c8b0a4abdd0b46fae79c31e0fdb50150396) | Request/response parse and serialization in [CI](https://github.com/fedequark/PasskeyTransit/actions/runs/40327351891). | Library exposes types, not an exporter/importer or HPKE/JWE engine. |
+| `go-cxp` types | [`94659f3...`](https://github.com/nvinuesa/go-cxp/tree/94659f317ac62470a149cb3ecb769ed5d03d18a1) | Same fixture parsed and serialized in [CI](https://github.com/fedequark/PasskeyTransit/actions/runs/40327351875). | README identifies message type definitions; no payload decryption or provider storage. |
+| Bitwarden Android app | [`d3f8e2d...`](https://github.com/bitwarden/android/tree/d3f8e2d01c1825f0efe1fc2a1b592a2a94f73980) | Source contains an [import payload parser](https://github.com/bitwarden/android/blob/d3f8e2d01c1825f0efe1fc2a1b592a2a94f73980/cxf/src/main/kotlin/com/bitwarden/cxf/parser/CredentialExchangePayloadParserImpl.kt) and [vault import manager](https://github.com/bitwarden/android/blob/d3f8e2d01c1825f0efe1fc2a1b592a2a94f73980/app/src/main/kotlin/com/x8bit/bitwarden/data/vault/manager/CredentialExchangeImportManagerImpl.kt). | The inspected parser consumes CXF JSON and the manager calls the SDK and account service. Neither class is a standalone CXP ZIP/JWE decrypter. Exercising the app's transfer path needs the Android provider-events flow and a test account. |
+| PasskeyTransit experimental ZIP/JWE profile | This repository's `docs/CXP_ZIP_JWE_EXPERIMENT.md` | Python exporter and Node importer recovered a synthetic CXF document with tamper controls. | Both sides are project-authored; the JOSE key-management mapping is private and unsigned. |
+
+The [Android credential-transfer guide](https://developer.android.com/identity/sign-in/credential-transfer) describes a platform-mediated provider-events flow and CXF credential payloads. The inspected Bitwarden classes therefore give a plausible **app-level** target for a future emulator run, but their existence does not show that our private ZIP/JWE profile is accepted by the platform or the app. The public CXP draft lacks a complete HPKE-to-JWE mapping; no provider-level conformance claim follows from parsing the displayed message fields.
+
+## Next executable gate
+
+1. Build or obtain two independently maintained providers that expose compatible transfer APIs in an Android emulator, using synthetic vaults and accounts. Record exact app, OS, and API revisions.
+2. Capture the platform transfer result without private keys or vault dumps; record exporter selection, destination import receipt, and the destination credential identifier.
+3. At a controlled RP, verify a destination assertion against the pre-transfer public key and separately test PRF behavior. Record expected and observed states, including `NOT_EVALUABLE` when the platform does not expose a value.
+4. Publish a replayable transcript or an appropriately scoped external CI artifact. A human-reported mobile success remains contextual until these controls pass.
+
+No independent review is scheduled; that work remains paused by the author.

@@ -25,6 +25,7 @@ EXPECTED_LOCAL = {
 EXPECTED_CROSS = {
     "python_zip_jwe_export_node_import_equal",
     "node_rejects_modified_index_jwe_ciphertext",
+    "node_rejects_modified_zip_central_crc",
     "node_rejects_wrong_recipient_key",
 }
 

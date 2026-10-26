@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import base64
 import subprocess
 import sys
 from pathlib import Path
@@ -60,6 +61,14 @@ def run(node: Path) -> dict:
     mutated = json.loads(json.dumps(payload))
     mutated["response"] = altered_member(response, "CXP-Export/index.jwe", 3)
     tampered = call_node(node, mutated, expect_success=False)
+    central = json.loads(json.dumps(payload))
+    archive = bytearray(base64.urlsafe_b64decode(central["response"]["payload"] + "=="))
+    central_header = archive.find(b"PK\x01\x02")
+    if central_header < 0:
+        raise RuntimeError("ZIP central header missing")
+    archive[central_header + 16] ^= 1
+    central["response"]["payload"] = b64url(bytes(archive))
+    central_tampered = call_node(node, central, expect_success=False)
     wrong_key = json.loads(json.dumps(payload))
     another = create_import_session("importer.example.test")
     another_raw = another.private_key.private_bytes(
@@ -70,6 +79,7 @@ def run(node: Path) -> dict:
     checks = {
         "python_zip_jwe_export_node_import_equal": recovered == document,
         "node_rejects_modified_index_jwe_ciphertext": tampered.get("status") == "FAIL",
+        "node_rejects_modified_zip_central_crc": central_tampered.get("status") == "FAIL",
         "node_rejects_wrong_recipient_key": wrong.get("status") == "FAIL",
     }
     if not all(checks.values()):
@@ -89,7 +99,7 @@ def run(node: Path) -> dict:
         "limitations": [
             "both implementations belong to this project; no external provider CXP exchange",
             "private experimental JOSE key-management algorithm",
-            "Node importer checks this ZIP subset, not general ZIP validity or provider state",
+            "Node importer checks this two-member ZIP subset, not general ZIP validity or provider state",
             "no browser or mobile credential-provider execution",
         ],
     }

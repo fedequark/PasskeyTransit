@@ -309,7 +309,7 @@ We then defined an explicitly private HPKE-to-JWE test profile: HPKE
 wraps a fresh content key for each compact JWE in a two-member ZIP; JWE
 AES-GCM authenticates the file contents~\cite{hpke,jwe}. A Python exporter
 and separately written Node importer recovered one synthetic CXF document
-with its HMAC fields. Nine local and three cross-runtime controls passed,
+with its HMAC fields. Nine local and four cross-runtime controls passed,
 including modified ciphertext, wrapped-key, and wrong-recipient rejection.
 The draft does not define this binding, and both programs are ours; this
 result cannot establish provider CXP interoperability.

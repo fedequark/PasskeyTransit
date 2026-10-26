@@ -64,10 +64,20 @@ function decryptAesGcm(key, iv, ciphertext, tag, aad) {
   return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
 }
 
+function crc32(bytes) {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit++) crc = (crc >>> 1) ^ ((crc & 1) ? 0xedb88320 : 0);
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
 function unzipTwoMembers(payload) {
   const bytes = unb64(payload);
   if (bytes.length > 1024 * 1024) throw new Error('archive exceeds limit');
   const members = new Map();
+  const local = [];
   let offset = 0;
   while (offset + 4 <= bytes.length && bytes.readUInt32LE(offset) === 0x04034b50) {
     if (offset + 30 > bytes.length) throw new Error('truncated ZIP header');
@@ -75,9 +85,10 @@ function unzipTwoMembers(payload) {
     const method = bytes.readUInt16LE(offset + 8);
     const compressed = bytes.readUInt32LE(offset + 18);
     const plain = bytes.readUInt32LE(offset + 22);
+    const crc = bytes.readUInt32LE(offset + 14);
     const nameLength = bytes.readUInt16LE(offset + 26);
     const extraLength = bytes.readUInt16LE(offset + 28);
-    if (flags & 0x0009 || method !== 8 || plain > 256 * 1024) throw new Error('unsupported ZIP member');
+    if (flags !== 0 || method !== 8 || plain > 256 * 1024) throw new Error('unsupported ZIP member');
     const nameStart = offset + 30;
     const bodyStart = nameStart + nameLength + extraLength;
     const bodyEnd = bodyStart + compressed;
@@ -86,11 +97,38 @@ function unzipTwoMembers(payload) {
     if (!name.startsWith('CXP-Export/') || name.includes('..') || members.has(name)) throw new Error('invalid ZIP member name');
     const body = inflateRawSync(bytes.subarray(bodyStart, bodyEnd), {maxOutputLength: 256 * 1024});
     if (body.length !== plain) throw new Error('ZIP member length mismatch');
+    if (crc32(body) !== crc) throw new Error('ZIP member CRC mismatch');
     members.set(name, body);
+    local.push({name, offset, flags, method, compressed, plain, crc});
     offset = bodyEnd;
     if (members.size > 2) throw new Error('unexpected ZIP member count');
   }
   if (members.size !== 2 || !members.has(INDEX)) throw new Error('missing ZIP member');
+  const centralOffset = offset;
+  for (const member of local) {
+    if (offset + 46 > bytes.length || bytes.readUInt32LE(offset) !== 0x02014b50) throw new Error('missing ZIP central header');
+    const nameLength = bytes.readUInt16LE(offset + 28);
+    const extraLength = bytes.readUInt16LE(offset + 30);
+    const commentLength = bytes.readUInt16LE(offset + 32);
+    const end = offset + 46 + nameLength + extraLength + commentLength;
+    if (end > bytes.length || bytes.readUInt16LE(offset + 8) !== member.flags ||
+        bytes.readUInt16LE(offset + 10) !== member.method ||
+        bytes.readUInt32LE(offset + 16) !== member.crc ||
+        bytes.readUInt32LE(offset + 20) !== member.compressed ||
+        bytes.readUInt32LE(offset + 24) !== member.plain ||
+        bytes.readUInt32LE(offset + 42) !== member.offset ||
+        bytes.subarray(offset + 46, offset + 46 + nameLength).toString('utf8') !== member.name) {
+      throw new Error('ZIP central/local mismatch');
+    }
+    offset = end;
+  }
+  if (offset + 22 !== bytes.length || bytes.readUInt32LE(offset) !== 0x06054b50 ||
+      bytes.readUInt16LE(offset + 4) !== 0 || bytes.readUInt16LE(offset + 6) !== 0 ||
+      bytes.readUInt16LE(offset + 8) !== 2 || bytes.readUInt16LE(offset + 10) !== 2 ||
+      bytes.readUInt32LE(offset + 12) !== offset - centralOffset ||
+      bytes.readUInt32LE(offset + 16) !== centralOffset || bytes.readUInt16LE(offset + 20) !== 0) {
+    throw new Error('invalid ZIP end record');
+  }
   return members;
 }
 

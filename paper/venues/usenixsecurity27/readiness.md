@@ -120,7 +120,8 @@ y ambos informes de parser, y su verificador de filas volvió a pasar. Continúa
 sin enlace anónimo estable y con riesgo de identificación contextual.
 El ZIP de replays locales tiene SHA-256
 `dceb35572eca3ebf6ccd43554a785f8e3192cac2b6d6dca34ddac9c9a000dd65`;
-el ZIP anónimo local, `56cb564cc64a1f41172708c163dbb28d2f96d9f6963a7ac9797f98fd1f69ebda`.
+el ZIP anónimo local se actualizó el 26 de octubre con el perfil cifrado
+descrito más abajo.
 La matriz diferencial de los dos parsers se genera desde ambos informes
 verificados y se vuelve a calcular al verificar el ZIP anónimo; conserva
 la distinción entre campos obligatorios descartados y la limitación futura
@@ -134,3 +135,26 @@ páginas U.S. letter y SHA-256
 Se inspeccionaron visualmente las cinco páginas. El
 [run de verificación 40327351777](https://github.com/fedequark/PasskeyTransit/actions/runs/40327351777)
 también pasó.
+
+## Avance del 26 de octubre: perfil cifrado experimental
+
+Se implementó un perfil **privado y no normativo** que envuelve con HPKE una
+clave de contenido distinta para cada archivo JWE de un ZIP de dos miembros.
+El exportador Python y el importador Node, escritos por este proyecto,
+recuperaron el mismo CXF sintético con campos HMAC. Pasaron nueve controles
+locales y cuatro controles entre runtimes; entre los negativos están alterar el
+JWE, la clave envuelta, el destinatario, el archivo negociado y el estado de
+replay. El [run de verificación 40329671859](https://github.com/fedequark/PasskeyTransit/actions/runs/40329671859)
+pasó. Los informes tienen SHA-256
+`e608f9dcee5f46f52f4cd70c72e3329337f8b6583a711e155194cf2bad811aba`
+y `fea15a29a06fff6aa14d889965726b76a90d7ff4a2f8681e63112cba79b8423b`.
+
+El artefacto anónimo local incorporó código, informe y verificador del nuevo
+perfil; una extracción limpia volvió a pasar con 117 miembros verificados.
+SHA-256 del ZIP: `705c87c9ee3b71ed32f8dc3ec6ac81329934d4308e7622a043b8baf63e99c84b`.
+El perfil **no** demuestra que un gestor externo acepte ese mapeo HPKE/JWE.
+La auditoría de código abierto documentada en
+`docs/CXP_EXTERNAL_PROVIDER_GATE.md` muestra que el parser de Bitwarden
+Android inspeccionado recibe CXF JSON y delega la importación al SDK y al
+servicio de cuenta; no provee un motor ZIP/JWE independiente ejecutable en
+este host. Sigue faltando un intercambio con un proveedor externo completo.
