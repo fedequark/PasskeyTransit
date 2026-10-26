@@ -1,0 +1,48 @@
+name: Anonymous staging reproduction
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/anonymous-artifact-repro.yml
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install project
+        run: python -m pip install -e .
+      - name: Verify retained provider CI artifacts
+        run: python tools/verify_provider_ci_replay.py
+      - name: Rebuild and inspect anonymous staging archive
+        env:
+          EXPECTED_SHA256: 2c7b4ed2a5bf7383b0fc36f27d2e69e361331d57b036177a7054fc921addc194
+        run: |
+          python tools/build_anonymous_artifact.py
+          python - <<'PY'
+          import hashlib
+          import os
+          import pathlib
+          import zipfile
+
+          archive = pathlib.Path("paper/venues/usenixsecurity27/anonymous_artifact/passkeytransit-anonymous-staging.zip")
+          digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+          print(f"archive_sha256={digest}")
+          if digest != os.environ["EXPECTED_SHA256"]:
+              raise SystemExit("staging archive differs from pinned clean-checkout SHA-256")
+          target = pathlib.Path("tmp/anonymous-artifact-verify")
+          target.mkdir(parents=True, exist_ok=True)
+          with zipfile.ZipFile(archive) as package:
+              package.extractall(target)
+          PY
+          python tmp/anonymous-artifact-verify/verify.py
