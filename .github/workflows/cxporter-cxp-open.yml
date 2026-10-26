@@ -17,6 +17,10 @@ on:
       - tools/run_cxp_public_vector.py
       - tools/verify_cxp_public_vector.py
       - experiments/cxporter_cxp_open/vectors/**
+      - interop/cxp_poc2_cross_probe/pt-index-control.ts
+      - tools/extract_cxp_public_index.py
+      - tools/run_cxp_index_control.py
+      - tools/verify_cxp_index_control.py
 
 permissions:
   contents: read
@@ -97,4 +101,15 @@ jobs:
           path: |
             tmp/cxporter-ci/public_vector_replay.json
             tmp/cxporter-ci/fresh_vector_replay.json
+          retention-days: 14
+      - name: Isolate decrypted index-layout gate
+        run: |
+          python tools/extract_cxp_public_index.py --output tmp/cxporter-ci/index-rederived.json
+          python tools/run_cxp_index_control.py --ts-source tmp/vendor_cxp_poc2 --output tmp/cxporter-ci/index_control.json
+          python tools/verify_cxp_index_control.py --report tmp/cxporter-ci/index_control.json
+          (cd tmp/vendor_cxp_poc2 && pnpm typecheck)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxporter-poc2-index-layout-control
+          path: tmp/cxporter-ci/index_control.json
           retention-days: 14

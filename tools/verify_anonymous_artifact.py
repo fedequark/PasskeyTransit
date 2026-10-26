@@ -122,6 +122,9 @@ def verify(root: Path) -> dict[str, object]:
     verify_replay(fresh_ci, retained=False)
     if fresh_ci["archive_sha256"] == vector_ci["archive_sha256"]:
         raise ValueError("fresh exporter replay reused the retained ciphertext")
+    from verify_cxp_index_control import verify as verify_index_control
+
+    index_control = verify_index_control(root, root / "experiments/cxporter_cxp_open/index_control.json")
 
     parser_report = json.loads((root / "experiments/cxp_external_schema/runtime_report.json").read_text())
     if parser_report.get("provider_interoperability") != "NOT_EVALUABLE":
@@ -226,6 +229,7 @@ def verify(root: Path) -> dict[str, object]:
         "cxp_poc2_cross_ci_rejections": cross_ci["cross_import_expected_rejections"],
         "cxp_public_vector_jwe_files": vector["jwe_files"],
         "cxp_public_vector_ci_replays": 2,
+        "cxp_index_control_local": index_control["status"],
         "provider_ci_report_byte_matches": 3,
         "provider_ci_fenko_signatures_verified": ci_counts[0] + ci_counts[2],
         "provider_ci_fenko_prf_bindings_verified": ci_counts[1] + ci_counts[3],

@@ -1,0 +1,18 @@
+{
+  "adapter_sha256": "ea2871f3d3487934285234af4bfc05c4151700fea7296852b69198882aaefa44",
+  "index_sha256": "e8f16dc16ad36a18f75b279c1bc7f5066ef13edcb43f6990f407cfc75f1dcd7c",
+  "limitation": "PoC envelope re-encrypts cxporter index plaintext; not original cxporter ciphertext or provider transfer",
+  "observation": {
+    "control": "PoC self-import positive; PoC encrypted index replaced by cxporter index plaintext",
+    "importer_error": "CxpPayloadError: index.jwe is not {header, documents}",
+    "positive_self_import_items": 1,
+    "replacement_index_jwe_alg": "dir",
+    "source_archive_sha256": "60927b038c4d324f0650541475f7b642b6af5bbce3da22501bddfe1bc80a8dd0",
+    "transformed_archive_sha256": "8d7d23d5a89626e0271cb24b09b3221b8764e90ca84196fe6942911930a61116"
+  },
+  "source_commits": {
+    "cxp_poc2": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+    "cxporter": "96bab31fdadcfd295542bba86b8ec8bd2355294a"
+  },
+  "status": "EXPECTED_REJECTION_AFTER_ADAPTER_TRANSFORMATION"
+}

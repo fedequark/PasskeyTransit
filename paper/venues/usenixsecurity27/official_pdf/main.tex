@@ -338,6 +338,11 @@ A retained synthetic ciphertext vector permits replay of the same response:
 its full schema parse rejects a missing \texttt{archive}; adding only that
 field passes schema parsing, after which the importer rejects the JWE
 algorithm. This isolates two gates without implying draft nonconformance.
+In a separate transformed control, we re-encrypted the decrypted
+\texttt{cxporter} index inside the second importer's own envelope. Its
+self-import passed, but the substituted index was rejected for lacking
+\texttt{header} and \texttt{documents}. This locates a later layout boundary;
+the transformed ZIP is not the original export.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF

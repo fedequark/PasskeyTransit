@@ -16,6 +16,7 @@ frozen v1.5 claim permissions.
 | V2-09 | Proton Pass software preserved original CXF HMAC seeds and UV PRF through its own import/export/reimport path | Pinned external WASM, both seed bytes, signed software WebAuthn assertions, separate HMAC oracle and changed-seed control | PASS in 2/2 selected exploratory runs; 8 positive signatures and PRF checks plus 4 changed-seed control signatures and PRF checks |
 | V2-10 | A pinned open exporter produced a decryptable synthetic CXP-shaped ZIP/JWE passkey payload | `cxporter` original ZIP, project importer decryption, identity/HMAC comparison, wrong-recipient and ciphertext controls, signed software assertions | PASS in 2/2 selected runs; 8 signatures and 8 PRF bindings; response omits draft-required `archive` |
 | V2-11 | A second open experimental importer accepted the `cxporter` response and payload | Its own positive import, full response parse, then isolated payload import using its recipient key | FAIL in 2/2: missing `archive` rejected by response parser; after bypassing that parser, JWE `alg` rejected before CXF recovery |
+| V2-12 | A later index-layout boundary is reachable after using the second importer's own crypto envelope | Decrypt the retained synthetic `cxporter` index, positively self-import an unchanged PoC archive, replace only its index plaintext under the PoC's JWE profile, then call its unchanged importer | Local transformed control rejected `{accounts, …}` index for missing `{header, documents}`; this is not an import attempt on the original `cxporter` ZIP |
 
 The denominators for V2-01 through V2-04 are two designed repetitions of one
 selected open provider route. They are repeatability checks, not independent
@@ -46,5 +47,6 @@ report ZIPs and executable adapters are retained. Two repetitions are
 repeatability checks, not reliability or prevalence estimates.
 The decrypted `cxporter` index also lacks the `{header, documents}` shape
 expected by the selected PoC importer. This is a further source-and-plaintext
-compatibility gap behind the observed schema/JWE failures, not a separately
-executed importer rejection.
+compatibility gap behind the observed schema/JWE failures. V2-12 now executes
+that branch in an adapter-built envelope, but it is not a separately executed
+rejection of the original ciphertext.

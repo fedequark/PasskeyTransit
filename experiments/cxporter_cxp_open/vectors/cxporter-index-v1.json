@@ -1,0 +1,30 @@
+{
+  "vector_version": 1,
+  "classification": "decrypted synthetic cxporter index; not the original JWE",
+  "source_archive_sha256": "60927b038c4d324f0650541475f7b642b6af5bbce3da22501bddfe1bc80a8dd0",
+  "index_sha256": "e8f16dc16ad36a18f75b279c1bc7f5066ef13edcb43f6990f407cfc75f1dcd7c",
+  "recipient_public_key": "3PSqbBTEHkFRnqmy9RiLFNBfme5ESODjgaabG8zte3s",
+  "index": {
+    "version": {
+      "major": 1,
+      "minor": 0
+    },
+    "exporterRpId": "passkeytransit.example.test",
+    "exporterDisplayName": "PasskeyTransit Reference Exporter",
+    "timestamp": 1700000000,
+    "accounts": [
+      {
+        "id": "YWNjb3VudC0w",
+        "username": "synthetic-research-account",
+        "email": "synthetic@example.test",
+        "collections": [],
+        "items": [
+          {
+            "id": "aXRlbS0w",
+            "title": "Synthetic User 91"
+          }
+        ]
+      }
+    ]
+  }
+}
