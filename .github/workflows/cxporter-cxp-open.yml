@@ -24,6 +24,10 @@ on:
       - interop/cxp_poc2_cross_probe/pt-rp-control.ts
       - tools/run_cxp_poc2_rp_control.py
       - tools/verify_cxp_poc2_rp_control.py
+      - interop/cxp_poc2_cross_probe/pt-adapter-rp.ts
+      - tools/cxporter_to_poc2_rp_adapter.py
+      - tools/run_cxporter_poc2_adapter_rp.py
+      - tools/verify_cxporter_poc2_adapter_rp.py
 
 permissions:
   contents: read
@@ -125,4 +129,14 @@ jobs:
         with:
           name: cxp-poc2-rp-control
           path: tmp/cxporter-ci/poc2_rp_control.json
+          retention-days: 14
+      - name: Exercise cxporter ciphertext through project adapter at PoC RP
+        run: |
+          python tools/run_cxporter_poc2_adapter_rp.py --binary tmp/cxporter-passkey-probe --go-source tmp/vendor_cxporter --ts-source tmp/vendor_cxp_poc2 --output tmp/cxporter-ci/adapter_rp_control.json
+          python tools/verify_cxporter_poc2_adapter_rp.py --report tmp/cxporter-ci/adapter_rp_control.json
+          (cd tmp/vendor_cxp_poc2 && pnpm typecheck)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxporter-poc2-adapter-rp-control
+          path: tmp/cxporter-ci/adapter_rp_control.json
           retention-days: 14

@@ -1,0 +1,30 @@
+{
+  "helper_sha256": "f9d8661a638157a0330a7a34ce648bb0c9036aa1931cd4d0f85eab8cf8fcadc5",
+  "limitation": "project Python decryptor and direct PoC vault insertion bypass PoC CXP importer; not independent provider wire interoperability",
+  "probe_sha256": "5971effcc0eb3719c005590eba48c32cdf4d42904c717e4d8eefd92d4c578c11",
+  "runs": [
+    {
+      "archive_sha256": "0c9eb1d402ed30be83c3c61dcd654d50bfb02047eb57a5a8a76034b5c632f90b",
+      "limitation": "project Python decryptor and direct vault insertion; PoC CXP importer not called",
+      "project_adapter_inserted_records": 1,
+      "response_has_archive": false,
+      "rp_verified_before_and_after": true,
+      "same_credential_id": true,
+      "status": "ADAPTER_RP_CONTROL_PASS"
+    },
+    {
+      "archive_sha256": "a35e5c317809020914b283d7b8f48c80b10880ab93433b1fd5e2ba049c761b38",
+      "limitation": "project Python decryptor and direct vault insertion; PoC CXP importer not called",
+      "project_adapter_inserted_records": 1,
+      "response_has_archive": false,
+      "rp_verified_before_and_after": true,
+      "same_credential_id": true,
+      "status": "ADAPTER_RP_CONTROL_PASS"
+    }
+  ],
+  "source_commits": {
+    "cxp_poc2": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+    "cxporter": "96bab31fdadcfd295542bba86b8ec8bd2355294a"
+  },
+  "status": "PROJECT_ADAPTER_RP_CONTROL_PASS"
+}
