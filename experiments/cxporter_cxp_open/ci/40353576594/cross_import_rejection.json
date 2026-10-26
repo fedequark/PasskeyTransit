@@ -1,0 +1,39 @@
+{
+  "adapter_sha256": "a49384a3d8f800ec9d49620bcce70a8d9bd70c47390d0f9931e5ea2e700c8b02",
+  "classification": "two open implementations; cxporter exporter to cxp_poc2 experimental importer",
+  "interoperability": "FAIL_JWE_ALGORITHM_MISMATCH",
+  "limitations": [
+    "cxp_poc2 is a research PoC, not an installed credential provider",
+    "this rejects before CXF reconstruction; it does not test persistent vault import or RP use",
+    "different CXP draft gap choices, not proof of nonconformance by either implementation"
+  ],
+  "runs": [
+    {
+      "cross_import_error": "JweError: JWE decryption failed: \"alg\" (Algorithm) Header Parameter value not allowed",
+      "cross_import_rejected": true,
+      "cxporter_archive_sha256": "d3b49873faa79912324c6d120027164f15bb840702c57df158c81152b6a82fc8",
+      "cxporter_jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
+      "repetition": 0,
+      "response_archive_field_present": false,
+      "second_source_commit": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+      "self_import_items": 1,
+      "self_import_passkey_state_preserved": true
+    },
+    {
+      "cross_import_error": "JweError: JWE decryption failed: \"alg\" (Algorithm) Header Parameter value not allowed",
+      "cross_import_rejected": true,
+      "cxporter_archive_sha256": "52793ec2e07d9806e5974390ab44bed3b1dba5b9e657ac6b8e1e31a866fab827",
+      "cxporter_jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
+      "repetition": 1,
+      "response_archive_field_present": false,
+      "second_source_commit": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+      "self_import_items": 1,
+      "self_import_passkey_state_preserved": true
+    }
+  ],
+  "source_commits": {
+    "cxp_poc2": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+    "cxporter": "96bab31fdadcfd295542bba86b8ec8bd2355294a"
+  },
+  "status": "EXPECTED_REJECTION"
+}

@@ -28,6 +28,8 @@ PROVIDER_CI_REPORTS = {
 }
 CXPORTER_CI_ARCHIVE = ROOT / "experiments/cxporter_cxp_open/ci/40350620050/github-artifact.zip"
 CXPORTER_CI_SHA256 = "e880f5a48b530caff22e7149e6b436d2a1c0451de5ca0d86a0e7c1898454cd09"
+CROSS_CI_ARCHIVE = ROOT / "experiments/cxporter_cxp_open/ci/40353576594/github-artifact.zip"
+CROSS_CI_SHA256 = "cd1d9abc381e2e2ea0d1b4387da1d64c2d24eb11e4e09696438d95b9b2ada9c3"
 RAW_NAMES = {
     "c1_attempts.jsonl": "evidence/20260923T162254713/full/c1_phase7_full_attempts.jsonl",
     "c2_attempts.jsonl": "evidence/20260923T162316380/c2/c2_phase6_attempts.jsonl",
@@ -43,6 +45,7 @@ SOURCE_FILES = [
     "experiments/protocol_v2_fenko_roundtrip.json",
     "experiments/protocol_v2_proton_software.json",
     "experiments/cxporter_cxp_open/report.json",
+    "experiments/cxporter_cxp_open/cross_import_rejection.json",
     "experiments/cxp_wire_structural/report.json",
     "experiments/cxp_external_schema/bitwarden_protocol_snapshot.json",
     "experiments/cxp_external_schema/report.json",
@@ -80,6 +83,7 @@ SOURCE_FILES = [
     "interop/proton-cxf-prf/package-lock.json",
     "interop/proton-cxf-prf/run.mjs",
     "interop/cxporter_cxp_probe/main.go",
+    "interop/cxp_poc2_cross_probe/pt-cross.ts",
     "paper/current/results_v0.7.json",
     "paper/current/table_c1_route_strata.csv",
     "paper/current/table_c1_estimands.csv",
@@ -110,6 +114,8 @@ SOURCE_FILES = [
     "tools/verify_proton_public_report.py",
     "tools/run_cxporter_cxp_passkey.py",
     "tools/verify_cxporter_cxp_public_report.py",
+    "tools/run_cxp_poc2_cross.py",
+    "tools/verify_cxp_poc2_cross_report.py",
     "tools/verify_provider_reports.py",
     "tools/verify_anonymous_artifact.py",
 ]
@@ -247,6 +253,17 @@ def build() -> Path:
             if not match.lower().endswith((b"@example.test", b"@example.com")):
                 raise ValueError("email-like value in cxporter CI report")
     files["data/replay/cxporter-ci-original.zip"] = cxporter_bytes
+    cross_bytes = CROSS_CI_ARCHIVE.read_bytes()
+    if _sha(cross_bytes) != CROSS_CI_SHA256:
+        raise ValueError("second-implementation CI archive differs from GitHub digest")
+    with zipfile.ZipFile(io.BytesIO(cross_bytes)) as replay:
+        if replay.testzip() is not None or replay.namelist() != ["cross_import_rejection.json"]:
+            raise ValueError("invalid cross-implementation CI archive")
+        ci_report = replay.read("cross_import_rejection.json")
+        if ci_report != (CROSS_CI_ARCHIVE.parent / "cross_import_rejection.json").read_bytes():
+            raise ValueError("cross-implementation CI report differs from original ZIP")
+        files["data/replay/ci/cxp_poc2_cross_report.json"] = ci_report
+    files["data/replay/cxp-poc2-cross-ci-original.zip"] = cross_bytes
     files["README.md"] = (
         "# Anonymous staged review artifact\n\n"
         "Contains synthetic C1/C2/C3 rows, result tables, selected public "
@@ -259,6 +276,8 @@ def build() -> Path:
         "A pinned open cxporter ZIP/JWE exporter and project importer control "
         "is included with its original clean-CI report ZIP; the exporter "
         "omits the draft-required response archive field. "
+        "A second open experimental importer self-test and rejected cross-import "
+        "are retained with their original clean-CI report ZIP. "
         "Git history, commit IDs in raw rows, "
         "and original provenance manifests were intentionally omitted. The "
         "original Phase 14 replay ZIP is included and checked byte-for-byte "
@@ -271,6 +290,8 @@ def build() -> Path:
         "python tools/verify_proton_cxp_wire_reports.py, "
         "python tools/verify_cxporter_cxp_public_report.py --report "
         "experiments/cxporter_cxp_open/report.json, "
+        "python tools/verify_cxp_poc2_cross_report.py --report "
+        "experiments/cxporter_cxp_open/cross_import_rejection.json, "
         "python tools/run_cxp_wire_probe.py and "
         "PYTHONPATH=src python -m pytest tests/test_cxp_wire_probe.py "
         "(set PYTHONPATH appropriately on Windows).\n\n"
@@ -302,6 +323,7 @@ def build() -> Path:
             "HPKE/JWE decryption is project-authored experimental; no external provider CXP transfer is evidenced",
             "Proton direct-HPKE library exchange does not implement draft CXP ZIP/JWE or durable provider import",
             "cxporter open ZIP/JWE export omits the draft-required response archive field; no second provider imports it",
+            "second open research importer rejects cxporter JWE algorithm; this is not a normative conformance verdict",
             "contextual linkage to an already public project cannot be ruled out",
             "no third-party replication claimed",
         ],
@@ -337,6 +359,8 @@ def build() -> Path:
         "provider_ci_artifacts": ci_provenance["artifacts"],
         "cxporter_ci_workflow_run_url": "https://github.com/fedequark/PasskeyTransit/actions/runs/40350620050",
         "cxporter_ci_artifact_sha256": CXPORTER_CI_SHA256,
+        "cxp_poc2_cross_ci_workflow_run_url": "https://github.com/fedequark/PasskeyTransit/actions/runs/40353576594",
+        "cxp_poc2_cross_ci_artifact_sha256": CROSS_CI_SHA256,
         "distribution": "local-private-sidecar-only",
     }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return target

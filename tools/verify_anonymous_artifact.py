@@ -60,6 +60,14 @@ def verify(root: Path) -> dict[str, object]:
             raise ValueError("invalid cxporter CI replay archive")
         if replay.read("report.json") != (root / "data/replay/ci/cxporter_cxp_report.json").read_bytes():
             raise ValueError("cxporter CI report differs from original ZIP")
+    cross_zip = (root / "data/replay/cxp-poc2-cross-ci-original.zip").read_bytes()
+    with zipfile.ZipFile(io.BytesIO(cross_zip)) as replay:
+        if replay.testzip() is not None or replay.namelist() != ["cross_import_rejection.json"]:
+            raise ValueError("invalid cross-implementation CI replay archive")
+        if replay.read("cross_import_rejection.json") != (
+            root / "data/replay/ci/cxp_poc2_cross_report.json"
+        ).read_bytes():
+            raise ValueError("cross-implementation CI report differs from original ZIP")
 
     sys.path.insert(0, str(root / "src"))
     from passkeytransit.fenko_verify import verify_fenko_report
@@ -95,6 +103,16 @@ def verify(root: Path) -> dict[str, object]:
     ))
     if cxporter_local["public_signatures_verified"] != 8 or cxporter_ci["public_signatures_verified"] != 8:
         raise ValueError("unexpected cxporter signature counts")
+    from verify_cxp_poc2_cross_report import verify as verify_cross
+
+    cross_local = verify_cross(json.loads(
+        (root / "experiments/cxporter_cxp_open/cross_import_rejection.json").read_text(encoding="utf-8")
+    ))
+    cross_ci = verify_cross(json.loads(
+        (root / "data/replay/ci/cxp_poc2_cross_report.json").read_text(encoding="utf-8")
+    ))
+    if cross_local["cross_import_expected_rejections"] != 2 or cross_ci["cross_import_expected_rejections"] != 2:
+        raise ValueError("unexpected cross-import control counts")
 
     parser_report = json.loads((root / "experiments/cxp_external_schema/runtime_report.json").read_text())
     if parser_report.get("provider_interoperability") != "NOT_EVALUABLE":
@@ -194,6 +212,9 @@ def verify(root: Path) -> dict[str, object]:
         "cxporter_ci_original_zip_checked": True,
         "cxporter_local_signatures_verified": cxporter_local["public_signatures_verified"],
         "cxporter_ci_signatures_verified": cxporter_ci["public_signatures_verified"],
+        "cxp_poc2_cross_ci_original_zip_checked": True,
+        "cxp_poc2_cross_local_rejections": cross_local["cross_import_expected_rejections"],
+        "cxp_poc2_cross_ci_rejections": cross_ci["cross_import_expected_rejections"],
         "provider_ci_report_byte_matches": 3,
         "provider_ci_fenko_signatures_verified": ci_counts[0] + ci_counts[2],
         "provider_ci_fenko_prf_bindings_verified": ci_counts[1] + ci_counts[3],

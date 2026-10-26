@@ -344,3 +344,16 @@ compiló el manuscrito actualizado con el estilo oficial. Tiene cinco
 páginas U.S. letter; la última se inspeccionó visualmente y las 19
 referencias terminan allí. SHA-256 del PDF:
 `0a116c8c319e59d79021c247a1f4499d4b3a6da3d9ff53b0443d60ce786ee8fb`.
+
+## Avance del 26 de octubre: cruce entre dos implementaciones abiertas
+
+En el [run 40353576594](https://github.com/fedequark/PasskeyTransit/actions/runs/40353576594),
+un segundo importador experimental (`cxp_poc2`, revisión
+`fee19d9ac392ffe0153bea8b917aa0a66f12b272`) abrió primero su propio
+ZIP y conservó el estado de una passkey sintética. Al recibir luego el ZIP
+de `cxporter` para su propia clave de destinatario, rechazó en dos repeticiones
+el `alg` del primer JWE. No llegó a reconstruir CXF ni a una aserción RP.
+El rechazo demuestra incompatibilidad entre esos dos perfiles de código;
+no demuestra cuál satisface el borrador ni mide dos apps instaladas.
+El ZIP original del informe CI tiene SHA-256
+`cd1d9abc381e2e2ea0d1b4387da1d64c2d24eb11e4e09696438d95b9b2ada9c3`.
