@@ -8,7 +8,7 @@ Fecha de consulta: 2026-10-20. Venue de referencia para preparar un borrador en 
 |---|---|---|
 | Registro obligatorio con título, autores, ORCID, resumen y temas fijos: 2027-01-19 AoE | [CFP, calendario y registro](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Pendiente de decisiones de autoría y envío. |
 | Paper: 2027-01-26 AoE; artefactos: 2027-01-29 AoE | [CFP, calendario](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Plazos futuros; no se enviará automáticamente. |
-| PDF U.S. letter, dos columnas, 10 pt, 12 pt leading, plantilla USENIX, cuerpo máximo de 13 páginas | [CFP, formato](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | El borrador inglés compiló con pdfLaTeX y el estilo oficial intacto; PDF de cinco páginas inspeccionado. Falta desarrollar el contenido para un envío. |
+| PDF U.S. letter, dos columnas, 10 pt, 12 pt leading, plantilla USENIX, cuerpo máximo de 13 páginas | [CFP, formato](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | El borrador inglés compiló con pdfLaTeX y el estilo oficial intacto; PDF actual de seis páginas inspeccionado. Falta desarrollar el contenido para un envío. |
 | Apéndice Open Science obligatorio; apéndice de ética recomendado | [CFP, política de ciencia abierta](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Ambos están redactados provisionalmente; el enlace anónimo del artefacto falta. |
 | Revisión anónima; enlaces de artefactos sin identidad ni rastreo | [CFP, envío anónimo](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | Hay una copia local sin identificadores directos con replays locales y de CI de proveedores. Falta un enlace anónimo; el repositorio público y detalles contextuales podrían identificar al autor. |
 | Sin categoría de replication submission; se juzga novedad, rigor y contribución de seguridad | [CFP, alcance](https://www.usenix.org/conference/usenixsecurity27/call-for-papers) | El trabajo se plantea como método y oráculos, no como réplica. El valor incremental frente a trabajos de passkeys debe defenderse mejor. |
@@ -393,3 +393,23 @@ pasó la extracción y verificación local en Windows.
 El [run 40355870182](https://github.com/fedequark/PasskeyTransit/actions/runs/40355870182)
 reconstruyó en Ubuntu exactamente el mismo SHA-256 y verificó los 158
 miembros, ocho firmas del informe `cxporter` y los dos rechazos del cruce.
+
+## Avance del 26 de octubre: estimando y validez del manuscrito
+
+La versión actual distingue el estimando C1 definido sobre rutas importadas
+con aserción, el oráculo `largeBlob` y los distintos niveles de evidencia.
+Corrige una frase previa: los 512 casos C1 de falsa tranquilidad fallaron
+en `largeBlob`; el oráculo UV no falló en esa campaña. Agrega una comparación
+de los caminos ejecutados y amenazas a la validez de construcción, interna,
+externa y reproducibilidad. Los resultados de campañas anteriores que
+motivaron cambios del protocolo no se presentan como confirmación nueva.
+
+El [run PDF 40356857613](https://github.com/fedequark/PasskeyTransit/actions/runs/40356857613)
+compiló ambas fuentes actualizadas con el estilo oficial. El PDF actual
+`compiled/main.pdf` tiene seis páginas U.S. letter; se inspeccionaron las
+páginas cinco y seis, con las veinte referencias completas. SHA-256:
+`2f4f3ca09bb11e0446a93313f587b43f19aa09d7269bca03826d197e8e9cdc3a`.
+El paquete anónimo local se reconstruyó a partir de esta fuente: 158 miembros
+con hash, extracción y verificación `PASS` en Windows, SHA-256
+`a30d664dc922a97f45136e555a7803113842f81b26387646374f44899b0e219e`.
+La reproducción Linux de este hash está pendiente del workflow actualizado.
