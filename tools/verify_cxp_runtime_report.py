@@ -15,7 +15,7 @@ def verify(path: Path) -> dict[str, object]:
         "response_parse": "PASS",
         "request_fields_dropped_on_roundtrip": ["archive", "mode"],
         "response_fields_dropped_on_roundtrip": ["archive"],
-        "draft_valid_version_256_rejected": True,
+        "draft_width_version_256_rejected": True,
         "hpke_jwe_decryption": "NOT_EVALUABLE",
         "provider_interoperability": "NOT_EVALUABLE",
     }

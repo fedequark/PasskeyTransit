@@ -298,9 +298,10 @@ We compiled pinned Bitwarden Rust~\cite{bitwardencxp} and
 same synthetic request and response. Both parsed. Rust serialization
 dropped request \texttt{archive} and \texttt{mode} and response
 \texttt{archive}; Go retained both \texttt{archive} fields but dropped
-request \texttt{mode}. Both rejected a draft-valid version value of 256
-because their version types are eight-bit. These are type-parser
-round-trip gaps, not encrypted transfers or provider interoperability.
+request \texttt{mode}. Both rejected 256 because their version types are
+eight-bit; 256 fits the draft field width but is not a published version.
+The dropped fields are type-parser gaps, not encrypted transfers or
+provider interoperability.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF

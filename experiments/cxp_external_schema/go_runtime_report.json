@@ -1,5 +1,5 @@
 {
-  "draft_valid_version_256_rejected": true,
+  "draft_width_version_256_rejected": true,
   "hpke_jwe_decryption": "NOT_EVALUABLE",
   "provider_interoperability": "NOT_EVALUABLE",
   "request_fields_dropped_on_roundtrip": [

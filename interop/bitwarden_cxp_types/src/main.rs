@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "response_parse": "PASS",
         "request_fields_dropped_on_roundtrip": request_dropped,
         "response_fields_dropped_on_roundtrip": response_dropped,
-        "draft_valid_version_256_rejected": version_256_rejected,
+        "draft_width_version_256_rejected": version_256_rejected,
         "hpke_jwe_decryption": "NOT_EVALUABLE",
         "provider_interoperability": "NOT_EVALUABLE"
     }))?);

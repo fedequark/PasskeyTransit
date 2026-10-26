@@ -90,8 +90,9 @@ compiló los tipos Rust CXP públicos de Bitwarden en la revisión fijada
 `32da4c8b0a4abdd0b46fae79c31e0fdb50150396`. La solicitud y la respuesta
 sintéticas se interpretaron, pero una serialización posterior omitió
 `archive` y `mode` de la solicitud y `archive` de la respuesta. Una versión
-256, válida para el entero de 16 bits del borrador, fue rechazada por el tipo
-de 8 bits. El resultado caracteriza ese parser; no prueba intercambio entre
+256, representable por el campo de 16 bits pero sin ser una versión publicada,
+fue rechazada por el tipo de 8 bits. Es una limitación de amplitud futura,
+no un fallo de conformidad actual. El resultado caracteriza ese parser; no prueba intercambio entre
 gestores, autenticación JWE ni descifrado HPKE.
 El [run con lockfile 40325899097](https://github.com/fedequark/PasskeyTransit/actions/runs/40325899097)
 repitió el resultado. Su informe y `Cargo.lock` descargados coinciden byte

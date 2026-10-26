@@ -76,7 +76,7 @@ func main() {
 		"response_parse": "PASS",
 		"request_fields_dropped_on_roundtrip": keysLost(reqIn, reqOut, []string{"archive", "mode"}),
 		"response_fields_dropped_on_roundtrip": keysLost(resIn, resOut, []string{"archive"}),
-		"draft_valid_version_256_rejected": wideError != nil,
+		"draft_width_version_256_rejected": wideError != nil,
 		"hpke_jwe_decryption": "NOT_EVALUABLE",
 		"provider_interoperability": "NOT_EVALUABLE",
 	}
