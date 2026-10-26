@@ -412,4 +412,7 @@ páginas cinco y seis, con las veinte referencias completas. SHA-256:
 El paquete anónimo local se reconstruyó a partir de esta fuente: 158 miembros
 con hash, extracción y verificación `PASS` en Windows, SHA-256
 `a30d664dc922a97f45136e555a7803113842f81b26387646374f44899b0e219e`.
-La reproducción Linux de este hash está pendiente del workflow actualizado.
+El [run 40357387301](https://github.com/fedequark/PasskeyTransit/actions/runs/40357387301)
+reconstruyó exactamente ese SHA-256 en Ubuntu 24.04 y verificó el paquete
+extraído. `claim_trace.md` enlaza las cifras y los casos ejecutados del
+manuscrito con los datos y verificadores retenidos.
