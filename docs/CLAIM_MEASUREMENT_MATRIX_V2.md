@@ -14,6 +14,8 @@ frozen v1.5 claim permissions.
 | V2-07 | Fenko's PRF output stayed equal across two Fenko browser profiles after its own CXF export/import | Source and destination signed browser observations, same fixed input, second input and PRF digest witnesses | PASS in 2/2 selected same-provider runs; original CXF seed state not preserved |
 | V2-08 | Two distinct Android provider apps completed a platform-mediated CXF transfer | Separate synthetic vaults, app versions, system transfer receipt, imported identity and signed browser assertion | NOT_EVALUABLE |
 | V2-09 | Proton Pass software preserved original CXF HMAC seeds and UV PRF through its own import/export/reimport path | Pinned external WASM, both seed bytes, signed software WebAuthn assertions, separate HMAC oracle and changed-seed control | PASS in 2/2 selected exploratory runs; 8 positive signatures and PRF checks plus 4 changed-seed control signatures and PRF checks |
+| V2-10 | A pinned open exporter produced a decryptable synthetic CXP-shaped ZIP/JWE passkey payload | `cxporter` original ZIP, project importer decryption, identity/HMAC comparison, wrong-recipient and ciphertext controls, signed software assertions | PASS in 2/2 selected runs; 8 signatures and 8 PRF bindings; response omits draft-required `archive` |
+| V2-11 | A second open experimental importer accepted the `cxporter` response and payload | Its own positive import, full response parse, then isolated payload import using its recipient key | FAIL in 2/2: missing `archive` rejected by response parser; after bypassing that parser, JWE `alg` rejected before CXF recovery |
 
 The denominators for V2-01 through V2-04 are two designed repetitions of one
 selected open provider route. They are repeatability checks, not independent
@@ -33,3 +35,12 @@ signature; the HMAC checks are independent. The retained synthetic public
 transcripts permit independent recomputation of all 12 signatures and PRF
 digests. Post-run verifier controls rejected two changed signatures and two
 changed PRF outputs. See `PHASE_17.md`.
+V2-10 and V2-11 use two independently maintained open codebases but not
+installed provider apps. The selected second implementation is itself a
+research PoC; its self-import positive control is not evidence that its
+profile is the normative one. V2-11 isolates two rejection stages and
+supports a specific incompatibility finding, while V2-05 remains
+NOT_EVALUABLE for a successful two-provider CXP exchange. The local and
+clean-CI reports are in `experiments/cxporter_cxp_open/`; the original CI
+report ZIPs and executable adapters are retained. Two repetitions are
+repeatability checks, not reliability or prevalence estimates.

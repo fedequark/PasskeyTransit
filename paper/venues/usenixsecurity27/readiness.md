@@ -375,3 +375,7 @@ quedan completas en la página cinco. SHA-256 del PDF:
 El nuevo paquete anónimo local contiene 158 archivos con hash, pasó tras
 extracción limpia en Windows y tiene SHA-256
 `7ca49ca3324d3ce0e1594927f1acd8fad58a01618034c0f56726f5f98f5840ad`.
+El [run de reproducción 40355053855](https://github.com/fedequark/PasskeyTransit/actions/runs/40355053855)
+obtuvo exactamente ese hash en Ubuntu 24.04. La extracción verificó los
+158 miembros, el ZIP original del segundo importador y los dos rechazos
+registrados. Es una repetición automatizada del mismo equipo.
