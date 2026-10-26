@@ -1,0 +1,47 @@
+name: Open Android CXF source audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/android-cxf-open-audit.yml
+      - tools/audit_android_cxf_open.py
+      - tools/verify_android_cxf_open.py
+      - experiments/android_cxf_open/**
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Fetch pinned Keyguard CXF source
+        run: |
+          git init tmp/vendor_keyguard
+          git -C tmp/vendor_keyguard remote add origin https://github.com/AChep/keyguard-app.git
+          git -C tmp/vendor_keyguard fetch --depth=1 --filter=blob:none origin ef84e290665277866adcb7f061824de06f43ef9c
+          git -C tmp/vendor_keyguard sparse-checkout init --cone
+          git -C tmp/vendor_keyguard sparse-checkout set common/src/commonMain/kotlin/com/artemchep/keyguard/common/service/credentialexchange common/src/commonTest/kotlin/com/artemchep/keyguard/common/service/credentialexchange
+          git -C tmp/vendor_keyguard checkout --detach FETCH_HEAD
+      - name: Fetch pinned Monica CXF source
+        run: |
+          git init tmp/vendor_monica
+          git -C tmp/vendor_monica remote add origin https://github.com/Monica-Pass/Monica.git
+          git -C tmp/vendor_monica fetch --depth=1 --filter=blob:none origin 5ef2f3a64b53094351210f1e316fbab51852708e
+          git -C tmp/vendor_monica sparse-checkout init --cone
+          git -C tmp/vendor_monica sparse-checkout set 'Monica for Android/app/src/main/java/takagi/ru/monica/credentialexchange' 'Monica for Android/app/src/test/java/takagi/ru/monica/credentialexchange'
+          git -C tmp/vendor_monica checkout --detach FETCH_HEAD
+      - name: Verify source paths and retained upstream test reports
+        run: |
+          python tools/verify_android_cxf_open.py
+          python tools/audit_android_cxf_open.py --keyguard tmp/vendor_keyguard --monica tmp/vendor_monica --output tmp/android-cxf-open-replay.json
+          cmp experiments/android_cxf_open/report.json tmp/android-cxf-open-replay.json
+          sha256sum experiments/android_cxf_open/report.json

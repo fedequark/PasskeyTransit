@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CxfRoundTripViewTest[desktop]" tests="29" skipped="0" failures="0" errors="0" timestamp="2026-10-25T20:24:30.428Z" hostname="runnervmtai0g" time="0.027">
+  <properties/>
+  <testcase name="members the wire cannot carry are lost[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="uris the scope cannot carry are dropped[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="a passkey with a non-zero counter is excluded and counted[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="an identity round-trips through the split and re-merge[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="a trashed item vanishes entirely[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="custom fields round-trip[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="a blank title comes back absent[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="a login with only a passkey fabricates a uri and a username[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.002"/>
+  <testcase name="a login with a passkey and a totp round-trips[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.003"/>
+  <testcase name="a steam token round-trips as the steam extension[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="a login with uris and an android app round-trips[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="an identity with a gap in its address lines closes up[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="interleaved uris come back partitioned[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="an item with nothing representable vanishes and is counted[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="a secure note round-trips[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="an ssh key round-trips through the conversion seam[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="fields the format cannot carry are dropped[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="a login with several passkeys keeps all of them[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.004"/>
+  <testcase name="an item carrying every payload comes back as several requests[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="a folder round-trips as its title[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="an otp the format cannot represent is dropped and counted[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="a totp with custom parameters round-trips[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="a card round-trips[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="a login round-trips[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="a steam token with a login username round-trips[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="a passkey with no username borrows the display name[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.003"/>
+  <testcase name="unsupported passkey key metadata is excluded and counted[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <testcase name="a user field named like an identity slot is absorbed[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.001"/>
+  <testcase name="an archived item vanishes entirely and is counted[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfRoundTripViewTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

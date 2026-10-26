@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="CxfConformanceCredentialTypesTest[desktop]" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-25T20:24:29.876Z" hostname="runnervmtai0g" time="0.085">
+  <properties/>
+  <testcase name="a note without its required content member is a counted skip[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.002"/>
+  <testcase name="generated-password with a raw string password does not poison its item[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.001"/>
+  <testcase name="credit-card imports the full member set[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.013"/>
+  <testcase name="identity-document imports its full member set with overflow fields[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.008"/>
+  <testcase name="a passkey without its required rpId member is a counted skip[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.001"/>
+  <testcase name="address imports its full member set[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.007"/>
+  <testcase name="passport imports its full member set with overflow fields[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.007"/>
+  <testcase name="passkey imports every member and forces the counter to zero[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.007"/>
+  <testcase name="totp imports the full member set with the base32 secret verbatim[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.006"/>
+  <testcase name="custom-fields import as a standalone secure note[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.006"/>
+  <testcase name="every modeled credential type imports and every item maps to one request[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.005"/>
+  <testcase name="ssh-key imports its metadata members as fields[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.006"/>
+  <testcase name="drivers-license imports its full member set with overflow fields[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.005"/>
+  <testcase name="person-name imports its full member set[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.005"/>
+  <testcase name="the five unmodeled spec types are counted as unknown credentials[desktop]" classname="com.artemchep.keyguard.common.service.credentialexchange.CxfConformanceCredentialTypesTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

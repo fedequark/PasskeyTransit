@@ -1,0 +1,48 @@
+{
+  "limitation": "No Keyguard-to-Monica exchange or Android provider-events flow was executed; upstream tests are authored and run by their respective providers.",
+  "observations": {
+    "keyguard": "Passkey CXF model omits fido2Extensions; parser ignores unknown members and import/export mappings have no extension slot. PRF loss is inferred from source, not directly asserted by upstream tests.",
+    "monica": "A non-null hmacCredentials value selects PASSKEY_PRF skip before passkey import; its upstream unit test passes."
+  },
+  "source_commits": {
+    "keyguard": "ef84e290665277866adcb7f061824de06f43ef9c",
+    "monica": "5ef2f3a64b53094351210f1e316fbab51852708e"
+  },
+  "source_sha256": {
+    "keyguard_export": "7a07c2ffd4020a09a9f2bf5bdced702a36c5d04c30d252f3f32d20dd1d6cb2f6",
+    "keyguard_fixture": "159a1cae4efece1bfd964290ed0e54cb266c352b3d02d2579fa9857c3f15f708",
+    "keyguard_import": "0d238a4dd8f3f3d8f807c041bb2b118214d6dfcd61e0bb636648dfa1d1b00e96",
+    "keyguard_model": "990ee35d9e4c1af381c844d35356b8d45558ad212828c59078a3bedf6fd98d52",
+    "keyguard_parser": "35c4055d9280526f7c873757cf78e2c92613f8c9895b995a8c4beeac6fccb066",
+    "monica_codec": "c19e971a72a8a4e09f90a57cc24a75d1f88736be16881638b40b6e1bb7f85cb7",
+    "monica_test": "cb001d0a5c505ce6ec828a78bb8958cb20564566ca9f5035551f00ea8e50d54b"
+  },
+  "status": "SOURCE_AUDIT_WITH_UPSTREAM_TESTS_PASS",
+  "upstream_ci": {
+    "keyguard": {
+      "artifact_digest": "sha256:8a0224e298bbf200a1e3cada91df1d6f9fb288fec9f826c6a3018291baa1f787",
+      "run": 40229843452
+    },
+    "monica": {
+      "artifact_digest": "sha256:c20587e76be94d0f42c4ab92dc3d537fb2d940f10b7efb7f681fe71b20b21098",
+      "run": 40359156465
+    }
+  },
+  "upstream_xml": {
+    "keyguard_conformance": {
+      "selected_case": "passkey imports every member and forces the counter to zero[desktop]",
+      "sha256": "fc9fcc6cd63fe8255e29c053007b0cd89eccf9b950537396d756260a969fb3e2",
+      "tests": 15
+    },
+    "keyguard_roundtrip": {
+      "selected_case": "a login with a passkey and a totp round-trips[desktop]",
+      "sha256": "8adfcd4ffd66f7829862e54a871e778a53527f1ab3f855f18f87df22bd6bd1f1",
+      "tests": 29
+    },
+    "monica_codec": {
+      "selected_case": "prfOrOtherUnimplementedExtensionsNeverLoseTheirSeedSilently",
+      "sha256": "d773a98d555f87981c65c3061803ee2a4bce351b54bc5ecd79dd9788e326c71e",
+      "tests": 18
+    }
+  }
+}

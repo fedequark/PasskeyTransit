@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" tests="18" skipped="0" failures="0" errors="0" timestamp="2026-10-26T16:44:23" hostname="runnervmtai0g" time="0.139">
+  <properties/>
+  <testcase name="unknownOptionalFieldsAndMinorVersionsDoNotBlockTheImport" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.002"/>
+  <testcase name="prfOrOtherUnimplementedExtensionsNeverLoseTheirSeedSilently" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.002"/>
+  <testcase name="p256PrivateKeySurvivesExchangeAndSignsForTheOriginalPublicKey" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.034"/>
+  <testcase name="unsupportedCredentialIsCountedWithoutDroppingAValidPassword" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.0"/>
+  <testcase name="nonzeroCountersAreExcludedWithoutChangingTheOriginalEntry" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.001"/>
+  <testcase name="unsupportedCurvesAndWeakRsaKeysAreRejected" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.01"/>
+  <testcase name="invalidRpAndOversizedHandleAreSkipped" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.001"/>
+  <testcase name="absentExtensionDataAndDisabledPaymentsKeepTheOriginalPasskey" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.008"/>
+  <testcase name="passwordFieldsAndUnicodeSurviveTheOfficialEditableFieldShape" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.0"/>
+  <testcase name="rpIdAndOpaqueIdsAreNotReplacedByTitlesOrUrls" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.001"/>
+  <testcase name="corruptPrivateKeyIsSkippedWithoutReplacingIt" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.0"/>
+  <testcase name="requiredRootShapeErrorsAreRejectedConsistently" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.0"/>
+  <testcase name="ed25519PrivateKeySurvivesExchangeAndSignsForTheOriginalPublicKey" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.016"/>
+  <testcase name="exporterRespectsRequestedCredentialTypes" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.002"/>
+  <testcase name="mixedCredentialReasonsDoNotDropValidCredentialsOrCountThemAsPasskeys" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.001"/>
+  <testcase name="rsaPrivateKeySurvivesExchangeAndSignsForTheOriginalPublicKey" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.06"/>
+  <testcase name="requiredNumericFieldsDoNotAcceptNumericStrings" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.0"/>
+  <testcase name="malformedOptionalPasswordDoesNotImportAPartialLogin" classname="takagi.ru.monica.credentialexchange.CxfCredentialCodecTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
