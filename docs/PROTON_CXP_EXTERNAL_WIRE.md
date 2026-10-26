@@ -2,7 +2,10 @@
 
 Checked 2026-10-26. The exporter boundary uses the independently maintained
 [Proton Pass common 2.0.0](https://github.com/protonpass/proton-pass-common/tree/2.0.0/proton-pass-common/src/cxp)
-module, pinned to Git commit `b22db5ca6fef03d0e9467c0305f9af8a2826be35`.
+module. The annotated `2.0.0` tag object is
+`b22db5ca6fef03d0e9467c0305f9af8a2826be35`; it resolves to the source
+commit `69a0927f0fe7071243d6c38e404459a69210fdd4`, as recorded in
+the checked-in Cargo lockfile.
 Our importer independently constructs a request, derives the RFC 9180 base-mode
 X25519/HKDF-SHA256/ChaCha20-Poly1305 context, authenticates the response, and
 parses the recovered CXF. The [CI workflow](../.github/workflows/proton-cxp-wire.yml)
@@ -22,6 +25,14 @@ and four PRF checks matched the source HMAC seeds for two salts. The
 [passkey report](../experiments/proton_cxp_wire/proton-cxp-passkey-report.json)
 and [basic-auth report](../experiments/proton_cxp_wire/proton-cxp-wire-report.json)
 retain only hashes, booleans, counts, source revision, and scope limits.
+
+The [reverse CI run](https://github.com/fedequark/PasskeyTransit/actions/runs/40340554016)
+passed Python→Proton import of another synthetic PRF-bearing passkey. Proton
+reexported the imported CXF without warnings; credential ID, private key,
+and both HMAC seeds matched the independent source, and a corrupted
+ciphertext was rejected. The [reverse report](../experiments/proton_cxp_wire/proton-cxp-reverse-report.json)
+records seven passing controls. The Rust dependency graph is pinned by
+[`Cargo.lock`](../interop/proton_cxp_wire/Cargo.lock).
 
 ## Scope boundary
 

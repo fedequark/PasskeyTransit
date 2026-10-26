@@ -47,6 +47,7 @@ SOURCE_FILES = [
     "experiments/cxp_jose_zip_go/report.json",
     "experiments/proton_cxp_wire/proton-cxp-wire-report.json",
     "experiments/proton_cxp_wire/proton-cxp-passkey-report.json",
+    "experiments/proton_cxp_wire/proton-cxp-reverse-report.json",
     "interop/bitwarden_cxp_types/Cargo.lock",
     "interop/bitwarden_cxp_types/Cargo.toml",
     "interop/bitwarden_cxp_types/src/main.rs",

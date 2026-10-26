@@ -1,0 +1,22 @@
+{
+  "controls": {
+    "credential_id_preserved": true,
+    "hmac_state_preserved": true,
+    "no_export_warnings": true,
+    "no_import_warnings": true,
+    "private_key_preserved": true,
+    "proton_imported_synthetic_passkey": true,
+    "tampered_ciphertext_rejected": true
+  },
+  "external_revision": "69a0927f0fe7071243d6c38e404459a69210fdd4",
+  "external_tag_object": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
+  "limitations": [
+    "Proton library import, not app vault persistence",
+    "no ZIP/JWE",
+    "no deployed RP assertion"
+  ],
+  "reexported_cxf_sha256": "c88b12ea12ef0f3081273098e8ae2830f45c8a54973ecf1d5f822f417da308e2",
+  "scope": "project direct-HPKE CXP exporter to Proton Pass common 2.0.0 importer; synthetic passkey",
+  "source_cxf_sha256": "224421affc8f35844ad430bef94429166c3b9c147333181afc1ad533f62826ac",
+  "status": "PASS"
+}

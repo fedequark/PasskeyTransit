@@ -85,7 +85,8 @@ def main() -> None:
         controls["tampered_ciphertext_rejected"] = False
     report = {
         "scope": "Proton Pass common 2.0.0 CXP direct HPKE exporter to project Python importer; synthetic basic-auth only",
-        "external_revision": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
+        "external_revision": "69a0927f0fe7071243d6c38e404459a69210fdd4",
+        "external_tag_object": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
         "request_sha256": hashlib.sha256(request).hexdigest(),
         "response_sha256": hashlib.sha256(response).hexdigest(),
         "plaintext_sha256": positive["plaintext_sha256"],

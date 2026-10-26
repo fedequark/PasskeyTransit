@@ -82,7 +82,8 @@ def main() -> None:
         controls["changed_request_rejected"] = False
     report = {
         "scope": "Proton Pass common 2.0.0 CXP direct-HPKE exporter; project CXF source and HPKE importer",
-        "external_revision": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
+        "external_revision": "69a0927f0fe7071243d6c38e404459a69210fdd4",
+        "external_tag_object": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
         "source_cxf_sha256": hashlib.sha256(json.dumps(source, sort_keys=True).encode()).hexdigest(),
         "recovered_cxf_sha256": recovered["plaintext_sha256"],
         "controls": controls,

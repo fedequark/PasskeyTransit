@@ -9,7 +9,8 @@
     "rp_id_preserved": true,
     "user_handle_preserved": true
   },
-  "external_revision": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
+  "external_revision": "69a0927f0fe7071243d6c38e404459a69210fdd4",
+  "external_tag_object": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
   "limitations": [
     "Proton library import/export and software authenticator, not app vault storage",
     "no ZIP/JWE",

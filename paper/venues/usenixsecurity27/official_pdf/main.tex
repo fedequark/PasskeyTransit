@@ -303,10 +303,10 @@ HPKE/JWE ZIP (nine local and four cross-runtime controls). Independent Go
 \texttt{jwx/v4} exchanged \texttt{HPKE-3-KE} JWE with Python in both
 directions (five controls), then decrypted our two-member CXP-shaped ZIP
 (five controls)~\cite{josehpke,jwx}. Both ZIP bindings remain
-project-authored. Proton Pass common 2.0.0~\cite{proton} exported a
-synthetic passkey in a direct-HPKE response that independent Python
-decrypted. Credential ID, key, and HMAC seeds survived; four software
-assertions and four PRF checks passed. Proton's direct payload lacks the
+project-authored. Proton Pass common 2.0.0~\cite{proton} and Python
+exchanged direct-HPKE responses in both directions. Credential ID, key,
+and HMAC seeds survived; four software assertions and four PRF checks
+passed on the Proton-to-Python path. Proton's direct payload lacks the
 draft's required ZIP/JWE structure~\cite{cxp}, and no provider vault
 import or deployed RP assertion was tested.
 
