@@ -45,6 +45,11 @@ def verify(root: Path) -> dict[str, object]:
     parser_report = json.loads((root / "experiments/cxp_external_schema/runtime_report.json").read_text())
     if parser_report.get("provider_interoperability") != "NOT_EVALUABLE":
         raise ValueError("external CXP parser report overclaims interoperability")
+    go_report = json.loads((root / "experiments/cxp_external_schema/go_runtime_report.json").read_text())
+    if go_report.get("request_fields_dropped_on_roundtrip") != ["mode"]:
+        raise ValueError("unexpected Go CXP parser result")
+    if go_report.get("provider_interoperability") != "NOT_EVALUABLE":
+        raise ValueError("Go CXP parser report overclaims interoperability")
 
     observed: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
     attempts = 0
@@ -114,6 +119,7 @@ def verify(root: Path) -> dict[str, object]:
         "phase14_replay_reports_byte_equal": 2,
         "provider_replay_hashed_members": len(provider_manifest["files"]),
         "external_cxp_parser_scope": parser_report["scope"],
+        "second_cxp_parser_scope": go_report["scope"],
         "c1_attempts": attempts,
         "c1_groups": len(observed),
         "c1_totals": expected,

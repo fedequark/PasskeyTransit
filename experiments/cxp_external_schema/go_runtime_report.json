@@ -1,0 +1,13 @@
+{
+  "draft_valid_version_256_rejected": true,
+  "hpke_jwe_decryption": "NOT_EVALUABLE",
+  "provider_interoperability": "NOT_EVALUABLE",
+  "request_fields_dropped_on_roundtrip": [
+    "mode"
+  ],
+  "request_parse": "PASS",
+  "response_fields_dropped_on_roundtrip": [],
+  "response_parse": "PASS",
+  "scope": "go-cxp open Go CXP type deserialization and serialization only",
+  "source_commit": "94659f317ac62470a149cb3ecb769ed5d03d18a1"
+}
