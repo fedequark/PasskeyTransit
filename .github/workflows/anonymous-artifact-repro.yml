@@ -26,7 +26,7 @@ jobs:
         run: python tools/verify_provider_ci_replay.py
       - name: Rebuild and inspect anonymous staging archive
         env:
-          EXPECTED_SHA256: f09558cfe6e9cca45debd8e31b3cda792e2600f9dd7f0f85b22cb7c86921c090
+          EXPECTED_SHA256: 7ca49ca3324d3ce0e1594927f1acd8fad58a01618034c0f56726f5f98f5840ad
         run: |
           python tools/build_anonymous_artifact.py
           python - <<'PY'

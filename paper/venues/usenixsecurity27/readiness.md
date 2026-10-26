@@ -360,3 +360,18 @@ El rechazo demuestra incompatibilidad entre esos dos perfiles de código;
 no demuestra cuál satisface el borrador ni mide dos apps instaladas.
 El ZIP original del informe CI tiene SHA-256
 `cd1d9abc381e2e2ea0d1b4387da1d64c2d24eb11e4e09696438d95b9b2ada9c3`.
+
+El [run ampliado 40354422120](https://github.com/fedequark/PasskeyTransit/actions/runs/40354422120)
+repitió el rechazo del parser por ausencia de `archive` y, al aislar el
+payload, el rechazo del `alg` JWE. El ZIP original de ese informe tiene
+SHA-256 `1536898b57077d6a5902750d36baf4768512c29cecdd606b1fc937a0c227cab7`;
+éste es el que integra el paquete anónimo local.
+
+El [run PDF 40354661711](https://github.com/fedequark/PasskeyTransit/actions/runs/40354661711)
+compiló el manuscrito con los dos controles negativos en cinco páginas
+U.S. letter. Se inspeccionó visualmente la última: las veinte referencias
+quedan completas en la página cinco. SHA-256 del PDF:
+`6d4a6cdcbcd841971a165a49da24a1aab2f8a03975d2d39694be2d45e4e4b5ef`.
+El nuevo paquete anónimo local contiene 158 archivos con hash, pasó tras
+extracción limpia en Windows y tiene SHA-256
+`7ca49ca3324d3ce0e1594927f1acd8fad58a01618034c0f56726f5f98f5840ad`.

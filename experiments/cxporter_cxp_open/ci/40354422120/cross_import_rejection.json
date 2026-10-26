@@ -1,0 +1,43 @@
+{
+  "adapter_sha256": "5b605ec4797f22013d9041dc759ef6bc28b9588678b5a2e843c2a1b734a6fd05",
+  "classification": "two open implementations; cxporter exporter to cxp_poc2 experimental importer",
+  "interoperability": "FAIL_RESPONSE_SCHEMA_AND_JWE_ALGORITHM",
+  "limitations": [
+    "cxp_poc2 is a research PoC, not an installed credential provider",
+    "this rejects before CXF reconstruction; it does not test persistent vault import or RP use",
+    "different CXP draft gap choices, not proof of nonconformance by either implementation"
+  ],
+  "runs": [
+    {
+      "cross_import_error": "JweError: JWE decryption failed: \"alg\" (Algorithm) Header Parameter value not allowed",
+      "cross_import_rejected": true,
+      "cxporter_archive_sha256": "899f2a2456f2e11e2906bf745368b0b8fa387a0f15b2e3383b1ff5e01746456d",
+      "cxporter_jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
+      "repetition": 0,
+      "response_archive_field_present": false,
+      "response_schema_error": "CxpValidationError: Malformed ExportResponse: $.archive: Invalid input: expected string, received undefined",
+      "response_schema_rejected": true,
+      "second_source_commit": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+      "self_import_items": 1,
+      "self_import_passkey_state_preserved": true
+    },
+    {
+      "cross_import_error": "JweError: JWE decryption failed: \"alg\" (Algorithm) Header Parameter value not allowed",
+      "cross_import_rejected": true,
+      "cxporter_archive_sha256": "a63d5a0262f05982f88c3c91945e8e4c5f606563173448e1025fc65f62475d0f",
+      "cxporter_jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
+      "repetition": 1,
+      "response_archive_field_present": false,
+      "response_schema_error": "CxpValidationError: Malformed ExportResponse: $.archive: Invalid input: expected string, received undefined",
+      "response_schema_rejected": true,
+      "second_source_commit": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+      "self_import_items": 1,
+      "self_import_passkey_state_preserved": true
+    }
+  ],
+  "source_commits": {
+    "cxp_poc2": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+    "cxporter": "96bab31fdadcfd295542bba86b8ec8bd2355294a"
+  },
+  "status": "EXPECTED_REJECTION"
+}
