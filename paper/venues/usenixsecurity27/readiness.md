@@ -233,3 +233,40 @@ El ZIP anónimo local se regeneró con la corrección del paper. Una extracción
 limpia verificó 132 miembros y los controles previos; SHA-256 del ZIP:
 `426ab4312ed6f1170e9c0c033ba119beb00e54e45b40e26b9938832d608c7de9`.
 El PDF final debe recompilarse para verificar de nuevo la paginación.
+
+## Avance del 26 de octubre: CXP directo con implementación externa Proton
+
+Se compiló Proton Pass common 2.0.0 desde el código abierto. El objeto de
+etiqueta anotada `2.0.0` es `b22db5ca6fef03d0e9467c0305f9af8a2826be35`;
+su commit de código es `69a0927f0fe7071243d6c38e404459a69210fdd4`.
+El `Cargo.lock` fija también las dependencias. En el
+[run 40340988748](https://github.com/fedequark/PasskeyTransit/actions/runs/40340988748)
+pasaron cuatro controles de login sintético, ocho del camino
+Proton→Python con passkey, y siete del camino Python→Proton. La passkey
+recuperada conservó identificador, clave privada y ambas semillas HMAC;
+cuatro firmas de software y cuatro comprobaciones PRF pasaron en la
+primera dirección. La segunda importó y reexportó la passkey sin avisos,
+con los mismos campos, y rechazó el ciphertext alterado. Los tres
+informes verificaron localmente y tienen SHA-256, respectivamente:
+
+- Login: `3a6866fbf6206b60aa4e81f59de9e652c0785d74b8d2e6ae3124cd47ef4fa497`.
+- Passkey Proton→Python: `3b45985557c38eebbd51b7ad69941fa67424eeb34b59bf079a017b227e69a6f6`.
+- Passkey Python→Proton: `853e658067f4dfc0c1aba3b6b36a6fad1420fd914903bb3f387e7548ba8cbf58`.
+
+Proton usa un ciphertext HPKE directo con CXF JSON; el borrador CXP
+requiere un ZIP con JWE por miembro. Por tanto, este hito demuestra
+interoperabilidad bidireccional de ese **perfil de implementación**,
+pero no conformidad al payload ZIP/JWE del borrador ni importación en
+dos apps con almacenamiento persistente. Las aserciones verificadas son
+de un autenticador de software y un RP local, no de un RP desplegado.
+
+El [run general 40340988704](https://github.com/fedequark/PasskeyTransit/actions/runs/40340988704)
+pasó. El [run PDF 40340990138](https://github.com/fedequark/PasskeyTransit/actions/runs/40340990138)
+compiló el paper actualizado con la plantilla oficial: cinco páginas
+U.S. letter. Se inspeccionaron las páginas finales tras el cambio;
+SHA-256 del PDF: `cd949aae0eee68d4d0fdd4b61a7121d4c1d86047aecb75f4b5d9d955ccc3cebfd`.
+El ZIP anónimo **local** se reconstruyó y verificó desde una extracción
+limpia con 143 miembros con hash. SHA-256:
+`c76ef792a50a849b64176d94fb428ff2ce7354b4d403c3f82b96546b3c78208d`.
+Sigue sin URL anónima estable ni revisión independiente, que permanece
+pausada por el autor.

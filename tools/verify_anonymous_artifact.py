@@ -66,6 +66,9 @@ def verify(root: Path) -> dict[str, object]:
     from verify_cxp_jose_zip_go import verify as verify_cxp_jose_zip
 
     cxp_jose_result = verify_cxp_jose_zip(root)
+    from verify_proton_cxp_wire_reports import verify as verify_proton_cxp_wire
+
+    proton_cxp_result = verify_proton_cxp_wire(root)
 
     observed: dict[tuple[str, str], Counter[str]] = defaultdict(Counter)
     attempts = 0
@@ -141,6 +144,10 @@ def verify(root: Path) -> dict[str, object]:
         "cxp_zip_jwe_cross_runtime_controls": zip_jwe_result["cross_runtime_controls"],
         "external_jose_hpke_crypto_controls": jose_result["controls"],
         "cxp_jose_zip_external_crypto_controls": cxp_jose_result["controls"],
+        "proton_cxp_basic_controls": proton_cxp_result["basic_controls"],
+        "proton_cxp_passkey_controls": proton_cxp_result["passkey_controls"],
+        "proton_cxp_reverse_controls": proton_cxp_result["reverse_controls"],
+        "proton_cxp_signed_assertions_verified": proton_cxp_result["signed_assertions_verified"],
         "c1_attempts": attempts,
         "c1_groups": len(observed),
         "c1_totals": expected,

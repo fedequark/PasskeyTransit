@@ -179,7 +179,9 @@ def build() -> Path:
         "browser and provider reports, protocols, source, and a CXP draft "
         "structure probe, an experimental HPKE/JWE ZIP round trip, and a "
         "separate external JOSE-library cryptographic test and a "
-        "project CXP-shaped ZIP using that library. "
+        "project CXP-shaped ZIP using that library. It also contains "
+        "a bidirectional direct-HPKE exchange with Proton's open library, "
+        "which is not the draft ZIP/JWE profile. "
         "Git history, commit IDs in raw rows, "
         "and original provenance manifests were intentionally omitted. The "
         "original Phase 14 replay ZIP is included and checked byte-for-byte "
@@ -189,6 +191,7 @@ def build() -> Path:
         "python tools/verify_cxp_zip_jwe_reports.py, "
         "python tools/verify_jose_hpke_go_interop.py, "
         "python tools/verify_cxp_jose_zip_go.py, "
+        "python tools/verify_proton_cxp_wire_reports.py, "
         "python tools/run_cxp_wire_probe.py and "
         "PYTHONPATH=src python -m pytest tests/test_cxp_wire_probe.py "
         "(set PYTHONPATH appropriately on Windows).\n\n"
@@ -215,6 +218,7 @@ def build() -> Path:
         "limitations": [
             "provider replay is same-team local execution without external CI attestation",
             "HPKE/JWE decryption is project-authored experimental; no external provider CXP transfer is evidenced",
+            "Proton direct-HPKE library exchange does not implement draft CXP ZIP/JWE or durable provider import",
             "contextual linkage to an already public project cannot be ruled out",
             "no third-party replication claimed",
         ],

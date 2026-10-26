@@ -15,7 +15,7 @@
     "no ZIP/JWE",
     "no deployed RP assertion"
   ],
-  "reexported_cxf_sha256": "c88b12ea12ef0f3081273098e8ae2830f45c8a54973ecf1d5f822f417da308e2",
+  "reexported_cxf_sha256": "3ba834d271623f52a6b399b80582546f392f5bc387869d25069b7c160e080c66",
   "scope": "project direct-HPKE CXP exporter to Proton Pass common 2.0.0 importer; synthetic passkey",
   "source_cxf_sha256": "224421affc8f35844ad430bef94429166c3b9c147333181afc1ad533f62826ac",
   "status": "PASS"

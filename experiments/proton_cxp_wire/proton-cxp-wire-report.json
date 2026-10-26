@@ -13,9 +13,9 @@
     "no ZIP/JWE",
     "no RP assertion"
   ],
-  "plaintext_sha256": "002034734f2142582d2ba8e67f4aa4d99b282d34c1f2196b1141d41fc1c57e32",
-  "request_sha256": "ad3b417d52f0371b82174150a7382b167d2fa8e2a21417bd9dca7750ce50d4fd",
-  "response_sha256": "dbeb5f1865dad9e5be7639b9f518887d19f1bd3bd8229998800ac64cfd7d4a8d",
+  "plaintext_sha256": "70644395c99d5adf6ef0ceb02a20a1c9100091507845a9e8ffc633f70cd7a23d",
+  "request_sha256": "52dbfd392743d5f807bf9b23a2fb8f67c37fcf92a514eaedc1cfa01685b49fea",
+  "response_sha256": "a6f03668c688bb35435c1a6962bcf6b05e822f95b0d3e53976fec0d885201ceb",
   "scope": "Proton Pass common 2.0.0 CXP direct HPKE exporter to project Python importer; synthetic basic-auth only",
   "status": "PASS"
 }

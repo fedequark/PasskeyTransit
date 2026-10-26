@@ -7,14 +7,13 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORTS = ROOT / "experiments/proton_cxp_wire"
 REVISION = "69a0927f0fe7071243d6c38e404459a69210fdd4"
 TAG_OBJECT = "b22db5ca6fef03d0e9467c0305f9af8a2826be35"
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
 
 
-def _check(name: str, expected_controls: set[str]) -> dict:
-    report = json.loads((REPORTS / name).read_text(encoding="utf-8"))
+def _check(root: Path, name: str, expected_controls: set[str]) -> dict:
+    report = json.loads((root / "experiments/proton_cxp_wire" / name).read_text(encoding="utf-8"))
     assert report["status"] == "PASS", name
     assert report["external_revision"] == REVISION, name
     assert report["external_tag_object"] == TAG_OBJECT, name
@@ -29,8 +28,9 @@ def _check(name: str, expected_controls: set[str]) -> dict:
     return report
 
 
-def main() -> None:
+def verify(root: Path = ROOT) -> dict:
     basic = _check(
+        root,
         "proton-cxp-wire-report.json",
         {
             "synthetic_cxf_recovered",
@@ -40,6 +40,7 @@ def main() -> None:
         },
     )
     passkey = _check(
+        root,
         "proton-cxp-passkey-report.json",
         {
             "credential_id_preserved",
@@ -55,6 +56,7 @@ def main() -> None:
     assert passkey["signed_assertions_verified"] == 4
     assert passkey["prf_seed_checks_verified"] == 4
     reverse = _check(
+        root,
         "proton-cxp-reverse-report.json",
         {
             "proton_imported_synthetic_passkey",
@@ -66,10 +68,14 @@ def main() -> None:
             "tampered_ciphertext_rejected",
         },
     )
-    print(json.dumps({"status": "PASS", "basic_controls": len(basic["controls"]),
-                      "passkey_controls": len(passkey["controls"]),
-                      "reverse_controls": len(reverse["controls"]),
-                      "signed_assertions_verified": 4, "prf_seed_checks_verified": 4}, sort_keys=True))
+    return {"status": "PASS", "basic_controls": len(basic["controls"]),
+            "passkey_controls": len(passkey["controls"]),
+            "reverse_controls": len(reverse["controls"]),
+            "signed_assertions_verified": 4, "prf_seed_checks_verified": 4}
+
+
+def main() -> None:
+    print(json.dumps(verify(), sort_keys=True))
 
 
 if __name__ == "__main__":
