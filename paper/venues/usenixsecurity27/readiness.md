@@ -317,3 +317,24 @@ que Windows. El verificador extraído pasó con 146 miembros, igualdad de
 los tres informes con los ZIP originales y 52 firmas y 30 vínculos PRF de
 proveedores. El workflow es manual para evitar runs repetidos y no publica
 un artefacto que pudiera confundirse con un enlace anónimo de revisión.
+
+## Avance del 26 de octubre: exportador CXP abierto
+
+El [run 40350620050](https://github.com/fedequark/PasskeyTransit/actions/runs/40350620050)
+compiló `cxporter` en la revisión `96bab31fdadcfd295542bba86b8ec8bd2355294a`,
+ejecutó sus pruebas internas y exportó dos passkeys CXF sintéticas a un ZIP
+con índice y documento JWE. Un importador Python del proyecto descifró ambos
+miembros, comprobó la conservación de identidad, clave, user handle y estado
+HMAC, y rechazó receptor erróneo y ciphertext alterado. El control de
+software Proton produjo ocho firmas y ocho resultados PRF verificados de
+nuevo desde los datos públicos. El ZIP original del run tiene SHA-256
+`e880f5a48b530caff22e7149e6b436d2a1c0451de5ca0d86a0e7c1898454cd09`.
+
+La respuesta de `cxporter` omite `archive`, campo exigido por el borrador;
+su `alg` JWE difiere del control JOSE `HPKE-3-KE`. El ensayo mide un exportador
+externo abierto con importador propio, sin segunda app proveedora ni almacén
+persistente. El reporte conserva firmas y hashes públicos, pero el descifrado
+del ZIP requiere repetir el run. La reproducción en CI es del mismo equipo.
+El paquete anónimo local actualizado tiene 152 miembros con hash y SHA-256
+`7450819f738bf689e10e8ccd5cfcfe96f8e02a5d221a1efc2090b761ea5c1c3b`;
+su verificador pasó en una extracción limpia de Windows.

@@ -310,6 +310,17 @@ passed on the Proton-to-Python path. Proton's direct payload lacks the
 draft's required ZIP/JWE structure~\cite{cxp}, and no provider vault
 import or deployed RP assertion was tested.
 
+We also ran the pinned open \texttt{cxporter} exporter~\cite{cxporter}
+against two synthetic CXF passkeys. Its ZIP held encrypted index and
+document JWEs; a project Python importer decrypted both, checked key,
+identity, user handle and HMAC state, and rejected wrong-recipient and
+altered-ciphertext controls. Proton's software authenticator then signed
+eight assertions and reproduced eight expected PRF outputs; a public
+verifier rechecked their signatures and digest bindings. This is an
+external exporter to project importer test, not two-provider exchange.
+The export response omits the draft-required \texttt{archive} field,
+and its JWE algorithm differs from the separate JOSE control~\cite{cxp}.
+
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
 path. Two fresh profiles per repetition imported synthetic basic and
@@ -397,6 +408,7 @@ and revisions only.
 \bibitem{henarejos} P. Henarejos. Vaulted Passkeys: A Device-Bound Proposal for Authenticated Credential Export and Import. arXiv:2608.13806, 2026. \url{https://arxiv.org/abs/2608.13806}.
 \bibitem{bitwardencxp} Bitwarden. Credential Exchange Protocol Rust types, revision \texttt{32da4c8}, 2026. \url{https://github.com/bitwarden/credential-exchange}.
 \bibitem{gocxp} N. Vinuesa. \texttt{go-cxp}, revision \texttt{94659f3}, 2026. \url{https://github.com/nvinuesa/go-cxp}.
+\bibitem{cxporter} N. Vinuesa. \texttt{cxporter}, revision \texttt{96bab31}, 2026. \url{https://github.com/nvinuesa/cxporter}.
 \bibitem{fenko} FenkoHQ. Passkey Vault 0.12.0, revision \texttt{2d873fb}. \url{https://github.com/FenkoHQ/passkey-vault}.
 \bibitem{proton} Proton. Proton Pass common 2.0.0; pinned revisions in artifact. \url{https://github.com/protonpass/proton-pass-common}.
 \bibitem{josehpke} T. Reddy et al. Use of HPKE with JWE, Internet-Draft \texttt{draft-ietf-jose-hpke-encrypt-22}, 2026. \url{https://datatracker.ietf.org/doc/draft-ietf-jose-hpke-encrypt/22/}.

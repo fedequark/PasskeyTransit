@@ -54,6 +54,12 @@ def verify(root: Path) -> dict[str, object]:
             for report in reports:
                 if replay.read(report) != (root / "data/replay/ci" / report).read_bytes():
                     raise ValueError(f"{provider} CI report differs from original ZIP: {report}")
+    cxporter_zip = (root / "data/replay/cxporter-ci-original.zip").read_bytes()
+    with zipfile.ZipFile(io.BytesIO(cxporter_zip)) as replay:
+        if replay.testzip() is not None or replay.namelist() != ["report.json"]:
+            raise ValueError("invalid cxporter CI replay archive")
+        if replay.read("report.json") != (root / "data/replay/ci/cxporter_cxp_report.json").read_bytes():
+            raise ValueError("cxporter CI report differs from original ZIP")
 
     sys.path.insert(0, str(root / "src"))
     from passkeytransit.fenko_verify import verify_fenko_report
@@ -79,6 +85,16 @@ def verify(root: Path) -> dict[str, object]:
     )
     if ci_counts != (16, 6, 24, 12, 12, 12):
         raise ValueError(f"unexpected provider CI public verifier counts: {ci_counts}")
+    from verify_cxporter_cxp_public_report import verify_report as verify_cxporter_public
+
+    cxporter_local = verify_cxporter_public(json.loads(
+        (root / "experiments/cxporter_cxp_open/report.json").read_text(encoding="utf-8")
+    ))
+    cxporter_ci = verify_cxporter_public(json.loads(
+        (root / "data/replay/ci/cxporter_cxp_report.json").read_text(encoding="utf-8")
+    ))
+    if cxporter_local["public_signatures_verified"] != 8 or cxporter_ci["public_signatures_verified"] != 8:
+        raise ValueError("unexpected cxporter signature counts")
 
     parser_report = json.loads((root / "experiments/cxp_external_schema/runtime_report.json").read_text())
     if parser_report.get("provider_interoperability") != "NOT_EVALUABLE":
@@ -175,6 +191,9 @@ def verify(root: Path) -> dict[str, object]:
         "phase14_replay_reports_byte_equal": 2,
         "provider_replay_hashed_members": len(provider_manifest["files"]),
         "provider_ci_original_zips_checked": 2,
+        "cxporter_ci_original_zip_checked": True,
+        "cxporter_local_signatures_verified": cxporter_local["public_signatures_verified"],
+        "cxporter_ci_signatures_verified": cxporter_ci["public_signatures_verified"],
         "provider_ci_report_byte_matches": 3,
         "provider_ci_fenko_signatures_verified": ci_counts[0] + ci_counts[2],
         "provider_ci_fenko_prf_bindings_verified": ci_counts[1] + ci_counts[3],

@@ -1,0 +1,181 @@
+{
+  "adapter_sha256": "189dfac68973685789d99c86fcb0fc6aba94c4f583feac048ea50118f41f8e9e",
+  "classification": "external open ZIP/JWE exporter to project importer; software authenticator follow-up",
+  "draft_response_schema_status": "FAIL_REQUIRED_ARCHIVE_OMITTED",
+  "external_commit": "96bab31fdadcfd295542bba86b8ec8bd2355294a",
+  "limitations": [
+    "cxporter is a CLI exporter, not an installed passkey provider app or persistent destination vault",
+    "its ExportResponse omits the draft-required archive field",
+    "its HPKE-Base-X25519-SHA256-AES256GCM JWE algorithm is not the JOSE HPKE-3-KE profile tested elsewhere",
+    "the importer and CXF source document are project-authored; no second provider imports this ZIP"
+  ],
+  "prf_seed_checks_verified": 8,
+  "runs": [
+    {
+      "archive_sha256": "1eae2a15141371a60612189568fe22fb6e90780521758ddac72d6000f83eb2a7",
+      "controls": {
+        "changed_document_ciphertext_rejected": true,
+        "changed_index_ciphertext_rejected": true,
+        "index_and_document_decrypted": true,
+        "passkey_identity_and_state_preserved": true,
+        "software_assertions_verified": true,
+        "software_prf_verified": true,
+        "wrong_recipient_rejected": true,
+        "zip_jwe_shape": true
+      },
+      "decrypted_item_sha256": "ac63f8208327ee8707173cfca51afc637f69bf04308e0c8ac923cca81f8936f6",
+      "index_sha256": "b035e82631855159a5ca153ae163518ca06ecd6433ae3481fc85bf189424df3f",
+      "jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
+      "prf_seed_checks_verified": 4,
+      "public_observations": [
+        {
+          "destination": {
+            "prf_matches_cxf_seed": true,
+            "prf_sha256": "871be1bf0040683621553d2997fdfeed3cf8a254d4b58c258830f69adf642438",
+            "public_transcript": {
+              "authenticator_data": "IOvJdyiQGGcfv-OR5KHlSEQGc8yx_RWAXbYwCaWQzf4dAAAAAQ",
+              "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiVkM1NGNQSmQ5M2ROaEwxNTVnckdIOE9URlNqRzFoY1RhN2NSUXYzSFVWNCIsIm9yaWdpbiI6Imh0dHBzOi8vcnAtMS5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+              "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfqy3dCUySbSQY32AM-LuRuNTjdo3qxDD6br4Gs6UQQphsmuvNM7bxffws9MCLkrs1B6B93BumUttEuB5ug06zA",
+              "rp_id": "rp-1.example.test",
+              "signature": "MEYCIQCkksD-bKe2Cz1aJCV6EsicLWwO5vxVwXQhue5IVq_xFgIhAMy_2paXe3QDbC1RdxupZ8qb6O9FWA8QmZb9h74xT3N2"
+            },
+            "signature_verified": true,
+            "uv_flag": true
+          },
+          "same_input_prf_equal": true,
+          "source": {
+            "prf_matches_cxf_seed": true,
+            "prf_sha256": "871be1bf0040683621553d2997fdfeed3cf8a254d4b58c258830f69adf642438",
+            "public_transcript": {
+              "authenticator_data": "IOvJdyiQGGcfv-OR5KHlSEQGc8yx_RWAXbYwCaWQzf4dAAAAAQ",
+              "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiejBDY3NhNTF1VXV3eGY2Q1JjdzJaTlJubTUtdkdRV29WMFRPZm10cWx3NCIsIm9yaWdpbiI6Imh0dHBzOi8vcnAtMS5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+              "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfqy3dCUySbSQY32AM-LuRuNTjdo3qxDD6br4Gs6UQQphsmuvNM7bxffws9MCLkrs1B6B93BumUttEuB5ug06zA",
+              "rp_id": "rp-1.example.test",
+              "signature": "MEQCIGZ9TDFnhbRFOBC94vjd6KoKpD36GhGmMqvmq3fCbCfBAiBAbaPCWfTPdSrlwEv7iesgKmdpKyP2xb8-ZxeHMNeQ1Q"
+            },
+            "signature_verified": true,
+            "uv_flag": true
+          }
+        },
+        {
+          "destination": {
+            "prf_matches_cxf_seed": true,
+            "prf_sha256": "82d809b766bcb9fdb949af5da7a485e8cc20ac1508a602c1c34d7585a768a7ce",
+            "public_transcript": {
+              "authenticator_data": "IOvJdyiQGGcfv-OR5KHlSEQGc8yx_RWAXbYwCaWQzf4dAAAAAQ",
+              "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoidVRxUXhMb1ZiOTVfZ05WLVNVQjZvYU5DSGE0YjVnNFdzcktMbEZWWnBabyIsIm9yaWdpbiI6Imh0dHBzOi8vcnAtMS5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+              "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfqy3dCUySbSQY32AM-LuRuNTjdo3qxDD6br4Gs6UQQphsmuvNM7bxffws9MCLkrs1B6B93BumUttEuB5ug06zA",
+              "rp_id": "rp-1.example.test",
+              "signature": "MEUCIQD-YBZCqoYS8YzOhqgkC4f4Ock78hE0Bbabb71MbQZxlwIgJnl7Tk31l_6eZRAKBAqSeY8Ur-Xh5RtrCkc06rXFaCs"
+            },
+            "signature_verified": true,
+            "uv_flag": true
+          },
+          "same_input_prf_equal": true,
+          "source": {
+            "prf_matches_cxf_seed": true,
+            "prf_sha256": "82d809b766bcb9fdb949af5da7a485e8cc20ac1508a602c1c34d7585a768a7ce",
+            "public_transcript": {
+              "authenticator_data": "IOvJdyiQGGcfv-OR5KHlSEQGc8yx_RWAXbYwCaWQzf4dAAAAAQ",
+              "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiUjJfdjJJQkNaSUJKZUlheEtVTW9TR0lDWVZJcmdFa1dfZHdOZm9naTNYZyIsIm9yaWdpbiI6Imh0dHBzOi8vcnAtMS5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+              "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfqy3dCUySbSQY32AM-LuRuNTjdo3qxDD6br4Gs6UQQphsmuvNM7bxffws9MCLkrs1B6B93BumUttEuB5ug06zA",
+              "rp_id": "rp-1.example.test",
+              "signature": "MEUCIQDXIZ9xXCo5BmOuizL2Tc5gEUS7RL0HF6f9IcTrqKcAAwIgX7RWTCwyk9KhXNyTD7hXwYY-2WT66t5VTQKkodNd9Es"
+            },
+            "signature_verified": true,
+            "uv_flag": true
+          }
+        }
+      ],
+      "repetition": 0,
+      "response_archive_field_present": false,
+      "response_sha256": "ca54fd7a69ac2b4a1f48da6b5b3c71c05b2036df435bfb7e8af27129f65ce15a",
+      "same_ephemeral_key_across_members": true,
+      "signed_assertions_verified": 4
+    },
+    {
+      "archive_sha256": "55cb0a216dc7913e97a8786a1f77d7cbaeda670ca0406227c3ff5640c7742f88",
+      "controls": {
+        "changed_document_ciphertext_rejected": true,
+        "changed_index_ciphertext_rejected": true,
+        "index_and_document_decrypted": true,
+        "passkey_identity_and_state_preserved": true,
+        "software_assertions_verified": true,
+        "software_prf_verified": true,
+        "wrong_recipient_rejected": true,
+        "zip_jwe_shape": true
+      },
+      "decrypted_item_sha256": "3c5056d4ea40f84231286131da67352921d38cbbf2c0458a9ef810f03029dc6f",
+      "index_sha256": "1ce006e8359bcac7a47c903533936247472ed28be7574c3dc259a58bdfa38064",
+      "jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
+      "prf_seed_checks_verified": 4,
+      "public_observations": [
+        {
+          "destination": {
+            "prf_matches_cxf_seed": true,
+            "prf_sha256": "8627eb1dbf31347582d829ff06b9a5d6b6880c426cef977a871eab3c7e35679f",
+            "public_transcript": {
+              "authenticator_data": "RXGxeGG5I9wEPFb-MoNtDdl6Oh94A88vTIKuz_Da8eUdAAAAAQ",
+              "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiMmtvSkgzX2tnYVoyMGRZb2JyRnN6b0RZSjNIbEpmWl9sQmRPdm9sSTV5VSIsIm9yaWdpbiI6Imh0dHBzOi8vcnAtMi5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+              "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQ01OIS26Cj0qFz0zkTj_ggAkCd9OGlvAiCo0n-zhg0ycFGvf6KPEgUR2PzotI1xLDck71PmYdfR2e59ReqdCrw",
+              "rp_id": "rp-2.example.test",
+              "signature": "MEQCIBzM5FLXM8PcVIBI4oKRhf5h3tSFa6QcvkPPLm5CWo41AiBdrG9DGwWI-9B7Kvg1tDJlpZNGnyPLtPlyWnL1mWHkpQ"
+            },
+            "signature_verified": true,
+            "uv_flag": true
+          },
+          "same_input_prf_equal": true,
+          "source": {
+            "prf_matches_cxf_seed": true,
+            "prf_sha256": "8627eb1dbf31347582d829ff06b9a5d6b6880c426cef977a871eab3c7e35679f",
+            "public_transcript": {
+              "authenticator_data": "RXGxeGG5I9wEPFb-MoNtDdl6Oh94A88vTIKuz_Da8eUdAAAAAQ",
+              "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiNk94VFdfTVlZMDdzeEM1OThtNVA0RnY3S2l4VHY5NWxiVzRYOVBwejVEUSIsIm9yaWdpbiI6Imh0dHBzOi8vcnAtMi5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+              "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQ01OIS26Cj0qFz0zkTj_ggAkCd9OGlvAiCo0n-zhg0ycFGvf6KPEgUR2PzotI1xLDck71PmYdfR2e59ReqdCrw",
+              "rp_id": "rp-2.example.test",
+              "signature": "MEQCIDq83wfv6xfymBssicQ3fUeFje2n-egtXzrilOCEWREkAiA2KRPX11VCgBm7_1uh6fEvxvopvqTZB34GCYDOW_Uffw"
+            },
+            "signature_verified": true,
+            "uv_flag": true
+          }
+        },
+        {
+          "destination": {
+            "prf_matches_cxf_seed": true,
+            "prf_sha256": "2b9d7552fb48cb69d8f8709d2ba29c9083021249c4b01d0477ce3a122d61f228",
+            "public_transcript": {
+              "authenticator_data": "RXGxeGG5I9wEPFb-MoNtDdl6Oh94A88vTIKuz_Da8eUdAAAAAQ",
+              "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiSG1odjl6bnExanhDN3VtVjNmc2d5a2tUcC16UFU3MGRSMXU3UndKMERpdyIsIm9yaWdpbiI6Imh0dHBzOi8vcnAtMi5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+              "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQ01OIS26Cj0qFz0zkTj_ggAkCd9OGlvAiCo0n-zhg0ycFGvf6KPEgUR2PzotI1xLDck71PmYdfR2e59ReqdCrw",
+              "rp_id": "rp-2.example.test",
+              "signature": "MEUCIEa6hdDFGFi2J1e7IKmnsdlGX3xyW8pPlGWCTOeuN7UjAiEAwKiyb2GPKQOTMnNgHhKnalGsUK9eFp4Ya6Be8_IHCuE"
+            },
+            "signature_verified": true,
+            "uv_flag": true
+          },
+          "same_input_prf_equal": true,
+          "source": {
+            "prf_matches_cxf_seed": true,
+            "prf_sha256": "2b9d7552fb48cb69d8f8709d2ba29c9083021249c4b01d0477ce3a122d61f228",
+            "public_transcript": {
+              "authenticator_data": "RXGxeGG5I9wEPFb-MoNtDdl6Oh94A88vTIKuz_Da8eUdAAAAAQ",
+              "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiUTdCeUdRYUFoT3JqYTNwSGdJMjhUaV9KNC1kVGRSRV8zTXBvX2lNYzFZTSIsIm9yaWdpbiI6Imh0dHBzOi8vcnAtMi5leGFtcGxlLnRlc3QiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+              "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQ01OIS26Cj0qFz0zkTj_ggAkCd9OGlvAiCo0n-zhg0ycFGvf6KPEgUR2PzotI1xLDck71PmYdfR2e59ReqdCrw",
+              "rp_id": "rp-2.example.test",
+              "signature": "MEUCIQCkAtIjSz0T0RbY9ASE94eQs33z3XjejE8rR87Bv1SMBwIgafyyymhnWhlhRgDzVemmflSVDTZc7sFS9uLQDUua7cE"
+            },
+            "signature_verified": true,
+            "uv_flag": true
+          }
+        }
+      ],
+      "repetition": 1,
+      "response_archive_field_present": false,
+      "response_sha256": "9783dee0a6c3b8dd1eedef747831fae334fa758cb1cf5a552024cb83bd6628c1",
+      "same_ephemeral_key_across_members": true,
+      "signed_assertions_verified": 4
+    }
+  ],
+  "signed_assertions_verified": 8,
+  "status": "PASS"
+}
