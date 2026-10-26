@@ -1,0 +1,60 @@
+{
+  "cases": [
+    {
+      "imported_passkeys": 1,
+      "mode": "indirect",
+      "profile": "spec-minimal",
+      "registered": true,
+      "rp_registered_credentials": 1,
+      "same_credential_id": true,
+      "scope": "same-codebase synthetic software authenticators and local demo RP",
+      "skipped": 0,
+      "source_login_after": true,
+      "source_login_before": true,
+      "target_login_after": true
+    },
+    {
+      "imported_passkeys": 1,
+      "mode": "direct",
+      "profile": "spec-minimal",
+      "registered": true,
+      "rp_registered_credentials": 1,
+      "same_credential_id": true,
+      "scope": "same-codebase synthetic software authenticators and local demo RP",
+      "skipped": 0,
+      "source_login_after": true,
+      "source_login_before": true,
+      "target_login_after": true
+    },
+    {
+      "imported_passkeys": 1,
+      "mode": "indirect",
+      "profile": "hardened",
+      "registered": true,
+      "rp_registered_credentials": 1,
+      "same_credential_id": true,
+      "scope": "same-codebase synthetic software authenticators and local demo RP",
+      "skipped": 0,
+      "source_login_after": true,
+      "source_login_before": true,
+      "target_login_after": true
+    },
+    {
+      "imported_passkeys": 1,
+      "mode": "direct",
+      "profile": "hardened",
+      "registered": true,
+      "rp_registered_credentials": 1,
+      "same_credential_id": true,
+      "scope": "same-codebase synthetic software authenticators and local demo RP",
+      "skipped": 0,
+      "source_login_after": true,
+      "source_login_before": true,
+      "target_login_after": true
+    }
+  ],
+  "limitation": "PoC Provider A and B share one codebase; does not import cxporter ciphertext or represent installed provider apps",
+  "probe_sha256": "4f0fd3360c61c84b3f171f96579ecd715ce31f2703e01fe0162f82e034dc5138",
+  "source_commit": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
+  "status": "SAME_CODEBASE_RP_CONTROL_PASS"
+}

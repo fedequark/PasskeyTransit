@@ -18,6 +18,14 @@ def verify(root: Path) -> dict[str, object]:
         source = root / name
         if not source.is_file() or hashlib.sha256(source.read_bytes()).hexdigest() != expected:
             raise ValueError(f"missing or modified artifact member: {name}")
+    rp_control = json.loads((root / "experiments/cxporter_cxp_open/poc2_rp_control.json").read_text(encoding="utf-8"))
+    rp_probe = root / "interop/cxp_poc2_cross_probe/pt-rp-control.ts"
+    if rp_control["status"] != "SAME_CODEBASE_RP_CONTROL_PASS" or rp_control["probe_sha256"] != hashlib.sha256(rp_probe.read_bytes()).hexdigest():
+        raise ValueError("PoC RP control source or status differs")
+    if len(rp_control["cases"]) != 4 or any(not c["target_login_after"] or c["imported_passkeys"] != 1 for c in rp_control["cases"]):
+        raise ValueError("PoC RP control result differs")
+    if (root / "experiments/cxporter_cxp_open/ci/40363074055/poc2_rp_control.json").read_bytes() != (root / "experiments/cxporter_cxp_open/poc2_rp_control.json").read_bytes():
+        raise ValueError("PoC RP control CI and local reports differ")
     replay_bytes = (root / "data/replay/phase14-original.zip").read_bytes()
     with zipfile.ZipFile(io.BytesIO(replay_bytes)) as replay:
         members = replay.namelist()
