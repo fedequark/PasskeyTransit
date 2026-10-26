@@ -390,3 +390,6 @@ observado. El nuevo ZIP original del informe tiene SHA-256
 El paquete anónimo local actualizado conserva 158 archivos con hash y tiene
 SHA-256 `3017684d625a12c816b969bde931eb07c69ee4968f79303db67b3dcb4a1e13b6`;
 pasó la extracción y verificación local en Windows.
+El [run 40355870182](https://github.com/fedequark/PasskeyTransit/actions/runs/40355870182)
+reconstruyó en Ubuntu exactamente el mismo SHA-256 y verificó los 158
+miembros, ocho firmas del informe `cxporter` y los dos rechazos del cruce.
