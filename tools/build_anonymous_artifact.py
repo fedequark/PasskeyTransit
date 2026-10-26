@@ -47,6 +47,8 @@ SOURCE_FILES = [
     "experiments/cxporter_cxp_open/report.json",
     "experiments/cxporter_cxp_open/cross_import_rejection.json",
     "experiments/cxporter_cxp_open/vectors/cxporter-poc2-v1.json",
+    "experiments/cxporter_cxp_open/ci/40359254321/public_vector_replay.json",
+    "experiments/cxporter_cxp_open/ci/40359254321/fresh_vector_replay.json",
     "experiments/cxp_wire_structural/report.json",
     "experiments/cxp_external_schema/bitwarden_protocol_snapshot.json",
     "experiments/cxp_external_schema/report.json",

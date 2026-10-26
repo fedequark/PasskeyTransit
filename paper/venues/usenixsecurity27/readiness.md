@@ -416,3 +416,32 @@ El [run 40357387301](https://github.com/fedequark/PasskeyTransit/actions/runs/40
 reconstruyó exactamente ese SHA-256 en Ubuntu 24.04 y verificó el paquete
 extraído. `claim_trace.md` enlaza las cifras y los casos ejecutados del
 manuscrito con los datos y verificadores retenidos.
+
+## Avance del 26 de octubre: vector público de ciphertext CXP
+
+Se conserva una respuesta ZIP/JWE real del exportador abierto `cxporter`
+para una passkey **sintética**, junto con el CXF esperado y la derivación
+de una clave receptora de prueba pública. El ZIP tiene dos archivos JWE y
+SHA-256 `60927b038c4d324f0650541475f7b642b6af5bbce3da22501bddfe1bc80a8dd0`.
+El verificador estático comprobó bytes, estructura y algoritmo; el adaptador
+ejecutó el parser y `openPayload` de `cxp_poc2` en su revisión fijada. En la
+respuesta íntegra faltó `archive`; al añadir sólo ese campo pasó el parser
+y falló después por `alg` JWE, antes de recuperar CXF. El
+[run 40359254321](https://github.com/fedequark/PasskeyTransit/actions/runs/40359254321)
+repitió ese vector y produjo uno fresco con los mismos dos resultados.
+Sus dos informes JSON están conservados. El digest del artefacto CI original
+es `sha256:e079dfbe0ede2104e2e8fa161f0b4c11999bf6c5f9f8b4ed1b9a30d9ba4fb018`.
+Esto mide incompatibilidad entre perfiles de dos implementaciones de
+investigación, sin transferencia exitosa entre apps proveedoras ni juicio
+normativo de conformidad.
+
+El [run PDF 40359254305](https://github.com/fedequark/PasskeyTransit/actions/runs/40359254305)
+compiló la explicación del vector con el estilo oficial: seis páginas
+U.S. letter, quinta y sexta páginas inspeccionadas, veinte referencias
+completas. SHA-256 de `compiled/main.pdf`:
+`50c81a9824f51459f8924ba849ac244b7689e6797fbb36948498e20ff783f2f8`.
+El paquete anónimo local contiene el vector, adaptadores, verificadores e
+informes CI; tiene 165 miembros con hash, pasó extracción y verificación
+local en Windows y tiene SHA-256
+`e629d46e6e36b18f9ec70847731f8e7f41ed4d7d6322813fed74a287fdfcd34a`.
+La reproducción Linux de este hash está pendiente del workflow actualizado.

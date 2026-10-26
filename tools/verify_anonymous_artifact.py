@@ -113,9 +113,15 @@ def verify(root: Path) -> dict[str, object]:
     ))
     if cross_local["cross_import_expected_rejections"] != 2 or cross_ci["cross_import_expected_rejections"] != 2:
         raise ValueError("unexpected cross-import control counts")
-    from verify_cxp_public_vector import verify as verify_public_vector
+    from verify_cxp_public_vector import verify as verify_public_vector, verify_replay
 
     vector = verify_public_vector(root / "experiments/cxporter_cxp_open/vectors/cxporter-poc2-v1.json")
+    vector_ci = json.loads((root / "experiments/cxporter_cxp_open/ci/40359254321/public_vector_replay.json").read_text())
+    fresh_ci = json.loads((root / "experiments/cxporter_cxp_open/ci/40359254321/fresh_vector_replay.json").read_text())
+    verify_replay(vector_ci, retained=True)
+    verify_replay(fresh_ci, retained=False)
+    if fresh_ci["archive_sha256"] == vector_ci["archive_sha256"]:
+        raise ValueError("fresh exporter replay reused the retained ciphertext")
 
     parser_report = json.loads((root / "experiments/cxp_external_schema/runtime_report.json").read_text())
     if parser_report.get("provider_interoperability") != "NOT_EVALUABLE":
@@ -219,6 +225,7 @@ def verify(root: Path) -> dict[str, object]:
         "cxp_poc2_cross_local_rejections": cross_local["cross_import_expected_rejections"],
         "cxp_poc2_cross_ci_rejections": cross_ci["cross_import_expected_rejections"],
         "cxp_public_vector_jwe_files": vector["jwe_files"],
+        "cxp_public_vector_ci_replays": 2,
         "provider_ci_report_byte_matches": 3,
         "provider_ci_fenko_signatures_verified": ci_counts[0] + ci_counts[2],
         "provider_ci_fenko_prf_bindings_verified": ci_counts[1] + ci_counts[3],

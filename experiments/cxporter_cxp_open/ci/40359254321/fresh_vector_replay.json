@@ -1,0 +1,11 @@
+{
+  "archive_file_count": 2,
+  "archive_member_count": 4,
+  "archive_sha256": "cb33aa7a45f39360dbd6d40fe5996d9085d3699dc5848c12db9511f21aff24d6",
+  "index_jwe_alg": "HPKE-Base-X25519-SHA256-AES256GCM",
+  "patched_schema_error": "",
+  "payload_error": "JweError: JWE decryption failed: \"alg\" (Algorithm) Header Parameter value not allowed",
+  "response_has_archive": false,
+  "schema_error": "CxpValidationError: Malformed ExportResponse: $.archive: Invalid input: expected string, received undefined",
+  "vector_version": 1
+}

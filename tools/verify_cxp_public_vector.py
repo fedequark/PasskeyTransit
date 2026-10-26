@@ -21,6 +21,8 @@ EXPECTED_SOURCE = {
     "cxporter": "96bab31fdadcfd295542bba86b8ec8bd2355294a",
     "cxp_poc2": "fee19d9ac392ffe0153bea8b917aa0a66f12b272",
 }
+SCHEMA_ERROR = "CxpValidationError: Malformed ExportResponse: $.archive: Invalid input: expected string, received undefined"
+JWE_ERROR = 'JweError: JWE decryption failed: "alg" (Algorithm) Header Parameter value not allowed'
 
 
 def b64url(value: str) -> bytes:
@@ -66,6 +68,19 @@ def verify(path: Path) -> dict[str, object]:
         raise ValueError("recipient public key length differs")
     return {"status": "PASS", "archive_sha256": digest, "jwe_files": len(files),
             "synthetic_passkeys": len(credentials), "scope": "vector integrity and wire structure"}
+
+
+def verify_replay(report: dict, *, retained: bool) -> None:
+    if report["vector_version"] != 1 or report["archive_file_count"] != 2:
+        raise ValueError("replay version or JWE count differs")
+    if report["response_has_archive"] is not False or report["schema_error"] != SCHEMA_ERROR:
+        raise ValueError("replay response-schema rejection differs")
+    if report["patched_schema_error"] or report["payload_error"] != JWE_ERROR:
+        raise ValueError("replay JWE-algorithm rejection differs")
+    if report["index_jwe_alg"] != "HPKE-Base-X25519-SHA256-AES256GCM":
+        raise ValueError("replay JWE algorithm differs")
+    if retained and report["archive_sha256"] != EXPECTED_ARCHIVE:
+        raise ValueError("retained replay used a different ciphertext")
 
 
 def main() -> None:
