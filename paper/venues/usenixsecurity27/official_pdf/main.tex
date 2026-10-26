@@ -348,9 +348,11 @@ possible in one selected implementation. These cases are not a
 representative sample of provider behavior.
 
 The public CXP wire format was not exchanged between two independent
-providers. A human-reported Android Bitwarden-to-Google transfer lacks an
-instrumented destination assertion and transfer receipt and is excluded
-from measured results. CDP cannot inject original PRF state; positive
+providers. Android's provider-events flow carries CXF JSON through a
+content URI~\cite{androidtransfer}, so a mobile transfer would test a
+different path. The human-reported Bitwarden-to-Google transfer lacks an
+instrumented destination assertion and receipt and is excluded from
+measured results. CDP cannot inject original PRF state; positive
 browser-to-browser restoration of CXF HMAC seeds is NOT\_EVALUABLE. The
 Proton module result cannot fill that gap. The transaction simulation
 cannot support claims about storage durability, and the synthetic campaign
@@ -398,5 +400,6 @@ and revisions only.
 \bibitem{proton} Proton. Proton Pass common 2.0.0, pinned commit \texttt{69a0927f0fe7071243d6c38e404459a69210fdd4}. \url{https://github.com/protonpass/proton-pass-common}.
 \bibitem{josehpke} T. Reddy et al. Use of HPKE with JWE, Internet-Draft \texttt{draft-ietf-jose-hpke-encrypt-22}, 2026. \url{https://datatracker.ietf.org/doc/draft-ietf-jose-hpke-encrypt/22/}.
 \bibitem{jwx} lestrrat-go. \texttt{jwx/v4}, v4.6.0, 2026. \url{https://github.com/lestrrat-go/jwx/tree/v4.6.0}.
+\bibitem{androidtransfer} Android Developers. Credential transfer, updated 23 October 2026. \url{https://developer.android.com/identity/sign-in/credential-transfer}.
 \end{thebibliography}
 \end{document}

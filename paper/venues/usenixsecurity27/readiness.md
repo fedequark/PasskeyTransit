@@ -212,3 +212,24 @@ con hash y los cinco nuevos controles. El [run PDF 40335870754](https://github.c
 compiló la versión actual del paper con la plantilla oficial: cinco
 páginas U.S. letter inspeccionadas visualmente. SHA-256 del PDF:
 `2e2c85a98a7874e0ab699fa9d6893d0a665485ff70e58530be4b51ef47fc16d0`.
+
+## Avance del 26 de octubre: separación Android CXF / CXP
+
+La guía oficial de Android (actualizada el 23 de octubre de 2026) describe
+`ProviderEventsManager` con CXF JSON transportado por un content URI. Ese
+ensayo móvil mide transferencia entre proveedores por la API de Android;
+no prueba el ZIP/JWE del borrador CXP. El manuscrito ahora explicita esta
+distinción y conserva el resultado móvil comunicado por el operador fuera
+de los resultados medidos. `docs/CXP_EXTERNAL_PROVIDER_GATE.md` separa las
+dos puertas de aceptación.
+
+La inspección de Proton Pass common 2.0.0 encontró un módulo CXP abierto
+con intercambio HPKE directo y conversión CXF. Es un candidato nuevo para
+una prueba cruzada de implementación, pero su perfil no es el ZIP/JWE del
+proyecto, su prueba interna no constituye interoperabilidad externa, y aún
+no ejecutamos la compilación del módulo con un adaptador independiente.
+
+El ZIP anónimo local se regeneró con la corrección del paper. Una extracción
+limpia verificó 132 miembros y los controles previos; SHA-256 del ZIP:
+`426ab4312ed6f1170e9c0c033ba119beb00e54e45b40e26b9938832d608c7de9`.
+El PDF final debe recompilarse para verificar de nuevo la paginación.
