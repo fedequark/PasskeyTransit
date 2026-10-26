@@ -1,0 +1,20 @@
+{
+  "controls": {
+    "altered_request_rejected": true,
+    "synthetic_cxf_recovered": true,
+    "tampered_ciphertext_rejected": true,
+    "wrong_recipient_rejected": true
+  },
+  "external_revision": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
+  "limitations": [
+    "no passkey in this fixture",
+    "no provider vault import",
+    "no ZIP/JWE",
+    "no RP assertion"
+  ],
+  "plaintext_sha256": "002034734f2142582d2ba8e67f4aa4d99b282d34c1f2196b1141d41fc1c57e32",
+  "request_sha256": "ad3b417d52f0371b82174150a7382b167d2fa8e2a21417bd9dca7750ce50d4fd",
+  "response_sha256": "dbeb5f1865dad9e5be7639b9f518887d19f1bd3bd8229998800ac64cfd7d4a8d",
+  "scope": "Proton Pass common 2.0.0 CXP direct HPKE exporter to project Python importer; synthetic basic-auth only",
+  "status": "PASS"
+}

@@ -1,0 +1,24 @@
+{
+  "controls": {
+    "changed_request_rejected": true,
+    "credential_id_preserved": true,
+    "destination_assertions_verified": true,
+    "destination_prf_verified": true,
+    "hmac_state_preserved": true,
+    "private_key_preserved": true,
+    "rp_id_preserved": true,
+    "user_handle_preserved": true
+  },
+  "external_revision": "b22db5ca6fef03d0e9467c0305f9af8a2826be35",
+  "limitations": [
+    "Proton library import/export and software authenticator, not app vault storage",
+    "no ZIP/JWE",
+    "no deployed RP assertion"
+  ],
+  "prf_seed_checks_verified": 4,
+  "recovered_cxf_sha256": "33bd3863aaf2fbd8c4c9238ba56dd89b13e330e2ddc7eae54f7bc7c395df399d",
+  "scope": "Proton Pass common 2.0.0 CXP direct-HPKE exporter; project CXF source and HPKE importer",
+  "signed_assertions_verified": 4,
+  "source_cxf_sha256": "1eea6dcd6280c8841c665b37374708031108a80a8c15f2dac46d589000f34d59",
+  "status": "PASS"
+}

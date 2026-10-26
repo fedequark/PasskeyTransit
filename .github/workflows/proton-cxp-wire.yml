@@ -52,3 +52,8 @@ jobs:
           name: proton-cxp-passkey-report
           path: proton-cxp-passkey-report.json
           retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proton-cxp-cargo-lock
+          path: interop/proton_cxp_wire/Cargo.lock
+          retention-days: 7
