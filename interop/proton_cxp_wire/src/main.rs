@@ -4,7 +4,7 @@
 use std::io::{self, Read, Write};
 
 use proton_pass_common::cxf::{CxfExportInput, CxfVaultWithItems, ItemMetadata, ItemWithMetadata};
-use proton_pass_common::cxp::CxpExportHandler;
+use proton_pass_common::cxp::{CxpCredentialType, CxpExportHandler, CxpExportRequest, CxpImportHandler};
 use proton_pass_types::{ItemContent, ItemData, LoginItem, VaultData, VaultDisplayPreferences};
 
 fn synthetic_export() -> CxfExportInput {
@@ -50,6 +50,38 @@ fn synthetic_export() -> CxfExportInput {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    if std::env::args().any(|arg| arg == "--import") {
+        let importer = CxpImportHandler::new();
+        let request = importer
+            .create_export_request(CxpExportRequest {
+                importer_name: "PasskeyTransit synthetic importer".to_string(),
+                supported_credential_types: vec![CxpCredentialType::Passkey],
+            })
+            .map_err(|e| format!("Proton CXP request: {e:?}"))?;
+        writeln!(io::stdout(), "{request}")?;
+        io::stdout().flush()?;
+        let mut response = Vec::new();
+        io::stdin().read_to_end(&mut response)?;
+        let imported = importer
+            .process_export_response(&response)
+            .map_err(|e| format!("Proton CXP import: {e:?}"))?;
+        let passkey_count: usize = imported
+            .vaults
+            .iter()
+            .flat_map(|vault| &vault.items)
+            .map(|item| match &item.content {
+                ItemContent::Login(login) => login.passkeys.len(),
+                _ => 0,
+            })
+            .sum();
+        let summary = serde_json::json!({
+            "vault_count": imported.vaults.len(),
+            "passkey_count": passkey_count,
+            "warning_count": imported.warnings.len(),
+        });
+        writeln!(io::stdout(), "{summary}")?;
+        return Ok(());
+    }
     let mut input = String::new();
     io::stdin().read_to_string(&mut input)?;
     let (request, export) = if input.trim_start().starts_with("{\"cxp_request\":") {

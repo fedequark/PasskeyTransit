@@ -9,6 +9,33 @@ from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 from .hpke import HpkeError, _extract_and_expand, _i2osp, _labeled_expand, _labeled_extract, _public_bytes
 
 
+def _context(shared: bytes, info: bytes) -> tuple[bytes, bytes]:
+    suite = b"HPKE" + _i2osp(0x0020, 2) + _i2osp(0x0001, 2) + _i2osp(0x0003, 2)
+    psk_id_hash = _labeled_extract(suite, b"", b"psk_id_hash", b"")
+    info_hash = _labeled_extract(suite, b"", b"info_hash", info)
+    schedule = b"\x00" + psk_id_hash + info_hash
+    secret = _labeled_extract(suite, shared, b"secret", b"")
+    return (
+        _labeled_expand(suite, secret, b"key", schedule, 32),
+        _labeled_expand(suite, secret, b"base_nonce", schedule, 12),
+    )
+
+
+def seal_base(
+    recipient_public_key: x25519.X25519PublicKey,
+    plaintext: bytes,
+    *,
+    info: bytes,
+    aad: bytes,
+) -> tuple[bytes, bytes]:
+    ephemeral = x25519.X25519PrivateKey.generate()
+    enc = _public_bytes(ephemeral.public_key())
+    recipient = _public_bytes(recipient_public_key)
+    shared = _extract_and_expand(ephemeral.exchange(recipient_public_key), enc + recipient)
+    key, nonce = _context(shared, info)
+    return enc, ChaCha20Poly1305(key).encrypt(nonce, plaintext, aad)
+
+
 def open_base(
     recipient_private_key: x25519.X25519PrivateKey,
     enc: bytes,
@@ -23,13 +50,7 @@ def open_base(
         ephemeral = x25519.X25519PublicKey.from_public_bytes(enc)
         recipient = _public_bytes(recipient_private_key.public_key())
         shared = _extract_and_expand(recipient_private_key.exchange(ephemeral), enc + recipient)
-        suite = b"HPKE" + _i2osp(0x0020, 2) + _i2osp(0x0001, 2) + _i2osp(0x0003, 2)
-        psk_id_hash = _labeled_extract(suite, b"", b"psk_id_hash", b"")
-        info_hash = _labeled_extract(suite, b"", b"info_hash", info)
-        schedule = b"\x00" + psk_id_hash + info_hash
-        secret = _labeled_extract(suite, shared, b"secret", b"")
-        key = _labeled_expand(suite, secret, b"key", schedule, 32)
-        nonce = _labeled_expand(suite, secret, b"base_nonce", schedule, 12)
+        key, nonce = _context(shared, info)
         return ChaCha20Poly1305(key).decrypt(nonce, ciphertext, aad)
     except (InvalidTag, ValueError) as exc:
         raise HpkeError("HPKE ciphertext authentication failed") from exc

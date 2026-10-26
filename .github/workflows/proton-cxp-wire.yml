@@ -11,6 +11,7 @@ on:
       - src/passkeytransit/hpke_chacha.py
       - tools/run_proton_cxp_wire.py
       - tools/run_proton_cxp_passkey.py
+      - tools/run_proton_cxp_reverse.py
       - interop/proton-cxf-prf/package-lock.json
       - interop/proton-cxf-prf/run.mjs
 
@@ -42,6 +43,8 @@ jobs:
           python -c 'import json; r=json.load(open("proton-cxp-wire-report.json")); print(r["scope"], r["status"], r["controls"])'
           python tools/run_proton_cxp_passkey.py interop/proton_cxp_wire/target/debug/passkeytransit-proton-cxp-wire "$(command -v node)" interop/proton-cxf-prf/run.mjs > proton-cxp-passkey-report.json
           python -c 'import json; r=json.load(open("proton-cxp-passkey-report.json")); print(r["scope"], r["status"], r["controls"])'
+          python tools/run_proton_cxp_reverse.py interop/proton_cxp_wire/target/debug/passkeytransit-proton-cxp-wire > proton-cxp-reverse-report.json
+          python -c 'import json; r=json.load(open("proton-cxp-reverse-report.json")); print(r["scope"], r["status"], r["controls"])'
       - uses: actions/upload-artifact@v4
         with:
           name: proton-cxp-wire-report
@@ -56,4 +59,9 @@ jobs:
         with:
           name: proton-cxp-cargo-lock
           path: interop/proton_cxp_wire/Cargo.lock
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proton-cxp-reverse-report
+          path: proton-cxp-reverse-report.json
           retention-days: 7
