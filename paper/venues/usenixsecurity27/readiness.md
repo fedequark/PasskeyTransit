@@ -499,3 +499,9 @@ El manuscrito incorpora esa distinción. El paquete anónimo actualizado
 conserva ambos reportes y el probe. Su `verify.py` pasó sobre una extracción
 en Windows y el [run 40363849463](https://github.com/fedequark/PasskeyTransit/actions/runs/40363849463)
 reprodujo el mismo ZIP en Ubuntu.
+
+El [run PDF 40363849442](https://github.com/fedequark/PasskeyTransit/actions/runs/40363849442)
+compiló el manuscrito actualizado en seis páginas U.S. letter. Las páginas
+cinco y seis se inspeccionaron después de la descarga; el PDF en
+`compiled/main.pdf` tiene SHA-256
+`06af9a76ef7ab5f207efa64cb0e38f74e22c22a78231aac3e60739dc95b76d78`.
