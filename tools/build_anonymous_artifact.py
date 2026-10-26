@@ -11,6 +11,7 @@ import hashlib
 import io
 import json
 import re
+import subprocess
 import zipfile
 from pathlib import Path
 
@@ -106,6 +107,10 @@ SOURCE_FILES = [
     "tools/verify_provider_reports.py",
     "tools/verify_anonymous_artifact.py",
 ]
+RAW_BYTE_FILES = {
+    "experiments/phase14_ci_replay/2026-10-20/auditable/cross_runtime_cxp.json",
+    "experiments/phase14_ci_replay/2026-10-20/auditable/prf_migration.json",
+}
 DIRECT_IDENTIFIERS = [
     re.compile(rb"(?i)github\.com/fedequark(?:/|\b)"),
     re.compile(rb"(?i)(?<![A-Za-z0-9])fedep(?![A-Za-z0-9])"),
@@ -117,6 +122,26 @@ EMAIL = re.compile(rb"(?i)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 
 def _sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def _source_bytes(name: str) -> bytes:
+    data = (ROOT / name).read_bytes()
+    return data if name in RAW_BYTE_FILES else data.replace(b"\r\n", b"\n")
+
+
+def _python_sources(directory: str) -> list[str]:
+    # In a working tree, staged review must not silently absorb untracked tests.
+    # In a source archive without .git, every extracted file is from Git.
+    if (ROOT / ".git").exists():
+        result = subprocess.run(
+            ["git", "-C", str(ROOT), "ls-files", "--cached", "--", directory],
+            check=True, capture_output=True, text=True,
+        )
+        return sorted(name for name in result.stdout.splitlines()
+                      if name.endswith(".py") and
+                      (directory != "tests" or Path(name).name.startswith("test_")))
+    return sorted(path.relative_to(ROOT).as_posix()
+                  for path in (ROOT / directory).glob("test_*.py" if directory == "tests" else "*.py"))
 
 
 def _jsonl_without_revision(data: bytes) -> bytes:
@@ -131,11 +156,9 @@ def _jsonl_without_revision(data: bytes) -> bytes:
 def build() -> Path:
     files: dict[str, bytes] = {}
     for path in SOURCE_FILES:
-        files[path] = (ROOT / path).read_bytes()
-    for source in sorted((ROOT / "src/passkeytransit").glob("*.py")):
-        files[source.relative_to(ROOT).as_posix()] = source.read_bytes()
-    for source in sorted((ROOT / "tests").glob("test_*.py")):
-        files[source.relative_to(ROOT).as_posix()] = source.read_bytes()
+        files[path] = _source_bytes(path)
+    for source in _python_sources("src/passkeytransit") + _python_sources("tests"):
+        files[source] = _source_bytes(source)
     with zipfile.ZipFile(RELEASE) as original:
         for output, source in RAW_NAMES.items():
             files[f"data/raw/{output}"] = _jsonl_without_revision(original.read(source))
@@ -231,7 +254,7 @@ def build() -> Path:
         "not yet a complete submission artifact. "
         "No independent review or external provider CXP transfer is claimed.\n"
     ).encode()
-    files["verify.py"] = (ROOT / "tools/verify_anonymous_artifact.py").read_bytes()
+    files["verify.py"] = _source_bytes("tools/verify_anonymous_artifact.py")
     for name, data in files.items():
         for pattern in DIRECT_IDENTIFIERS:
             if pattern.search(data):

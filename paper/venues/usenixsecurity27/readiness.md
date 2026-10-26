@@ -291,10 +291,15 @@ los tres informes y recalculó 40 firmas y 18 vínculos PRF de Fenko,
 
 El ZIP anónimo **local** incorporó ambos ZIP originales y los informes,
 dejando el vínculo identificador con GitHub en un sidecar externo. Una
-extracción limpia verificó 148 miembros con hash y repitió esos chequeos;
-SHA-256 del ZIP: `e04b1b1285d13bd4a615dd585d11ecbb9054bdb1ec05b3f0b44e6cadfcf75328`.
+extracción limpia verificó 146 miembros con hash y repitió esos chequeos;
+SHA-256 del ZIP: `2c7b4ed2a5bf7383b0fc36f27d2e69e361331d57b036177a7054fc921addc194`.
 El job de Chrome del runner falló porque no cargó la extensión; el resultado
 que se conserva utiliza el Chromium incluido por Playwright. El run anterior
 con instalación del navegador sin progreso se canceló para evitar cómputo
 innecesario. CI demuestra repetición automatizada por el mismo equipo en otro
 entorno, no réplica independiente ni CXP entre dos apps de proveedores.
+Los ZIP originales de Phase 14 y del replay local se añadieron al repositorio
+con sus informes; el constructor del paquete usa solo archivos bajo control
+de versiones y normaliza los textos ordinarios a LF. Los dos informes de
+Phase 14 conservan sus bytes originales. Así, un checkout limpio produce
+el mismo ZIP de revisión pese a los archivos de trabajo no registrados.
