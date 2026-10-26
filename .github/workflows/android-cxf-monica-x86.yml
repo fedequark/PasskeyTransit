@@ -1,0 +1,54 @@
+name: Monica x86_64 emulator APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - name: Fetch pinned Monica source
+        run: |
+          git init tmp/vendor_monica_build
+          git -C tmp/vendor_monica_build remote add origin https://github.com/Monica-Pass/Monica.git
+          git -C tmp/vendor_monica_build fetch --depth=1 --filter=blob:none origin 5ef2f3a64b53094351210f1e316fbab51852708e
+          git -C tmp/vendor_monica_build checkout --detach FETCH_HEAD
+          test "$(git -C tmp/vendor_monica_build rev-parse HEAD)" = 5ef2f3a64b53094351210f1e316fbab51852708e
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build x86_64 JNI library
+        working-directory: tmp/vendor_monica_build/Monica for Android
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add x86_64-linux-android
+          cargo install cargo-ndk --version 4.1.2 --locked
+          cd rust-jni
+          cargo ndk -t x86_64 -o ../app/src/main/jniLibs build --release --locked
+          test -f ../app/src/main/jniLibs/x86_64/libmonica_rust_jni.so
+      - name: Assemble emulator APK
+        working-directory: tmp/vendor_monica_build/Monica for Android
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug -PincludeX86TestAbi --stacktrace --no-daemon
+          find app/build/outputs/apk/debug -maxdepth 1 -type f -print
+          apk=$(find app/build/outputs/apk/debug -maxdepth 1 -type f -iname '*x86_64*.apk' -print -quit)
+          test -n "$apk"
+          unzip -Z1 "$apk" | grep -q '^lib/x86_64/libmonica_rust_jni.so$'
+          sha256sum "$apk" | tee "$GITHUB_WORKSPACE/tmp/monica-x86-apk-sha256.txt"
+          cp "$apk" "$GITHUB_WORKSPACE/tmp/monica-x86_64-debug.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: monica-x86_64-debug
+          path: |
+            tmp/monica-x86_64-debug.apk
+            tmp/monica-x86-apk-sha256.txt
+          retention-days: 14
