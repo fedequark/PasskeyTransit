@@ -32,11 +32,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Install project and locate runner Chrome
+      - name: Install project and bundled Chromium
         run: |
           python -m pip install -e .
-          command -v google-chrome
-          google-chrome --version
+          python -m playwright install --no-shell chromium
       - name: Fetch pinned Fenko source and build extension
         run: |
           git init tmp/vendor_fenko
@@ -51,7 +50,7 @@ jobs:
           npm run build:chrome
       - name: Replay Fenko CXF import and browser assertions
         run: |
-          BROWSER_PATH="$(command -v google-chrome)"
+          BROWSER_PATH="$(python -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
           mkdir -p tmp/provider-ci
           python -m passkeytransit fenko-provider --protocol experiments/protocol_v2.json --vendor-root tmp/vendor_fenko --browser "$BROWSER_PATH" --output tmp/provider-ci/fenko_provider.json
           python -m passkeytransit verify-fenko-provider --report tmp/provider-ci/fenko_provider.json --protocol experiments/protocol_v2.json
