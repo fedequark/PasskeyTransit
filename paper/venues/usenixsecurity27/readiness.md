@@ -144,17 +144,28 @@ El exportador Python y el importador Node, escritos por este proyecto,
 recuperaron el mismo CXF sintético con campos HMAC. Pasaron nueve controles
 locales y cuatro controles entre runtimes; entre los negativos están alterar el
 JWE, la clave envuelta, el destinatario, el archivo negociado y el estado de
-replay. El [run de verificación 40329671859](https://github.com/fedequark/PasskeyTransit/actions/runs/40329671859)
+replay. El [run de verificación 40332016417](https://github.com/fedequark/PasskeyTransit/actions/runs/40332016417)
 pasó. Los informes tienen SHA-256
 `e608f9dcee5f46f52f4cd70c72e3329337f8b6583a711e155194cf2bad811aba`
 y `fea15a29a06fff6aa14d889965726b76a90d7ff4a2f8681e63112cba79b8423b`.
 
 El artefacto anónimo local incorporó código, informe y verificador del nuevo
 perfil; una extracción limpia volvió a pasar con 117 miembros verificados.
-SHA-256 del ZIP: `705c87c9ee3b71ed32f8dc3ec6ac81329934d4308e7622a043b8baf63e99c84b`.
+SHA-256 del ZIP: `0345730acce05f35ab807bdefcbd461a2e4b3e0bd15165b84ab9790749e61eb8`.
 El perfil **no** demuestra que un gestor externo acepte ese mapeo HPKE/JWE.
 La auditoría de código abierto documentada en
 `docs/CXP_EXTERNAL_PROVIDER_GATE.md` muestra que el parser de Bitwarden
 Android inspeccionado recibe CXF JSON y delega la importación al SDK y al
 servicio de cuenta; no provee un motor ZIP/JWE independiente ejecutable en
 este host. Sigue faltando un intercambio con un proveedor externo completo.
+
+La versión actual del manuscrito compiló en el
+[run PDF 40332016393](https://github.com/fedequark/PasskeyTransit/actions/runs/40332016393)
+con la plantilla oficial sin modificaciones. El PDF tiene cinco páginas
+U.S. letter y SHA-256
+`d22385cc8d7f5096bd1dea45c8cb64985e0b8dc0a525eb0d877464ea59ad9d17`.
+Se inspeccionaron visualmente las cinco páginas. El
+[run de verificación 40332016417](https://github.com/fedequark/PasskeyTransit/actions/runs/40332016417)
+pasó. El run PDF anterior `40331486215` compiló seis páginas porque dos
+referencias quedaron aisladas; se corrigió el apéndice antes de fijar
+este PDF.
