@@ -343,18 +343,14 @@ In a separate transformed control, we re-encrypted the decrypted
 self-import passed, but the substituted index was rejected for lacking
 \texttt{header} and \texttt{documents}. This locates a later layout boundary;
 the transformed ZIP is not the original export.
-As a separate positive control, the second research PoC's own exporter
-and importer transferred one synthetic passkey in direct and indirect
-modes under each of two policies. Its local WebAuthn RP verified login
-before and after import with the same credential ID in all four cases.
-This measures a same-codebase software flow, not independent-provider
-interoperability or an installed-app migration.
-An explicit project adapter also decrypted a fresh \texttt{cxporter}
-response and placed its CXF passkey directly in the PoC destination
-vault. The local RP verified the recovered key in two repetitions.
-This tests key-material usability across those software paths; the adapter
-bypasses the PoC's CXP importer, which still rejects the original wire
-response.
+Separately, the PoC's own exporter and importer transferred one synthetic
+passkey in four direct/indirect and policy combinations; its local RP
+verified login before and after import with one credential ID. In two
+further runs, a project decryptor opened fresh \texttt{cxporter} ZIPs,
+inserted recovered CXF keys directly into the PoC vault, and the RP
+verified them. These software controls do not establish provider
+interoperability: the adapter bypasses the PoC's CXP importer, which
+rejects the original response.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
