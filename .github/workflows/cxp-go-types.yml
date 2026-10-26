@@ -1,0 +1,34 @@
+name: CXP Go type probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/usenix27-pdf]
+    paths:
+      - .github/workflows/cxp-go-types.yml
+      - interop/go_cxp_types/**
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      - name: Pin external Go types
+        run: |
+          git clone --no-checkout https://github.com/nvinuesa/go-cxp.git tmp/go-cxp
+          git -C tmp/go-cxp checkout --detach 94659f317ac62470a149cb3ecb769ed5d03d18a1
+          test "$(git -C tmp/go-cxp rev-parse HEAD)" = "94659f317ac62470a149cb3ecb769ed5d03d18a1"
+      - name: Parse and round-trip synthetic CXP objects
+        working-directory: interop/go_cxp_types
+        run: |
+          set -o pipefail
+          go run . ../../experiments/cxp_external_schema/fixture.json | tee ../../experiments/cxp_external_schema/go_runtime_report.json
+          python ../../tools/verify_go_cxp_runtime_report.py ../../experiments/cxp_external_schema/go_runtime_report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxp-go-types
+          path: experiments/cxp_external_schema/go_runtime_report.json
