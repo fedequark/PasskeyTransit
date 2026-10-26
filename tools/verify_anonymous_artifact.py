@@ -41,6 +41,17 @@ def verify(root: Path) -> dict[str, object]:
         raise ValueError("cxporter adapter CI report differs in source or result")
     if len(adapter_ci["runs"]) != 2 or any(not run["rp_verified_before_and_after"] or run["project_adapter_inserted_records"] != 1 for run in adapter_ci["runs"]):
         raise ValueError("cxporter adapter CI RP assertion differs")
+    audit = json.loads((root / "experiments/android_cxf_open/report.json").read_text(encoding="utf-8"))
+    if audit["status"] != "SOURCE_AUDIT_WITH_UPSTREAM_TESTS_PASS":
+        raise ValueError("Android CXF source audit status differs")
+    for name, filename in (("keyguard_conformance", "keyguard-cxf-conformance.xml"),
+                           ("keyguard_roundtrip", "keyguard-cxf-roundtrip.xml"),
+                           ("monica_codec", "monica-cxf-codec.xml")):
+        raw = (root / "experiments/android_cxf_open/upstream" / filename).read_bytes()
+        if audit["upstream_xml"][name]["sha256"] != hashlib.sha256(raw).hexdigest():
+            raise ValueError("Android CXF upstream XML digest differs")
+    if "No Keyguard-to-Monica exchange" not in audit["limitation"]:
+        raise ValueError("Android CXF audit scope missing")
     replay_bytes = (root / "data/replay/phase14-original.zip").read_bytes()
     with zipfile.ZipFile(io.BytesIO(replay_bytes)) as replay:
         members = replay.namelist()
