@@ -447,3 +447,31 @@ local en Windows y tiene SHA-256
 El [run 40360147948](https://github.com/fedequark/PasskeyTransit/actions/runs/40360147948)
 reconstruyó exactamente ese SHA-256 en Ubuntu 24.04 y verificó el paquete
 extraído. Es una repetición automatizada del mismo equipo.
+
+## Avance del 26 de octubre: aislamiento del formato del índice
+
+El índice del vector CXP sintético se descifró con una clave receptora de
+prueba pública; su plaintext tiene SHA-256
+`e8f16dc16ad36a18f75b279c1bc7f5066ef13edcb43f6990f407cfc75f1dcd7c`.
+Un control transformado hizo primero una autoimportación positiva con
+`cxp_poc2`, reemplazó sólo el índice por ese plaintext dentro del perfil
+JWE del propio importador y ejecutó su `openPayload` sin modificar. El
+resultado fue `CxpPayloadError: index.jwe is not {header, documents}` tanto
+localmente como en el [run 40361395703](https://github.com/fedequark/PasskeyTransit/actions/runs/40361395703).
+El digest del artefacto CI original es
+`sha256:e61ab4e12dc8e5f5073aadbb64382239aada81b285273888e44938a179ae6ce7`.
+El ZIP transformado no es la exportación original de `cxporter`: el ensayo
+ubica una diferencia de formato posterior a los rechazos de esquema y
+algoritmo, sin demostrar un tercer rechazo de ese ciphertext ni conformidad
+normativa.
+
+El [run PDF 40361395891](https://github.com/fedequark/PasskeyTransit/actions/runs/40361395891)
+compiló esta distinción en seis páginas U.S. letter. Se inspeccionaron las
+páginas cinco y seis y las veinte referencias quedan completas; SHA-256 del
+PDF actual `compiled/main.pdf`:
+`e9dbb40755662f61a8e539bb67c46ead13d1e94253e5bce3b14ebd487b0dc40d`.
+El paquete anónimo local actualizado conserva ambos informes del control
+de índice: 172 miembros con hash, extracción y `verify.py` aprobados en
+Windows, SHA-256
+`0dd2378ef508b0c4387d950db21e7882bfc87e654218f36a6c22257d060307cc`.
+Falta la reconstrucción Linux de este hash.

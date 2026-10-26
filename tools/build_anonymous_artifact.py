@@ -49,6 +49,7 @@ SOURCE_FILES = [
     "experiments/cxporter_cxp_open/vectors/cxporter-poc2-v1.json",
     "experiments/cxporter_cxp_open/vectors/cxporter-index-v1.json",
     "experiments/cxporter_cxp_open/index_control.json",
+    "experiments/cxporter_cxp_open/ci/40361395703/index_control.json",
     "experiments/cxporter_cxp_open/ci/40359254321/public_vector_replay.json",
     "experiments/cxporter_cxp_open/ci/40359254321/fresh_vector_replay.json",
     "experiments/cxp_wire_structural/report.json",

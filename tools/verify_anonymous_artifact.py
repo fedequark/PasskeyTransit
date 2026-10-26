@@ -125,6 +125,11 @@ def verify(root: Path) -> dict[str, object]:
     from verify_cxp_index_control import verify as verify_index_control
 
     index_control = verify_index_control(root, root / "experiments/cxporter_cxp_open/index_control.json")
+    index_control_ci = verify_index_control(root, root / "experiments/cxporter_cxp_open/ci/40361395703/index_control.json")
+    index_local_report = json.loads((root / "experiments/cxporter_cxp_open/index_control.json").read_text())
+    index_ci_report = json.loads((root / "experiments/cxporter_cxp_open/ci/40361395703/index_control.json").read_text())
+    if index_local_report["observation"]["transformed_archive_sha256"] == index_ci_report["observation"]["transformed_archive_sha256"]:
+        raise ValueError("index CI control reused the local transformed archive")
 
     parser_report = json.loads((root / "experiments/cxp_external_schema/runtime_report.json").read_text())
     if parser_report.get("provider_interoperability") != "NOT_EVALUABLE":
@@ -230,6 +235,7 @@ def verify(root: Path) -> dict[str, object]:
         "cxp_public_vector_jwe_files": vector["jwe_files"],
         "cxp_public_vector_ci_replays": 2,
         "cxp_index_control_local": index_control["status"],
+        "cxp_index_control_ci": index_control_ci["status"],
         "provider_ci_report_byte_matches": 3,
         "provider_ci_fenko_signatures_verified": ci_counts[0] + ci_counts[2],
         "provider_ci_fenko_prf_bindings_verified": ci_counts[1] + ci_counts[3],
