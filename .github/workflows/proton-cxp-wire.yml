@@ -40,9 +40,9 @@ jobs:
         with:
           name: proton-cxp-wire-report
           path: proton-cxp-wire-report.json
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         with:
           name: proton-cxp-passkey-report
           path: proton-cxp-passkey-report.json
-          retention-days: 7
           retention-days: 7
