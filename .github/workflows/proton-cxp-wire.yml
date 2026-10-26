@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: "22"
       - name: Build pinned Proton CXP exporter adapter
-        run: cargo build --manifest-path interop/proton_cxp_wire/Cargo.toml
+        run: cargo build --locked --manifest-path interop/proton_cxp_wire/Cargo.toml
       - name: Exchange and decrypt synthetic direct-HPKE CXP response
         env:
           PYTHONPATH: src

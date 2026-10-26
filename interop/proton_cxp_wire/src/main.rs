@@ -74,10 +74,44 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 _ => 0,
             })
             .sum();
+        let vaults = imported
+            .vaults
+            .into_iter()
+            .map(|entry| CxfVaultWithItems {
+                vault: entry.vault.unwrap_or_else(|| {
+                    VaultData::new(
+                        "Synthetic vault".to_string(),
+                        String::new(),
+                        VaultDisplayPreferences::default(),
+                    )
+                    .expect("synthetic vault")
+                }),
+                items: entry
+                    .items
+                    .into_iter()
+                    .map(|item| ItemWithMetadata {
+                        item,
+                        metadata: ItemMetadata {
+                            created_at: 0,
+                            modified_at: 0,
+                            pinned: false,
+                        },
+                    })
+                    .collect(),
+            })
+            .collect();
+        let exported = proton_pass_common::cxf::export_cxf(CxfExportInput {
+            vaults,
+            exporter_rp_id: "passkeytransit.example.test".to_string(),
+            exporter_display_name: "Proton Pass synthetic importer".to_string(),
+            timestamp: 1_700_000_000,
+        })
+        .map_err(|e| format!("Proton CXF re-export: {e:?}"))?;
         let summary = serde_json::json!({
-            "vault_count": imported.vaults.len(),
             "passkey_count": passkey_count,
             "warning_count": imported.warnings.len(),
+            "export_warning_count": exported.warnings.len(),
+            "exported_cxf": exported.payload,
         });
         writeln!(io::stdout(), "{summary}")?;
         return Ok(());
