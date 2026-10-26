@@ -151,7 +151,7 @@ y `fea15a29a06fff6aa14d889965726b76a90d7ff4a2f8681e63112cba79b8423b`.
 
 El artefacto anónimo local incorporó código, informe y verificador del nuevo
 perfil; una extracción limpia volvió a pasar con 117 miembros verificados.
-SHA-256 del ZIP: `0345730acce05f35ab807bdefcbd461a2e4b3e0bd15165b84ab9790749e61eb8`.
+SHA-256 del ZIP: `688f7039d9ee7475059a67feab8b43706df0f316785fdb0227c11ffb9cdf059b`.
 El perfil **no** demuestra que un gestor externo acepte ese mapeo HPKE/JWE.
 La auditoría de código abierto documentada en
 `docs/CXP_EXTERNAL_PROVIDER_GATE.md` muestra que el parser de Bitwarden
@@ -169,3 +169,25 @@ Se inspeccionaron visualmente las cinco páginas. El
 pasó. El run PDF anterior `40331486215` compiló seis páginas porque dos
 referencias quedaron aisladas; se corrigió el apéndice antes de fijar
 este PDF.
+
+## Avance del 26 de octubre: interoperabilidad JOSE externa
+
+El mapeo genérico `HPKE-3-KE` del Internet-Draft JOSE -22 se probó con
+dos implementaciones: el módulo Python de este proyecto y la librería
+Go independiente `jwx/v4` v4.6.0. Cada una descifró el JWE de la otra
+con el mismo CXF sintético; se rechazaron ciphertext alterado y claves
+de destinatario incorrectas. Pasaron cinco controles. El
+[run de CI 40334103465](https://github.com/fedequark/PasskeyTransit/actions/runs/40334103465)
+repitió el ensayo. El informe, que no guarda claves ni texto claro,
+tiene SHA-256
+`3f6de00e7d472ee15681298b07b39f7c09b80483b0be81863ca58ba43d4701da`.
+Es interoperabilidad criptográfica JOSE, no un ZIP CXP importado por un
+gestor externo. El borrador JOSE todavía no es un RFC publicado.
+
+El ZIP anónimo local se regeneró y verificó desde una extracción limpia:
+126 miembros con hash y cinco nuevos controles JOSE. Su SHA-256 actual
+figura arriba. Sigue sin URL anónima estable y con riesgo de asociación
+contextual. El [run PDF 40334103538](https://github.com/fedequark/PasskeyTransit/actions/runs/40334103538)
+compiló la versión actual con la plantilla oficial. El PDF tiene cinco
+páginas U.S. letter, inspeccionadas visualmente, y SHA-256
+`5200a94756f7fe6fe2cdc64b3ca68261a7cca45165d517d5756c90ca0347e18f`.
