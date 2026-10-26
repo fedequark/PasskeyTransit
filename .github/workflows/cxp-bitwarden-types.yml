@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches: [codex/usenix27-pdf]
-    paths: [.github/workflows/cxp-bitwarden-types.yml]
+    paths:
+      - .github/workflows/cxp-bitwarden-types.yml
+      - interop/bitwarden_cxp_types/**
 
 jobs:
   probe:
@@ -14,7 +16,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Pin the external source
         run: |
-          git clone --depth 1 https://github.com/bitwarden/credential-exchange.git tmp/bitwarden-cxp
+          git init tmp/bitwarden-cxp
+          git -C tmp/bitwarden-cxp remote add origin https://github.com/bitwarden/credential-exchange.git
+          git -C tmp/bitwarden-cxp fetch --depth 1 origin 32da4c8b0a4abdd0b46fae79c31e0fdb50150396
+          git -C tmp/bitwarden-cxp checkout --detach FETCH_HEAD
           test "$(git -C tmp/bitwarden-cxp rev-parse HEAD)" = "32da4c8b0a4abdd0b46fae79c31e0fdb50150396"
       - name: Parse and round-trip synthetic CXP objects
         run: |
@@ -24,4 +29,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: cxp-bitwarden-types
-          path: experiments/cxp_external_schema/runtime_report.json
+          path: |
+            experiments/cxp_external_schema/runtime_report.json
+            interop/bitwarden_cxp_types/Cargo.lock

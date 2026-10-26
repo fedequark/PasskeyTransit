@@ -7,8 +7,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let fixture: Value = serde_json::from_slice(&fs::read(fixture_path)?)?;
     let request_input = fixture["request"].clone();
     let response_input = fixture["response"].clone();
-    let request: ExportRequest = serde_json::from_value(request_input.clone())?;
-    let response: ExportResponse = serde_json::from_value(response_input.clone())?;
+    // B64Url's deserializer borrows from the JSON input; from_value cannot
+    // provide that borrowed representation.
+    let request_json = request_input.to_string();
+    let response_json = response_input.to_string();
+    let request: ExportRequest = serde_json::from_str(&request_json)?;
+    let response: ExportResponse = serde_json::from_str(&response_json)?;
     let request_output = serde_json::to_value(request)?;
     let response_output = serde_json::to_value(response)?;
 
@@ -22,7 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .collect();
     let mut wide_version = request_input.clone();
     wide_version["version"] = json!(256);
-    let version_256_rejected = serde_json::from_value::<ExportRequest>(wide_version).is_err();
+    let version_256_rejected = serde_json::from_str::<ExportRequest>(&wide_version.to_string()).is_err();
 
     println!("{}", serde_json::to_string_pretty(&json!({
         "source_commit": "32da4c8b0a4abdd0b46fae79c31e0fdb50150396",
