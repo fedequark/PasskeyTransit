@@ -34,6 +34,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "draft_valid_version_256_rejected": version_256_rejected,
         "hpke_jwe_decryption": "NOT_EVALUABLE",
         "provider_interoperability": "NOT_EVALUABLE"
-    }))?)?;
+    }))?);
     Ok(())
 }

@@ -18,6 +18,7 @@ jobs:
           test "$(git -C tmp/bitwarden-cxp rev-parse HEAD)" = "32da4c8b0a4abdd0b46fae79c31e0fdb50150396"
       - name: Parse and round-trip synthetic CXP objects
         run: |
+          set -o pipefail
           cargo run --manifest-path interop/bitwarden_cxp_types/Cargo.toml -- experiments/cxp_external_schema/fixture.json | tee experiments/cxp_external_schema/runtime_report.json
           python tools/verify_cxp_runtime_report.py experiments/cxp_external_schema/runtime_report.json
       - uses: actions/upload-artifact@v4
