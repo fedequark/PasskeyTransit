@@ -21,6 +21,9 @@ on:
       - tools/extract_cxp_public_index.py
       - tools/run_cxp_index_control.py
       - tools/verify_cxp_index_control.py
+      - interop/cxp_poc2_cross_probe/pt-rp-control.ts
+      - tools/run_cxp_poc2_rp_control.py
+      - tools/verify_cxp_poc2_rp_control.py
 
 permissions:
   contents: read
@@ -112,4 +115,14 @@ jobs:
         with:
           name: cxporter-poc2-index-layout-control
           path: tmp/cxporter-ci/index_control.json
+          retention-days: 14
+      - name: Exercise pinned PoC migration and local RP
+        run: |
+          python tools/run_cxp_poc2_rp_control.py --ts-source tmp/vendor_cxp_poc2 --output tmp/cxporter-ci/poc2_rp_control.json
+          python tools/verify_cxp_poc2_rp_control.py --report tmp/cxporter-ci/poc2_rp_control.json
+          (cd tmp/vendor_cxp_poc2 && pnpm typecheck)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxp-poc2-rp-control
+          path: tmp/cxporter-ci/poc2_rp_control.json
           retention-days: 14
