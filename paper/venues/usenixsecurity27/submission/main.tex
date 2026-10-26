@@ -336,6 +336,10 @@ draft-required \texttt{archive} and uses a different JWE algorithm than
 our JOSE control~\cite{cxp}.
 An open research importer passed its own passkey transfer but rejected
 this export's JWE algorithm before CXF recovery~\cite{cxppoc}.
+A retained synthetic ciphertext vector permits replay of the same response:
+its full schema parse rejects a missing \texttt{archive}; adding only that
+field passes schema parsing, after which the importer rejects the JWE
+algorithm. This isolates two gates without implying draft nonconformance.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF
@@ -430,7 +434,7 @@ signatures; provider interoperability and mobile transfer remain open.
 
 \appendix
 \section{Open Science}
-Staged source, synthetic rows, reports and original CI ZIPs include
+Staged source, synthetic rows, a public ciphertext vector, reports and original CI ZIPs include
 verifiers for 96 C1 cells, 52 provider signatures and 30 PRF bindings.
 Clean CI is same-team execution, without independent replication or
 provider-app CXP transfer. Vaults and secret material are excluded;

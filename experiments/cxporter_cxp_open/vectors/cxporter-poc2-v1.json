@@ -1,0 +1,64 @@
+{
+  "vector_version": 1,
+  "description": "Synthetic cxporter response for a public, derivable test recipient",
+  "source_commits": {
+    "cxporter": "96bab31fdadcfd295542bba86b8ec8bd2355294a",
+    "cxp_poc2": "fee19d9ac392ffe0153bea8b917aa0a66f12b272"
+  },
+  "recipient_ikm_sha256": "64bfaef10fef4bd1a5bb17f8aa1163f2e45bc74bb1d1e88d85632b7c01f89ed9",
+  "recipient_public_key": "3PSqbBTEHkFRnqmy9RiLFNBfme5ESODjgaabG8zte3s",
+  "cxf_sha256": "77350f3be405354ac931a23ed1afa22aa93a987f2e07bd25360cecd080c288ee",
+  "cxf": {
+    "version": {
+      "major": 1,
+      "minor": 0
+    },
+    "exporterRpId": "passkeytransit.example.test",
+    "exporterDisplayName": "PasskeyTransit Reference Exporter",
+    "timestamp": 1700000000,
+    "accounts": [
+      {
+        "id": "YWNjb3VudC0w",
+        "username": "synthetic-research-account",
+        "email": "synthetic@example.test",
+        "collections": [],
+        "items": [
+          {
+            "id": "aXRlbS0w",
+            "title": "Synthetic User 91",
+            "credentials": [
+              {
+                "type": "passkey",
+                "credentialId": "bgLaAoTNdf_lOuW8uBQg6oSu8O5Xy9r8X_1tV0ORc90",
+                "rpId": "rp-1.example.test",
+                "username": "user-91@example.test",
+                "userDisplayName": "Synthetic User 91",
+                "userHandle": "zSdRl0fL0MR0AFhHKErtTw",
+                "key": "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgoADHGsoL1wgLfzcqABOvhnMQoIryngBFbcwCsVxv4V-hRANCAAQOSJN70N42d3oKy25T8_rAinvmkXbgx7bz19jPBEMTmLnf92aqs6iT2UqDuLn3W4ah-HHDmQIB95obDziHUfY9",
+                "fido2Extensions": {
+                  "hmacCredentials": {
+                    "algorithm": "hmac-sha256",
+                    "credWithUV": "V49G7YZSumHXLFyriLgF496jk8R4_c_e5Q5PYSXdCLw",
+                    "credWithoutUV": "L_SZ5vP8PohTw-Bk_NgZ6xSNZiiiwBDe1Uo7YwYH3T0"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "archive_sha256": "60927b038c4d324f0650541475f7b642b6af5bbce3da22501bddfe1bc80a8dd0",
+  "response": {
+    "version": 0,
+    "hpke": {
+      "mode": "base",
+      "kem": 32,
+      "kdf": 1,
+      "aead": 2
+    },
+    "exporter": "passkeytransit.example.test",
+    "payload": "UEsDBBQAAAAAAAAAAAAAAAAAAAAAAAAAAAALAAAAQ1hQLUV4cG9ydC9QSwMEFAAAAAAAAAAAAAAAAAAAAAAAAAAAABUAAABDWFAtRXhwb3J0L2RvY3VtZW50cy9QSwMEFAAIAAgAAAAAAAAAAAAAAAAAAAAAABQAAABDWFAtRXhwb3J0L2luZGV4Lmp3ZRTLWbZzMAAA4BX1HnFL9bHmKKkhVL04agyNKdRl9f_5F_CVu9W8jZw8iAVDbdHt0GpyPlyeKgQIa4IdIehhCBABsh85O8KJ6XEcsRXr86bOfyc7bcj7HEKQbCSJ5Rm24wVStBcEivBT7wiHf48AMkgXrgygCLurHSqQwb7-7y0_soTsmRgZv1RPAyn4CZjT51vRan9YE_iiT4DPIxD2tVAaIPA6RN_h6wx7cP358VWvxm2v3MoB7l5s_Kzb7zxhbEaPLQb9pW1pzTH7yhrvUhVvB_e1m4_DuVqjqJZP30vHkJ7fUiak3jAbtLMwV-RhcvULLZW87y19U-mZFblG55CFfZaUn7PG3RMieiyCCHdC0R8bbh6r31earM9w119DmqhmVpyaGwYV2QwhXZW8F0fLspjYrEsNGq8BX0MqgZtOHxV8f-_yINS_0RoVwsjsRQtFYzA0EXNarsWnqy86al582VQ1l5ICFghrpA52Oj70fgNLbHEedOkkjckkx5RaUu3uNRXjaZLrSeV3edZ3N05OaxPkwiU5s4gWldJZ7NCe_C4JFQ4qn0nqXE8Q6Lcjjyx2VOhkv2S336XhTVSXNxAB1uBgcjtmSJlzN-mIzcz9yo3NXk6Y-H7qi1prnr8H8e5_cKgmbgxk4pq5SoPydfgtBFJMHGGBFzA3v89duQcC6tAD3lI17kWTp3jLtp9uYi7Sia0sx_lNzTq70QJ4_wIAAP__UEsHCC_5JV0kAgAAsAIAAFBLAwQUAAgACAAAAAAAAAAAAAAAAAAAAAAAIQAAAENYUC1FeHBvcnQvZG9jdW1lbnRzL2FYUmxiUzB3Lmp3ZRTLV_ZzSgAA8BXlO9F51MIok-Gvvzh6HUSJsPp77gJ-1WW0uVZ0784Avrq_LN9oC9LfQwUQ0FMZK4DA8QABO0JyA_uCXqI7z2dnycaYY_t_J9m9T7pPCEF3dkkkraBfOIDhVXaABWNzQc__vf_ABvD-rP4ACwbB8mWwgan53xtuYDBZmGgZudehBmUvJDZ7Ks6yV3-eypDllBAuCQl_aphKI_6cAeLcj2kwEcK_f67iNF4_yWI1g8uJ9H9JLUUV0PLrB4DyYOr6a4PSlt_bGsSlmacrgvxaqIOImoc8IS7DPYnyFvaXfpvtstAu__HRxv_Ju_rxuk-nyZUcvMIfe1zitzSY2ZWPLDaa8fMBb9gILApT1lcUpZYo16hIUm-QwUP51N-EsuQtR2mIdNIuG87apM3nYWkCwqY0K_E5pV5qNj6tUWtGevW3zL4pY1LpQcm7GHr6ic6wmA0YLwGfRWbinYDUpDaOViK1-a2OPjKyaTfQUr7Z-0yrzPF0AhC3QMathNfVu7VlalvHEFsmkjS8p_xUbBFLdEMkb17hdHr8eyPr7h394Khle_FTFWBZsVzfXyRPOIb9Q2NOsCxBT0RUxgSd9goK42jfwiCV8Kt2rvaoIyr6SlIllbSQ8MTDuh5Pn2-VOl1_6FsRXKkpyKaC-a3enh8HFe56qoOw_p2lL-KzyAYj1YCZ7gZXl6iaE3meCeG6UVHL1HEfRPFZxwEyGSwn_t0t5409lNqDKgQP32Zsi4LjFkvnwVs3-wwfcX1aX2nJ1ediz6MtfER8CdZvLWlQsN7ciHP56tRo7uwZSZ7ehW11lHoeTk_EbdfAfe5z7iL-QzUp98cy3KQ3w-aSM_1qxs3StEjx9nb8Kbr2iAsxk6ydvcK4dkIheAeW_c3ZDdgTzJfk6GLFklmp1TGGs1R75C-jCoUh2gpA5tD65_xc1F9WJfSN2PFdYGFrEb_Sc2VOJpqPq3tw1NZwx97bK__YxIfrezeNE86lhjl9DdIeDZXa_GHlnakHpO8opHeCibVf5cpEqBUaJdFtL5Z4KoUI2ykceztfZVwYvEWhfvxi6zzC9s63cHDI4ck6U-hhGzF23SakWh53auofMxzmy6IFA1HB_gqeesiL_-Ih5YksZ9VCrEeOWjfnfcLzvwAAAP__UEsHCH2bqdBlAwAAWAQAAFBLAQIUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAALAAAAAAAAAAAAAAAAAAAAAABDWFAtRXhwb3J0L1BLAQIUABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAAAAAAAAAAAAAAAAACkAAABDWFAtRXhwb3J0L2RvY3VtZW50cy9QSwECFAAUAAgACAAAAAAAL_klXSQCAACwAgAAFAAAAAAAAAAAAAAAAABcAAAAQ1hQLUV4cG9ydC9pbmRleC5qd2VQSwECFAAUAAgACAAAAAAAfZup0GUDAABYBAAAIQAAAAAAAAAAAAAAAADCAgAAQ1hQLUV4cG9ydC9kb2N1bWVudHMvYVhSbGJTMHcuandlUEsFBgAAAAAEAAQADQEAAHYGAAAAAA"
+  }
+}

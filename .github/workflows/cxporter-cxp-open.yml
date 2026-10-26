@@ -13,6 +13,10 @@ on:
       - interop/cxp_poc2_cross_probe/pt-cross.ts
       - tools/run_cxp_poc2_cross.py
       - tools/verify_cxp_poc2_cross_report.py
+      - interop/cxp_poc2_cross_probe/pt-vector.ts
+      - tools/run_cxp_public_vector.py
+      - tools/verify_cxp_public_vector.py
+      - experiments/cxporter_cxp_open/vectors/**
 
 permissions:
   contents: read
@@ -80,4 +84,17 @@ jobs:
         with:
           name: cxporter-poc2-cross-report
           path: tmp/cxporter-ci/cross_import_rejection.json
+          retention-days: 14
+      - name: Replay retained public ciphertext vector
+        run: |
+          python tools/verify_cxp_public_vector.py
+          python tools/run_cxp_public_vector.py --ts-source tmp/vendor_cxp_poc2 --vector experiments/cxporter_cxp_open/vectors/cxporter-poc2-v1.json > tmp/cxporter-ci/public_vector_replay.json
+          python tools/run_cxp_public_vector.py --binary tmp/cxporter-passkey-probe --ts-source tmp/vendor_cxp_poc2 --vector tmp/cxporter-ci/fresh_vector.json > tmp/cxporter-ci/fresh_vector_replay.json
+          (cd tmp/vendor_cxp_poc2 && pnpm typecheck)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cxporter-poc2-public-vector-replay
+          path: |
+            tmp/cxporter-ci/public_vector_replay.json
+            tmp/cxporter-ci/fresh_vector_replay.json
           retention-days: 14
