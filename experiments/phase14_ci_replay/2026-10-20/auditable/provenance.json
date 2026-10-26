@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-20",
+  "status": "completed",
+  "workflow_run_url": "https://github.com/fedequark/PasskeyTransit/actions/runs/39446248808",
+  "workflow_run_id": 39446248808,
+  "workflow_conclusion": "success",
+  "head_sha": "cf355ea051561109e025a94f9efea8b75efbb098",
+  "artifact_id": 12276966407,
+  "artifact_name": "phase14-replay-39446248808",
+  "artifact_sha256": "92b58636fc844d87e65df8d868d4c4604e515c03d7c027514cabe539d2fc7b46",
+  "artifact_run_directory": "20261020T151305810",
+  "reports": {
+    "cross_runtime_cxp.json": "cda5b98d6625ecd81a7ba6654c6321bfa73dd424855de2e4bd462fc2a8f6926c",
+    "prf_migration.json": "a8db32937224599bdb2ff25e67b9fbb20824a78d2244859e6f630a4b713ec692"
+  },
+  "environment": {
+    "runner": "windows-2025",
+    "browser_version": "154.0.4258.62",
+    "node_version": "v24.21.0"
+  },
+  "audit": {
+    "signed_assertions_recomputed": 4,
+    "prf_digest_bindings_recomputed": 4,
+    "private_keys_or_raw_prf_outputs_retained": false
+  },
+  "interpretation": "The public transcript independently validates signatures, RP binding, challenges, UV flags, credential identity and PRF digest relations for the virtual-authenticator loss control. It does not verify an external provider or positive restoration of an original PRF seed."
+}

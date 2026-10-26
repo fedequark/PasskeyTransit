@@ -2,3 +2,5 @@
 *.docx binary
 *.pdf binary
 *.zip binary
+experiments/phase14_ci_replay/2026-10-20/auditable/cross_runtime_cxp.json -text -eol
+experiments/phase14_ci_replay/2026-10-20/auditable/prf_migration.json -text -eol

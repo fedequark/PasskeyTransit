@@ -1,0 +1,29 @@
+{
+  "evidence_class": "cross-runtime-experimental-cxp-exchange",
+  "source_corpus_protocol_id": "passkeytransit-semantic-preservation-v1.5",
+  "study_status": "post-inspection-exploratory",
+  "protocol_sha256": "65c519b89cf03093692f51965f4cf85328eca46252b47d2074eb1706e77779a7",
+  "node_script_sha256": "55642661f2d1ea14a8ecfaa1625f9cbcd2d5b2b0ab721f99f4c96534cf3a67b0",
+  "python_runner_sha256": "83f2ac54ade7510edb29e0f5ac293f3c53601a2f5a490c58b68f9e7e7d1326a3",
+  "node_version": "v24.21.0",
+  "implementations": [
+    "passkeytransit Python reference",
+    "project-authored standalone Node.js"
+  ],
+  "document_sha256": "5f91de7a12458ef53045e2ccd3683b89d9071f24d5716c5c5d08571d116cf287",
+  "checks": {
+    "node_export_python_import_equal": true,
+    "python_export_node_import_equal": true,
+    "node_rejects_modified_ciphertext": true,
+    "software_prf_with_uv_preserved": true,
+    "software_prf_without_uv_preserved": true,
+    "software_prf_missing_state_rejected": true
+  },
+  "all_checks_pass": true,
+  "limitations": [
+    "the Node implementation is project-authored, not a third-party provider",
+    "the tested single-document binding is experimental and omits normative CXP ZIP/JWE mapping",
+    "this exchange does not establish browser PRF preservation or durable provider storage",
+    "software PRF evaluation is not a browser or CTAP authenticator ceremony"
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "evidence_class": "browser-executed-prf-loss-control-after-cross-runtime-exchange",
+  "study_status": "post-inspection-exploratory",
+  "node_script_sha256": "55642661f2d1ea14a8ecfaa1625f9cbcd2d5b2b0ab721f99f4c96534cf3a67b0",
+  "python_runner_sha256": "258d3410e2346a5cb8bc1e2e1b107523cbb24ef27adefb244a6ddaf5c5cf647f",
+  "browser_version": "154.0.4258.62",
+  "node_version": "v24.21.0",
+  "rp_id": "localhost",
+  "credential_id_sha256": "e3be8ae81490ff27d2d238ca7267950120aa640221e2ea6bca83a1867e5a11af",
+  "source_prf_output_sha256": "8ddf580cb1fa3509829e60d69b28d6d1766cb086bd1c8b7527ae786989ccc782",
+  "public_transcript": {
+    "schema_version": 1,
+    "rp_id": "localhost",
+    "credential_id": "VuqnnG6ZbwsPJCAnInQW9kwrti5Y2aPl_F_7IHxvnwY",
+    "public_key_spki": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5Ghc57HVdD3htFTr-0vk0UgJmc2or9pMNA02tVuhW3zl1KGsCBNrvh9AEQ5M_2CRkAEa-GnsiGrJbMVcw_O1GA",
+    "observations": [
+      {
+        "stage": "source_initial",
+        "challenge": "cLYYrfvk4BVzXgePpt_bbBSABbtAnFxyCcrykxhxTOA",
+        "salt": "yMiqWIeLAKLVj5o2rcEImPl8oJc1NSDh924AO1XUf6Q",
+        "raw_id": "VuqnnG6ZbwsPJCAnInQW9kwrti5Y2aPl_F_7IHxvnwY",
+        "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAg",
+        "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiY0xZWXJmdms0QlZ6WGdlUHB0X2JiQlNBQmJ0QW5GeHlDY3J5a3hoeFRPQSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTM1MDgiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEQCIElamofFyoP0BRpjlLLiBuDPXJkcUtAUkfPINWOulkWxAiA1zGiT3XeFHJoKnr9CCvgKsUA6ZtWcRcerGVUC0SUhlg",
+        "prf_present": true,
+        "prf_output_sha256": "8ddf580cb1fa3509829e60d69b28d6d1766cb086bd1c8b7527ae786989ccc782"
+      },
+      {
+        "stage": "source_repeat",
+        "challenge": "oQYHOFTgiQjTdX7k9zgX0NJm7h1QtWW3S-bn8pUz2xM",
+        "salt": "yMiqWIeLAKLVj5o2rcEImPl8oJc1NSDh924AO1XUf6Q",
+        "raw_id": "VuqnnG6ZbwsPJCAnInQW9kwrti5Y2aPl_F_7IHxvnwY",
+        "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAw",
+        "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoib1FZSE9GVGdpUWpUZFg3azl6Z1gwTkptN2gxUXRXVzNTLWJuOHBVejJ4TSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTM1MDgiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEQCIEX_B0p_zqRtPGfZbkxoeeISzAUjh2tc3hwAyqSxmRKfAiBvtga5hU4Eluz1I623gX5eRLaNTMcXfRLdj56QP-YdDQ",
+        "prf_present": true,
+        "prf_output_sha256": "8ddf580cb1fa3509829e60d69b28d6d1766cb086bd1c8b7527ae786989ccc782"
+      },
+      {
+        "stage": "source_other_salt",
+        "challenge": "nLZ2yIHI8Lgp6jnikUYD9-z0c1qhBcj76PRHqIo4AVo",
+        "salt": "CyWh57Wg88BI_YVIBHFKxGMfz_1XWuybVZMpof5UMcM",
+        "raw_id": "VuqnnG6ZbwsPJCAnInQW9kwrti5Y2aPl_F_7IHxvnwY",
+        "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAABA",
+        "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoibkxaMnlJSEk4TGdwNmpuaWtVWUQ5LXowYzFxaEJjajc2UFJIcUlvNEFWbyIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTM1MDgiLCJjcm9zc09yaWdpbiI6ZmFsc2UsIm90aGVyX2tleXNfY2FuX2JlX2FkZGVkX2hlcmUiOiJkbyBub3QgY29tcGFyZSBjbGllbnREYXRhSlNPTiBhZ2FpbnN0IGEgdGVtcGxhdGUuIFNlZSBodHRwczovL3Blcm1hbmVudGx5LXJlbW92ZWQuaW52YWxpZC95YWJQZXgifQ",
+        "signature": "MEQCIEVxnNghUsS4pPXh9iqAK5T8EZOHod-BjEY5-oYr1xlsAiABxBVqyPnr6ijOra-ra0HBOGQe-gVBQqlCc6XvRSyiMQ",
+        "prf_present": true,
+        "prf_output_sha256": "3befd22e59d6d9f381f846f0622793fa1020c918db2bb9516b08d30d3ce91886"
+      },
+      {
+        "stage": "destination",
+        "challenge": "TNeLicgTZkTPKnj5byHcAbhbGTw0Z-4pDANOf3XHdqU",
+        "salt": "yMiqWIeLAKLVj5o2rcEImPl8oJc1NSDh924AO1XUf6Q",
+        "raw_id": "VuqnnG6ZbwsPJCAnInQW9kwrti5Y2aPl_F_7IHxvnwY",
+        "authenticator_data": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MFAAAAAA",
+        "client_data_json": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiVE5lTGljZ1Raa1RQS25qNWJ5SGNBYmhiR1R3MFotNHBEQU5PZjNYSGRxVSIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTM1MDgiLCJjcm9zc09yaWdpbiI6ZmFsc2V9",
+        "signature": "MEQCIHGHYpC7minTIp6VfF6yta_3aWm9kBJgKxqGFtLcFhJMAiAopiUQaeX3B82IlkuQeCcLvyFaqy_1uJhJD-38o1YwKA",
+        "prf_present": false,
+        "prf_output_sha256": null
+      }
+    ]
+  },
+  "source_cdp_fields": [
+    "backupEligibility",
+    "backupState",
+    "credentialId",
+    "isResidentCredential",
+    "privateKey",
+    "rpId",
+    "signCount",
+    "userDisplayName",
+    "userHandle",
+    "userName"
+  ],
+  "checks": {
+    "source_registration_prf_enabled": true,
+    "source_prf_executed": true,
+    "same_salt_stable": true,
+    "different_salt_changes_output": true,
+    "all_assertion_signatures_valid": true,
+    "credential_id_preserved": true,
+    "source_prf_state_not_exposed_in_cdp_fields": true,
+    "cxp_document_equal": true,
+    "destination_prf_result_missing": true
+  },
+  "all_checks_pass": true,
+  "interpretation": "PRF was executed before migration and absent after CDP-based import; this proves loss detection for this test path, not positive PRF preservation or provider behavior.",
+  "limitations": [
+    "CDP getCredentials/addCredential does not expose or inject the PRF secret",
+    "the Node CXP implementation is project-authored and uses an experimental binding",
+    "Chromium virtual authenticators are not commercial credential providers"
+  ]
+}
