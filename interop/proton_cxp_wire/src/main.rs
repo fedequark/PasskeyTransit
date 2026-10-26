@@ -50,10 +50,54 @@ fn synthetic_export() -> CxfExportInput {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut request = String::new();
-    io::stdin().read_to_string(&mut request)?;
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input)?;
+    let (request, export) = if input.trim_start().starts_with("{\"cxp_request\":") {
+        let wrapper: serde_json::Value = serde_json::from_str(&input)?;
+        let request = wrapper["cxp_request"].as_str().ok_or("missing cxp_request")?.to_string();
+        let cxf = wrapper["cxf"].as_str().ok_or("missing cxf")?;
+        let imported = proton_pass_common::cxf::import_cxf(cxf)
+            .map_err(|e| format!("Proton CXF import: {e:?}"))?;
+        let vaults = imported
+            .vaults
+            .into_iter()
+            .map(|entry| CxfVaultWithItems {
+                vault: entry.vault.unwrap_or_else(|| {
+                    VaultData::new(
+                        "Synthetic vault".to_string(),
+                        String::new(),
+                        VaultDisplayPreferences::default(),
+                    )
+                    .expect("synthetic vault")
+                }),
+                items: entry
+                    .items
+                    .into_iter()
+                    .map(|item| ItemWithMetadata {
+                        item,
+                        metadata: ItemMetadata {
+                            created_at: 0,
+                            modified_at: 0,
+                            pinned: false,
+                        },
+                    })
+                    .collect(),
+            })
+            .collect();
+        (
+            request,
+            CxfExportInput {
+                vaults,
+                exporter_rp_id: "passkeytransit.example.test".to_string(),
+                exporter_display_name: "Proton Pass synthetic exporter".to_string(),
+                timestamp: 1_700_000_000,
+            },
+        )
+    } else {
+        (input, synthetic_export())
+    };
     let response = CxpExportHandler::new()
-        .create_export_response(&request, synthetic_export())
+        .create_export_response(&request, export)
         .map_err(|e| format!("Proton CXP export: {e:?}"))?;
     io::stdout().write_all(&response.response)?;
     Ok(())

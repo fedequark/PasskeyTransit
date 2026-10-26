@@ -37,8 +37,6 @@ def _open(private_key: x25519.X25519PrivateKey, request: bytes, response: bytes)
         aad=request,
     )
     document = json.loads(plaintext)
-    if EXPECTED_EMAIL not in plaintext.decode() or "synthetic-password-1" not in plaintext.decode():
-        raise ValueError("synthetic credential missing from recovered CXF")
     return {"document": document, "plaintext_sha256": hashlib.sha256(plaintext).hexdigest()}
 
 
@@ -59,7 +57,10 @@ def main() -> None:
     process = subprocess.run([str(args.exporter.resolve())], input=request, capture_output=True, check=True)
     response = process.stdout
     positive = _open(private_key, request, response)
-    controls = {"synthetic_cxf_recovered": bool(positive["document"])}
+    recovered = json.dumps(positive["document"], separators=(",", ":"))
+    controls = {
+        "synthetic_cxf_recovered": EXPECTED_EMAIL in recovered and "synthetic-password-1" in recovered,
+    }
     for name, changed_request, changed_key in (
         ("altered_request_rejected", request.replace(b"synthetic importer", b"changed importer"), private_key),
         ("wrong_recipient_rejected", request, x25519.X25519PrivateKey.generate()),
