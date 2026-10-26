@@ -2,6 +2,11 @@ name: Monica x86_64 emulator APK
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/android-cxf-monica-x86.yml
 
 permissions:
   contents: read
