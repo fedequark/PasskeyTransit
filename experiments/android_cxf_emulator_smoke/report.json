@@ -1,0 +1,17 @@
+{
+  "android_api": 35,
+  "emulator_abi": "x86_64",
+  "google_play_services_installed": true,
+  "keyguard": {
+    "apk_sha256": "58c018583b5e1d1b0e22dcdd21a9de29fde44988934a37c194cba92905b79763",
+    "package": "com.artemchep.keyguard",
+    "release": "r20261024.1"
+  },
+  "monica": {
+    "apk_sha256": "1ad65e8d1bf2354ed09fddfd3bd084e0aa1f67da69b7f99cdf9358dfa7f2e8f8",
+    "package": "takagi.ru.monica",
+    "source_commit": "5ef2f3a64b53094351210f1e316fbab51852708e"
+  },
+  "scope": "Fresh Android emulator, APK installation and foreground launch only; no credential creation, provider-events transfer, vault import, or RP assertion.",
+  "status": "EMULATOR_INSTALL_LAUNCH_PASS"
+}
