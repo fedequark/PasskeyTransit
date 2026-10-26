@@ -4,6 +4,7 @@
   "date": "2026-10-02",
   "external_module": "@protontech/pass-rust-core@2.0.0",
   "source_tag_commit": "69a0927f0fe7071243d6c38e404459a69210fdd4",
+  "binary_provenance": "npm SHA512 integrity is pinned; run report records installed worker WASM SHA256; upstream binary build not independently reproduced",
   "repetitions": 2,
   "route": "synthetic CXF -> Proton WASM import -> Proton WASM signed PRF -> Proton WASM CXF export -> Proton WASM reimport -> Proton WASM signed PRF",
   "fixture_scope": "two synthetic ES256 passkeys with distinct UV/no-UV HMAC seeds and no largeBlob or credBlob",

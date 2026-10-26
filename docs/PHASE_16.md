@@ -44,6 +44,10 @@ Prepare the pinned Fenko source as in `docs/PHASE_15.md`, then run:
 ./research.ps1 phase16
 ```
 
+This route shares the corrected extension launcher described in
+`PHASE_15.md`. The 2026-10-02 replay again passed both browser-profile
+round trips and its independent public-transcript verifier.
+
 The script runs Fenko's CXF tests and typecheck, builds the unchanged
 extension, runs two browser round trips and independently recalculates public
 transcripts. Retained files are

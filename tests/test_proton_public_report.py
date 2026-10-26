@@ -17,11 +17,10 @@ def load_report() -> dict:
 
 
 def test_pinned_proton_public_report_recomputes_signatures_and_prf_digests() -> None:
-    assert verify_report(load_report()) == {
-        "public_signatures_verified": 12,
-        "public_prf_digests_verified": 12,
-        "repetitions": 2,
-    }
+    result = verify_report(load_report())
+    assert result["public_signatures_verified"] == 12
+    assert result["public_prf_digests_verified"] == 12
+    assert result["repetitions"] == 2
 
 
 @pytest.mark.parametrize("field", ["signature", "prf_sha256"])

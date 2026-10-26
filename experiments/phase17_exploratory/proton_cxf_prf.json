@@ -1,4 +1,10 @@
 {
+  "artifact_sha256": {
+    "node_adapter": "6816442a86f5636d9498b13e55b740fd93b0ac5cbceb80033a18d51661229d5f",
+    "npm_lockfile": "5fa3e16aab024905b1ac146b0803cb14359c41e4be0dca746da740ea076bba7c",
+    "proton_worker_wasm": "d35e1ac67d88774e5cfcecf4331091ea552aec81dbbfec8d0e4e2d2c3b7a3b9b",
+    "python_driver": "11c97e239a8223ebd4b188cfcddce65e7ffbe2774c3f68f2f35d755f561f5ee0"
+  },
   "changed_seed_control_signed_assertions_verified": 4,
   "classification": "source-informed exploratory; software authenticator, no browser/provider-app CXP",
   "experiment": "phase17-proton-cxf-prf-software",
@@ -49,7 +55,7 @@
         "signed_assertions_verified": 2
       },
       "positive": {
-        "exported_cxf_sha256": "2966b6ed687ff2286008d867751b0af16da5ab4f2c3e9a631a3b4f208f0d8fa1",
+        "exported_cxf_sha256": "e3a8a912431f3e707ce65430e7974f07d4d16b440810e2f53b7ea2d1b9e9c53c",
         "observations": [
           {
             "destination": {
@@ -166,7 +172,7 @@
         "signed_assertions_verified": 2
       },
       "positive": {
-        "exported_cxf_sha256": "d30a460ecd40d387821ecc77c3ea64133a47e4eac4eb234b3005d1ecedeb5edc",
+        "exported_cxf_sha256": "2c4ba244c3a45cf5066a103e23b30f9c77e5ccf1fcf46e780196c0913487772d",
         "observations": [
           {
             "destination": {

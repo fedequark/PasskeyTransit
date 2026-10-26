@@ -71,6 +71,12 @@ Pop-Location
 ./research.ps1 phase15
 ```
 
+The shared browser launcher explicitly removes Playwright's default
+`--disable-extensions` argument before loading the pinned Fenko extension.
+Without that change, Edge 154 opened a profile but no extension service
+worker appeared. The corrected 2026-10-02 replay passed both provider runs
+and the independent public-transcript verifier.
+
 The script runs the provider's own CXF tests and TypeScript check, builds its
 extension, performs the two browser runs, and independently verifies the
 public transcripts. The retained report and verifier result are

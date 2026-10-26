@@ -174,6 +174,11 @@ def verify_round_trip(document: dict, response: dict, salts: list[bytes], challe
 
 
 def run(node: Path, adapter: Path, output: Path) -> dict:
+    adapter_root = adapter.resolve().parent
+    lockfile = adapter_root / "package-lock.json"
+    wasm = adapter_root / "node_modules" / "@protontech" / "pass-rust-core" / "worker" / "proton_pass_web_bg.wasm"
+    require(lockfile.is_file(), "pinned Proton npm lockfile missing")
+    require(wasm.is_file(), "pinned Proton worker WASM missing")
     runs = []
     for repeat in range(2):
         # Indices 1 and 2 have no largeBlob, isolating the HMAC-state route.
@@ -225,6 +230,12 @@ def run(node: Path, adapter: Path, output: Path) -> dict:
         "classification": "source-informed exploratory; software authenticator, no browser/provider-app CXP",
         "proton_package": "@protontech/pass-rust-core@2.0.0",
         "proton_source_commit": PROTON_SOURCE_COMMIT,
+        "artifact_sha256": {
+            "npm_lockfile": digest(lockfile.read_bytes()),
+            "proton_worker_wasm": digest(wasm.read_bytes()),
+            "node_adapter": digest(adapter.read_bytes()),
+            "python_driver": digest(Path(__file__).read_bytes()),
+        },
         "repetitions": len(runs),
         "positive_signed_assertions_verified": sum(run["positive"]["signed_assertions_verified"] for run in runs),
         "positive_prf_seed_checks_verified": sum(run["positive"]["prf_seed_checks_verified"] for run in runs),

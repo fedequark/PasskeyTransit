@@ -83,6 +83,23 @@ def verify_observation(observation: dict, repeat: int, salt: bytes, challenge: b
 def verify_report(report: dict) -> dict:
     require(report["experiment"] == "phase17-proton-cxf-prf-software", "wrong experiment")
     require(report["proton_package"] == "@protontech/pass-rust-core@2.0.0", "wrong package")
+    project_root = Path(__file__).resolve().parents[1]
+    expected_artifacts = {
+        "npm_lockfile": project_root / "interop/proton-cxf-prf/package-lock.json",
+        "node_adapter": project_root / "interop/proton-cxf-prf/run.mjs",
+        "python_driver": project_root / "tools/run_proton_cxf_prf.py",
+    }
+    for label, path in expected_artifacts.items():
+        require(report["artifact_sha256"][label] == hashlib.sha256(path.read_bytes()).hexdigest(),
+                f"{label} hash differs from the pinned report")
+    wasm_digest = report["artifact_sha256"]["proton_worker_wasm"]
+    require(isinstance(wasm_digest, str) and len(wasm_digest) == 64
+            and all(c in "0123456789abcdef" for c in wasm_digest), "invalid recorded WASM digest")
+    wasm_path = project_root / "interop/proton-cxf-prf/node_modules/@protontech/pass-rust-core/worker/proton_pass_web_bg.wasm"
+    wasm_present = wasm_path.is_file()
+    if wasm_present:
+        require(wasm_digest == hashlib.sha256(wasm_path.read_bytes()).hexdigest(),
+                "installed Proton WASM differs from the pinned report")
     require(report["repetitions"] == 2 and len(report["runs"]) == 2, "wrong repetition count")
     positive_assertions = control_assertions = 0
     for repeat, run in enumerate(report["runs"], start=1):
@@ -138,7 +155,7 @@ def verify_report(report: dict) -> dict:
             "wrong online negative-control totals")
     require(report["no_uv_ceremony_evaluated"] is False, "incorrect no-UV claim")
     return {"public_signatures_verified": 12, "public_prf_digests_verified": 12,
-            "repetitions": 2}
+            "repetitions": 2, "installed_wasm_hash_checked": wasm_present}
 
 
 def main() -> None:

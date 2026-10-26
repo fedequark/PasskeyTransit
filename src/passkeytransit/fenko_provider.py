@@ -148,6 +148,7 @@ def _export(context: BrowserContext, extension_id: str) -> dict[str, Any]:
 def _launch(playwright: Any, browser: Path, extension: Path, profile: Path) -> BrowserContext:
     return playwright.chromium.launch_persistent_context(
         user_data_dir=str(profile), executable_path=str(browser), headless=True, accept_downloads=True,
+        ignore_default_args=["--disable-extensions"],
         args=[f"--disable-extensions-except={extension}", f"--load-extension={extension}",
               "--no-first-run", "--no-default-browser-check"],
     )

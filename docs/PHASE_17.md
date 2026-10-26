@@ -13,7 +13,10 @@ The corresponding open source tag resolves to commit
 CXF import/export mappings for both `credWithUV` and `credWithoutUV` and a
 software WebAuthn authenticator. The package version and source tag match;
 we did not reproduce the upstream binary build, so binary provenance beyond
-the npm lockfile integrity is not independently established.
+the npm lockfile integrity is not independently established. The report records
+SHA-256 hashes of the installed worker WASM, npm lockfile, Node adapter and
+Python driver. `phase17-verify` checks the local source hashes and, when the
+package is installed, the worker WASM hash too.
 
 ## Executed route and controls
 
@@ -93,6 +96,7 @@ From a PowerShell checkout with Node.js 24 and the project virtualenv:
 The first command installs the pinned npm package, executes two synthetic
 repetitions and changed-seed controls, and writes a new sanitized report
 under `datasets/generated/phase17/`. The second verifies the tracked report
-without installing the package.
+without installing the package; in that case it reports that the WASM hash
+could not be checked locally.
 
 Primary source: https://github.com/protonpass/proton-pass-common/tree/69a0927f0fe7071243d6c38e404459a69210fdd4
