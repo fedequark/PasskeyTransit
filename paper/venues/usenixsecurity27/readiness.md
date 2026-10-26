@@ -292,7 +292,7 @@ los tres informes y recalculó 40 firmas y 18 vínculos PRF de Fenko,
 El ZIP anónimo **local** incorporó ambos ZIP originales y los informes,
 dejando el vínculo identificador con GitHub en un sidecar externo. Una
 extracción limpia verificó 146 miembros con hash y repitió esos chequeos;
-SHA-256 del ZIP: `2c7b4ed2a5bf7383b0fc36f27d2e69e361331d57b036177a7054fc921addc194`.
+SHA-256 del ZIP: `9fa07f23c72eb97261fb27063a06a6389e5c71a0032d9f82ef81671489cc2035`.
 El job de Chrome del runner falló porque no cargó la extensión; el resultado
 que se conserva utiliza el Chromium incluido por Playwright. El run anterior
 con instalación del navegador sin progreso se canceló para evitar cómputo
@@ -303,3 +303,9 @@ con sus informes; el constructor del paquete usa solo archivos bajo control
 de versiones y normaliza los textos ordinarios a LF. Los dos informes de
 Phase 14 conservan sus bytes originales. Así, un checkout limpio produce
 el mismo ZIP de revisión pese a los archivos de trabajo no registrados.
+
+El [run PDF 40347388639](https://github.com/fedequark/PasskeyTransit/actions/runs/40347388639)
+compiló la versión condensada con el estilo oficial sin modificar. El PDF
+tiene cinco páginas U.S. letter; se inspeccionó la última para descartar una
+referencia huérfana. SHA-256:
+`a6e5254613d87550492c5c22f938b5a3ad7e5907e31e9a8c1534bb8c2c2c61ff`.

@@ -283,6 +283,8 @@ def build() -> Path:
         for name, data in sorted(files.items()):
             info = zipfile.ZipInfo(name, date_time=(2024, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3
+            info.external_attr = 0o644 << 16
             archive.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
     audit = {
         "archive_sha256": _sha(target.read_bytes()),

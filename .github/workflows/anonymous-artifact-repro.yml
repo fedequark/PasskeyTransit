@@ -26,23 +26,30 @@ jobs:
         run: python tools/verify_provider_ci_replay.py
       - name: Rebuild and inspect anonymous staging archive
         env:
-          EXPECTED_SHA256: 2c7b4ed2a5bf7383b0fc36f27d2e69e361331d57b036177a7054fc921addc194
+          EXPECTED_SHA256: 9fa07f23c72eb97261fb27063a06a6389e5c71a0032d9f82ef81671489cc2035
         run: |
           python tools/build_anonymous_artifact.py
           python - <<'PY'
           import hashlib
-          import os
           import pathlib
           import zipfile
 
           archive = pathlib.Path("paper/venues/usenixsecurity27/anonymous_artifact/passkeytransit-anonymous-staging.zip")
           digest = hashlib.sha256(archive.read_bytes()).hexdigest()
           print(f"archive_sha256={digest}")
-          if digest != os.environ["EXPECTED_SHA256"]:
-              raise SystemExit("staging archive differs from pinned clean-checkout SHA-256")
+          pathlib.Path("tmp").mkdir(exist_ok=True)
+          pathlib.Path("tmp/archive-sha256.txt").write_text(digest, encoding="ascii")
           target = pathlib.Path("tmp/anonymous-artifact-verify")
           target.mkdir(parents=True, exist_ok=True)
           with zipfile.ZipFile(archive) as package:
               package.extractall(target)
           PY
           python tmp/anonymous-artifact-verify/verify.py
+          python - <<'PY'
+          import os
+          import pathlib
+
+          observed = pathlib.Path("tmp/archive-sha256.txt").read_text(encoding="ascii")
+          if observed != os.environ["EXPECTED_SHA256"]:
+              raise SystemExit("staging archive differs from pinned clean-checkout SHA-256")
+          PY
