@@ -20,11 +20,17 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Fetch pinned Keyguard release APK
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p tmp
-          curl --fail --location --retry 3 \
-            https://github.com/AChep/keyguard-app/releases/download/r20261024.1/androidApp-none-release.apk \
-            --output tmp/keyguard-r20261024.1.apk
+          if ! curl --fail --location --retry 3 --retry-all-errors \
+              https://github.com/AChep/keyguard-app/releases/download/r20261024.1/androidApp-none-release.apk \
+              --output tmp/keyguard-r20261024.1.apk; then
+            gh api -H 'Accept: application/octet-stream' \
+              repos/AChep/keyguard-app/releases/assets/672071299 \
+              > tmp/keyguard-r20261024.1.apk
+          fi
           echo '58c018583b5e1d1b0e22dcdd21a9de29fde44988934a37c194cba92905b79763  tmp/keyguard-r20261024.1.apk' | sha256sum --check
       - uses: actions/download-artifact@v4
         with:
