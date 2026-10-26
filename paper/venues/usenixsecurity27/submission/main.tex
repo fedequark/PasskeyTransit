@@ -351,6 +351,12 @@ modes under each of two policies. Its local WebAuthn RP verified login
 before and after import with the same credential ID in all four cases.
 This measures a same-codebase software flow, not independent-provider
 interoperability or an installed-app migration.
+An explicit project adapter also decrypted a fresh \texttt{cxporter}
+response and placed its CXF passkey directly in the PoC destination
+vault. The local RP verified the recovered key in two repetitions.
+This tests key-material usability across those software paths; the adapter
+bypasses the PoC's CXP importer, which still rejects the original wire
+response.
 
 \subsection{Selected provider case: Fenko}
 We selected Fenko Vault 0.12.0~\cite{fenko} after inspecting its CXF

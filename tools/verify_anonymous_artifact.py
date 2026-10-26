@@ -26,6 +26,21 @@ def verify(root: Path) -> dict[str, object]:
         raise ValueError("PoC RP control result differs")
     if (root / "experiments/cxporter_cxp_open/ci/40363074055/poc2_rp_control.json").read_bytes() != (root / "experiments/cxporter_cxp_open/poc2_rp_control.json").read_bytes():
         raise ValueError("PoC RP control CI and local reports differ")
+    adapter = json.loads((root / "experiments/cxporter_cxp_open/adapter_rp_control.json").read_text(encoding="utf-8"))
+    if adapter["status"] != "PROJECT_ADAPTER_RP_CONTROL_PASS" or len(adapter["runs"]) != 2:
+        raise ValueError("cxporter adapter RP control differs")
+    for field, path in (("probe_sha256", "interop/cxp_poc2_cross_probe/pt-adapter-rp.ts"),
+                        ("helper_sha256", "tools/cxporter_to_poc2_rp_adapter.py")):
+        if adapter[field] != hashlib.sha256((root / path).read_bytes()).hexdigest():
+            raise ValueError("cxporter adapter source differs")
+    if any(not run["rp_verified_before_and_after"] or run["project_adapter_inserted_records"] != 1
+           for run in adapter["runs"]):
+        raise ValueError("cxporter adapter RP assertion differs")
+    adapter_ci = json.loads((root / "experiments/cxporter_cxp_open/ci/40364915962/adapter_rp_control.json").read_text(encoding="utf-8"))
+    if adapter_ci["status"] != adapter["status"] or adapter_ci["probe_sha256"] != adapter["probe_sha256"] or adapter_ci["helper_sha256"] != adapter["helper_sha256"]:
+        raise ValueError("cxporter adapter CI report differs in source or result")
+    if len(adapter_ci["runs"]) != 2 or any(not run["rp_verified_before_and_after"] or run["project_adapter_inserted_records"] != 1 for run in adapter_ci["runs"]):
+        raise ValueError("cxporter adapter CI RP assertion differs")
     replay_bytes = (root / "data/replay/phase14-original.zip").read_bytes()
     with zipfile.ZipFile(io.BytesIO(replay_bytes)) as replay:
         members = replay.namelist()

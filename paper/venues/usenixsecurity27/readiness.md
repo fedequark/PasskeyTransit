@@ -505,3 +505,17 @@ compiló el manuscrito actualizado en seis páginas U.S. letter. Las páginas
 cinco y seis se inspeccionaron después de la descarga; el PDF en
 `compiled/main.pdf` tiene SHA-256
 `06af9a76ef7ab5f207efa64cb0e38f74e22c22a78231aac3e60739dc95b76d78`.
+
+## Avance del 26 de octubre: ciphertext externo hasta RP con adaptador
+
+Se registró una passkey sintética en el RP local de `cxp_poc2`, se exportó
+su CXF con `cxporter` y se descifró el ZIP/JWE original mediante código
+Python del proyecto. Un adaptador insertó directamente la credencial
+recuperada en el almacén B del PoC; el mismo RP verificó una firma de B con
+el ID registrado originalmente. Pasó en dos ejecuciones locales y dos del
+[run 40364915962](https://github.com/fedequark/PasskeyTransit/actions/runs/40364915962).
+Los reportes conservados contienen hashes del ZIP y resultados públicos;
+no contienen claves privadas. El importador CXP propio de `cxp_poc2` no
+participa en esta ruta y mantiene su rechazo del mensaje original. Por eso
+el resultado prueba usabilidad del material CXF recuperado mediante un
+adaptador explícito, no interoperabilidad CXP entre proveedores.
