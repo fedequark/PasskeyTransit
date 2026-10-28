@@ -24,13 +24,20 @@ for entry in "boveda:$boveda_pkg" "monica:$monica_pkg"; do
   label=${entry%%:*}
   pkg=${entry#*:}
   adb shell pm path "$pkg"
-  adb shell monkey -p "$pkg" -c android.intent.category.LAUNCHER 1 > "$out/$label-monkey.txt"
+  apk=$boveda_apk
+  if [ "$label" = monica ]; then apk=$monica_apk; fi
+  activity=$("$aapt" dump badging "$apk" | sed -n "s/^launchable-activity: name='\([^']*\)'.*/\1/p")
+  test -n "$activity"
+  adb shell am start -W -n "$pkg/$activity" > "$out/$label-launch.txt"
   sleep 5
   adb shell pidof "$pkg" > "$out/$label-pid.txt"
+  focus=$(adb shell dumpsys window windows | grep 'mCurrentFocus=' | tail -n1)
+  printf '%s\n' "$focus" > "$out/$label-focus.txt"
   adb shell uiautomator dump /sdcard/window.xml
   adb pull /sdcard/window.xml "$out/$label-window.xml"
   adb shell screencap -p /sdcard/window.png
   adb pull /sdcard/window.png "$out/$label-window.png"
+  echo "$focus" | grep -F "$pkg"
 done
 
 export EMULATOR_API="$(adb shell getprop ro.build.version.sdk | tr -d '\r')"
@@ -46,6 +53,7 @@ result = {
     "android_api": int(os.environ["EMULATOR_API"]),
     "emulator_abi": os.environ["EMULATOR_ABI"],
     "google_play_services_installed": True,
+    "foreground_verified_for_each_app": True,
     "boveda": {
         "package": "com.jlnavas3.bovedalocal",
         "release": "v1.11.4",
