@@ -1,0 +1,461 @@
+{
+  "scope": "Synthetic local vault and basic-auth setup, Bóveda export-registration attempt, Monica menu exploration. Registration and import require inspection of captured UI. No CXF transfer, RP assertion, or PRF result.",
+  "screens": {
+    "boveda-after-create-tap": {
+      "labels": [
+        "Volver atrás",
+        "Contraseña",
+        "Más opciones",
+        "Es la única llave de tu bóveda. Sin ella es matemáticamente imposible descifrar los datos.",
+        "CREDENCIALES MAESTRAS",
+        "Contraseña maestra (protegido)",
+        "Repite la contraseña (protegido)",
+        "Mínimo 10 caracteres",
+        "Generador asistido",
+        "PARÁMETROS DE DERIVACIÓN",
+        "Perfil Argon2id",
+        "Estándar",
+        "(64 MiB)",
+        "Desplegar opciones",
+        "Forjar la bóveda"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-after-entry-save": {
+      "labels": [
+        "Menú",
+        "Bóveda local",
+        "1 entrada cifradas",
+        "Buscar",
+        "Más opciones",
+        "C",
+        "cx1",
+        "Bloquear bóveda",
+        "Nueva entrada"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-after-first-password": {
+      "labels": [
+        "Volver atrás",
+        "Contraseña",
+        "Más opciones",
+        "Es la única llave de tu bóveda. Sin ella es matemáticamente imposible descifrar los datos.",
+        "CREDENCIALES MAESTRAS",
+        "Contraseña maestra (protegido)",
+        "Repite la contraseña (protegido)",
+        "Débil",
+        "19 bits",
+        "Descifrable al instante",
+        "Mínimo 10 caracteres",
+        "Generador asistido",
+        "Compartir",
+        "PARÁMETROS DE DERIVACIÓN",
+        "Perfil Argon2id",
+        "Estándar",
+        "(64 MiB)",
+        "Desplegar opciones",
+        "Forjar la bóveda"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-after-forge": {
+      "labels": [
+        "Protege tu privacidad",
+        "Asocia tu cuenta de correo habitual a esta identidad. Así tus credenciales se vincularán de forma automática y tu correo real no quedará expuesto a miradas indiscretas.",
+        "Personal",
+        "Nombre del perfil (ej. Personal, Trabajo)",
+        "Correo electrónico principal",
+        "Color temático",
+        "Continuar y forjar bóveda",
+        "Omitir por ahora",
+        "Volver atrás",
+        "Tu primera identidad"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-after-manager-prompt": {
+      "labels": [
+        "Menú",
+        "Bóveda local",
+        "0 entradas cifradas",
+        "Buscar",
+        "Más opciones",
+        "Tu bóveda está vacía",
+        "Guarda tu primera contraseña con el botón de abajo. Nada saldrá de este teléfono.",
+        "IMPORTAR",
+        "Copia de seguridad",
+        "Contraseñas de Google",
+        "Verificación en dos pasos de Google",
+        "Importación directa de llaves de paso y contraseñas",
+        "Bloquear bóveda",
+        "Nueva entrada"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-after-register-export": {
+      "labels": [
+        "Transferencia directa de credenciales",
+        "Transfiere tus llaves de paso, contraseñas y códigos de verificación directamente a otro gestor o dispositivo Android de forma local, cifrada y sin usar internet.",
+        "1 contraseñas",
+        "Listo para transferir: Abre el otro dispositivo o gestor e inicia la importación.",
+        "Compartir archivo FIDO (.cxf)",
+        "Cerrar",
+        "Desactivar"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-after-skip": {
+      "labels": [
+        "¿Me pones como gestor?",
+        "Android no deja que una app se ponga sola: lo tienes que activar tú. Te abro la pantalla de \"Contraseñas y llaves de acceso\" y marcas Bóveda local.\n\nSin esto no aparezco al rellenar contraseñas ni al crear una llave de acceso. Lo puedes hacer más tarde desde Ajustes.",
+        "Ahora no",
+        "Abrir ajustes"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-before": {
+      "labels": [
+        "ARGON2ID · AES-256 · SIN CONEXIÓN",
+        "Bóveda Local",
+        "Solo tú tienes la llave de acceso a tu información.",
+        "INICIAR CONFIGURACIÓN",
+        "Crear mi bóveda",
+        "Bóveda Local · v1.11.4 · by: jlnavas3",
+        "Más opciones"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-before-forge": {
+      "labels": [
+        "Volver atrás",
+        "Contraseña",
+        "Más opciones",
+        "Es la única llave de tu bóveda. Sin ella es matemáticamente imposible descifrar los datos.",
+        "CREDENCIALES MAESTRAS",
+        "Contraseña maestra (protegido)",
+        "Repite la contraseña (protegido)",
+        "Débil",
+        "19 bits",
+        "Descifrable al instante",
+        "✓ Las contraseñas coinciden",
+        "Generador asistido",
+        "Compartir",
+        "PARÁMETROS DE DERIVACIÓN",
+        "Perfil Argon2id",
+        "Estándar",
+        "(64 MiB)",
+        "Desplegar opciones",
+        "Forjar la bóveda"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-entry-before-save": {
+      "labels": [
+        "Volver atrás",
+        "Nueva entrada",
+        "Guardar",
+        "Crea y cifra un registro seguro en la bóveda",
+        "Contraseña",
+        "Desplegar tipos de entrada",
+        "cx1",
+        "Título",
+        "Limpiar texto",
+        "u1",
+        "Usuario o correo",
+        "Limpiar texto",
+        "Contraseña (protegido)",
+        "Débil",
+        "14 bits",
+        "Descifrable al instante",
+        "Personalizar generador (20 car.)",
+        "Añadir sitio web",
+        "Explorar app",
+        "Verificación en dos pasos (2FA)",
+        "Clave secreta opcional",
+        "Expandir"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-entry-title": {
+      "labels": [
+        "Volver atrás",
+        "Nueva entrada",
+        "Guardar",
+        "Crea y cifra un registro seguro en la bóveda",
+        "Contraseña",
+        "Desplegar tipos de entrada",
+        "cx1",
+        "Título",
+        "Limpiar texto",
+        "Usuario o correo",
+        "Contraseña (protegido)",
+        "Personalizar generador (20 car.)",
+        "Añadir sitio web",
+        "Explorar app",
+        "Verificación en dos pasos (2FA)",
+        "Clave secreta opcional",
+        "Expandir",
+        "Notas y detalles",
+        "Expandir"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-entry-user": {
+      "labels": [
+        "Volver atrás",
+        "Nueva entrada",
+        "Guardar",
+        "Crea y cifra un registro seguro en la bóveda",
+        "Contraseña",
+        "Desplegar tipos de entrada",
+        "cx1",
+        "Título",
+        "Limpiar texto",
+        "u1",
+        "Usuario o correo",
+        "Limpiar texto",
+        "Contraseña (protegido)",
+        "Personalizar generador (20 car.)",
+        "Añadir sitio web",
+        "Explorar app",
+        "Verificación en dos pasos (2FA)",
+        "Clave secreta opcional",
+        "Expandir",
+        "Notas y detalles",
+        "Sin notas añadidas",
+        "Expandir"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-export-dialog": {
+      "labels": [
+        "Transferencia directa de credenciales",
+        "Transfiere tus llaves de paso, contraseñas y códigos de verificación directamente a otro gestor o dispositivo Android de forma local, cifrada y sin usar internet.",
+        "1 contraseñas",
+        "Compartir archivo FIDO (.cxf)",
+        "Habilitar transferencia",
+        "Cerrar"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-export-menu": {
+      "labels": [
+        "Volver",
+        "Exportar",
+        "Copia de seguridad completa (.bvda)",
+        "Exportación selectiva (.bvda)",
+        "Exportación directa de llaves de paso y contraseñas"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-more-menu": {
+      "labels": [
+        "Ordenar por...",
+        "Filtrar por tipo...",
+        "Solo favoritos",
+        "Ajustes de agrupación...",
+        "Ajustes de indicadores...",
+        "Importar...",
+        "Exportar..."
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-new-entry-form": {
+      "labels": [
+        "Volver atrás",
+        "Nueva entrada",
+        "Guardar",
+        "Crea y cifra un registro seguro en la bóveda",
+        "Contraseña",
+        "Desplegar tipos de entrada",
+        "Título",
+        "Usuario o correo",
+        "Contraseña (protegido)",
+        "Personalizar generador (20 car.)",
+        "Añadir sitio web",
+        "Explorar app",
+        "Verificación en dos pasos (2FA)",
+        "Clave secreta opcional",
+        "Expandir",
+        "Notas y detalles",
+        "Sin notas añadidas",
+        "Expandir",
+        "Campos personalizados",
+        "Sin campos adicionales",
+        "Expandir",
+        "Categorías",
+        "Sin categorías asignadas",
+        "Expandir",
+        "Etiquetas",
+        "Sin etiquetas añadidas",
+        "Expandir",
+        "Favorito",
+        "Fijar arriba en la lista principal",
+        "Ignorar en auditoría"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "monica-after-confirm": {
+      "labels": [
+        "Monica",
+        "Make Monica your own",
+        "Choose a layout, set up protection, and bring your data. You can revisit this guide in Settings.",
+        "Follow system",
+        "Language",
+        "Change",
+        "Start with a preset",
+        "Security & autofill",
+        "Data import",
+        "Step 1 of 7",
+        "Skip",
+        "Start"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-after-input": {
+      "labels": [
+        "Monica",
+        "Set up your master password",
+        "At least 3 characters required",
+        "••••••••••••",
+        "Master Password",
+        "Show password",
+        "Set Up Password"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-after-setup-tap": {
+      "labels": [
+        "Monica",
+        "Confirm Master Password",
+        "Confirm Master Password",
+        "Show password",
+        "Confirm"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-after-wizard-skip": {
+      "labels": [
+        "ALL",
+        "Category",
+        "Search",
+        "More Options",
+        "Pwd",
+        "Auth",
+        "Card",
+        "Set",
+        "Recent & frequent",
+        "Add"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-before": {
+      "labels": [
+        "Monica",
+        "Set up your master password",
+        "At least 3 characters required",
+        "Master Password",
+        "Show password",
+        "Set Up Password"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-before-confirm": {
+      "labels": [
+        "Monica",
+        "Confirm Master Password",
+        "••••••••••••",
+        "Confirm Master Password",
+        "Show password",
+        "Confirm"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-confirm-visible": {
+      "labels": [
+        "Monica",
+        "Confirm Master Password",
+        "777777777777",
+        "Confirm Master Password",
+        "Hide password",
+        "Confirm"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-first-visible": {
+      "labels": [
+        "Monica",
+        "Set up your master password",
+        "At least 3 characters required",
+        "777777777777",
+        "Master Password",
+        "Hide password",
+        "Set Up Password"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-more-options": {
+      "labels": [
+        "Display & grouping",
+        "Scan passkey QR",
+        "Common Account Info",
+        "Timeline",
+        "Recycle Bin",
+        "Archived"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    }
+  },
+  "status": "EXPORT_REGISTRATION_PROBE_CAPTURED"
+}
