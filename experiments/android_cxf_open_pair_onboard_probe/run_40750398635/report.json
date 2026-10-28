@@ -1,0 +1,178 @@
+{
+  "scope": "Synthetic local vault setup submitted and final UI captured; vault creation requires inspection of final screens. No credential, CXF transfer, RP assertion, or PRF result.",
+  "screens": {
+    "boveda-after-create-tap": {
+      "labels": [
+        "Volver atrás",
+        "Contraseña",
+        "Más opciones",
+        "Es la única llave de tu bóveda. Sin ella es matemáticamente imposible descifrar los datos.",
+        "CREDENCIALES MAESTRAS",
+        "Contraseña maestra (protegido)",
+        "Repite la contraseña (protegido)",
+        "Mínimo 10 caracteres",
+        "Generador asistido",
+        "PARÁMETROS DE DERIVACIÓN",
+        "Perfil Argon2id",
+        "Estándar",
+        "(64 MiB)",
+        "Desplegar opciones",
+        "Forjar la bóveda"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-after-first-password": {
+      "labels": [
+        "Volver atrás",
+        "Contraseña",
+        "Más opciones",
+        "Es la única llave de tu bóveda. Sin ella es matemáticamente imposible descifrar los datos.",
+        "CREDENCIALES MAESTRAS",
+        "Contraseña maestra (protegido)",
+        "Repite la contraseña (protegido)",
+        "Excelente",
+        "107 bits",
+        "Inquebrantable por fuerza bruta",
+        "Mínimo 10 caracteres",
+        "Generador asistido",
+        "Compartir",
+        "PARÁMETROS DE DERIVACIÓN",
+        "Perfil Argon2id",
+        "Estándar",
+        "(64 MiB)",
+        "Desplegar opciones",
+        "Forjar la bóveda"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-after-forge": {
+      "labels": [
+        "Protege tu privacidad",
+        "Asocia tu cuenta de correo habitual a esta identidad. Así tus credenciales se vincularán de forma automática y tu correo real no quedará expuesto a miradas indiscretas.",
+        "Personal",
+        "Nombre del perfil (ej. Personal, Trabajo)",
+        "Correo electrónico principal",
+        "Color temático",
+        "Continuar y forjar bóveda",
+        "Omitir por ahora",
+        "Volver atrás",
+        "Tu primera identidad"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-before": {
+      "labels": [
+        "ARGON2ID · AES-256 · SIN CONEXIÓN",
+        "Bóveda Local",
+        "Solo tú tienes la llave de acceso a tu información.",
+        "INICIAR CONFIGURACIÓN",
+        "Crear mi bóveda",
+        "Bóveda Local · v1.11.4 · by: jlnavas3",
+        "Más opciones"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "boveda-before-forge": {
+      "labels": [
+        "Volver atrás",
+        "Contraseña",
+        "Más opciones",
+        "Es la única llave de tu bóveda. Sin ella es matemáticamente imposible descifrar los datos.",
+        "CREDENCIALES MAESTRAS",
+        "Contraseña maestra (protegido)",
+        "Repite la contraseña (protegido)",
+        "Excelente",
+        "107 bits",
+        "Inquebrantable por fuerza bruta",
+        "✓ Las contraseñas coinciden",
+        "Generador asistido",
+        "Compartir",
+        "PARÁMETROS DE DERIVACIÓN",
+        "Perfil Argon2id",
+        "Estándar",
+        "(64 MiB)",
+        "Desplegar opciones",
+        "Forjar la bóveda"
+      ],
+      "packages": [
+        "com.jlnavas3.bovedalocal"
+      ]
+    },
+    "monica-after-confirm": {
+      "labels": [
+        "Monica",
+        "Set up your master password",
+        "At least 3 characters required",
+        "••••••••••••••••••",
+        "Master Password",
+        "Show password",
+        "Passwords do not match",
+        "Set Up Password"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-after-input": {
+      "labels": [
+        "Monica",
+        "Set up your master password",
+        "At least 3 characters required",
+        "••••••••••••••••••",
+        "Master Password",
+        "Show password",
+        "Set Up Password"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-after-setup-tap": {
+      "labels": [
+        "Monica",
+        "Confirm Master Password",
+        "Confirm Master Password",
+        "Show password",
+        "Confirm"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-before": {
+      "labels": [
+        "Monica",
+        "Set up your master password",
+        "At least 3 characters required",
+        "Master Password",
+        "Show password",
+        "Set Up Password"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    },
+    "monica-before-confirm": {
+      "labels": [
+        "Monica",
+        "Confirm Master Password",
+        "••••••••••••••••••",
+        "Confirm Master Password",
+        "Show password",
+        "Confirm"
+      ],
+      "packages": [
+        "takagi.ru.monica"
+      ]
+    }
+  },
+  "status": "SETUP_SUBMITTED_UI_CAPTURED"
+}
