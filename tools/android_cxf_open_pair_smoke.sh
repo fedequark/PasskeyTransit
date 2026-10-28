@@ -45,9 +45,12 @@ done
 
 export EMULATOR_API="$(adb shell getprop ro.build.version.sdk | tr -d '\r')"
 export EMULATOR_ABI="$(adb shell getprop ro.product.cpu.abi | tr -d '\r')"
+export EMULATOR_FINGERPRINT="$(adb shell getprop ro.build.fingerprint | tr -d '\r')"
+adb shell dumpsys package com.google.android.gms > tmp/google-play-services-package.txt
 python3 - <<'PY'
 import json
 import os
+import re
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -56,12 +59,20 @@ for label, package in (("boveda", "com.jlnavas3.bovedalocal"), ("monica", "takag
     visible_packages = {node.get("package") for node in hierarchy.iter("node")}
     assert package in visible_packages, f"{label} UI is not visible: {sorted(visible_packages)}"
 
+gms_package = Path("tmp/google-play-services-package.txt").read_text(encoding="utf-8")
+gms_version_name = re.search(r"\bversionName=([^\s]+)", gms_package)
+gms_version_code = re.search(r"\bversionCode=(\d+)", gms_package)
+assert gms_version_name and gms_version_code, "Google Play services version unavailable"
+
 result = {
     "status": "OPEN_PAIR_INSTALL_LAUNCH_PASS",
     "scope": "Fresh emulator installation and launch only; no vault setup, credential, CXF transfer, or RP assertion.",
     "android_api": int(os.environ["EMULATOR_API"]),
     "emulator_abi": os.environ["EMULATOR_ABI"],
+    "android_build_fingerprint": os.environ["EMULATOR_FINGERPRINT"],
     "google_play_services_installed": True,
+    "google_play_services_version_name": gms_version_name.group(1),
+    "google_play_services_version_code": int(gms_version_code.group(1)),
     "foreground_verified_for_each_app": True,
     "boveda": {
         "package": "com.jlnavas3.bovedalocal",
