@@ -115,6 +115,18 @@ capture boveda-export-dialog
 tap_text "$out/boveda-export-dialog.xml" 'Habilitar transferencia'
 sleep 6
 capture boveda-after-register-export
+if ! python3 - "$out/boveda-after-register-export.xml" <<'PY'
+import sys
+from xml.etree import ElementTree
+labels = [node.get("text") or "" for node in ElementTree.parse(sys.argv[1]).iter("node")]
+assert any("Listo para transferir" in label for label in labels)
+PY
+then
+  sleep 12
+  tap_text "$out/boveda-after-register-export.xml" 'Habilitar transferencia'
+  sleep 6
+fi
+capture boveda-register-final
 
 adb shell am start -W -n takagi.ru.monica/.MainActivity > "$out/monica-launch.txt"
 sleep 3
@@ -144,6 +156,9 @@ capture monica-after-wizard-skip
 tap_text "$out/monica-after-wizard-skip.xml" 'Set'
 sleep 2
 capture monica-settings
+tap_text "$out/monica-settings.xml" 'Database & Backup'
+sleep 2
+capture monica-database-backup
 
 python3 - <<'PY'
 import json
@@ -152,7 +167,7 @@ from xml.etree import ElementTree
 
 out = Path("tmp/android-cxf-open-pair-onboard-probe")
 screens = {}
-for label in ("boveda-before", "boveda-after-create-tap", "boveda-after-first-password", "boveda-before-forge", "boveda-after-forge", "boveda-after-skip", "boveda-after-manager-prompt", "boveda-new-entry-form", "boveda-entry-title", "boveda-entry-user", "boveda-entry-before-save", "boveda-after-entry-save", "boveda-more-menu", "boveda-export-menu", "boveda-export-dialog", "boveda-after-register-export", "monica-before", "monica-after-input", "monica-first-visible", "monica-after-setup-tap", "monica-before-confirm", "monica-confirm-visible", "monica-after-confirm", "monica-after-wizard-skip", "monica-settings"):
+for label in ("boveda-before", "boveda-after-create-tap", "boveda-after-first-password", "boveda-before-forge", "boveda-after-forge", "boveda-after-skip", "boveda-after-manager-prompt", "boveda-new-entry-form", "boveda-entry-title", "boveda-entry-user", "boveda-entry-before-save", "boveda-after-entry-save", "boveda-more-menu", "boveda-export-menu", "boveda-export-dialog", "boveda-after-register-export", "boveda-register-final", "monica-before", "monica-after-input", "monica-first-visible", "monica-after-setup-tap", "monica-before-confirm", "monica-confirm-visible", "monica-after-confirm", "monica-after-wizard-skip", "monica-settings", "monica-database-backup"):
     root = ElementTree.parse(out / f"{label}.xml").getroot()
     screens[label] = {
         "packages": sorted({node.get("package") for node in root.iter("node") if node.get("package")}),
