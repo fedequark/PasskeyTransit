@@ -1,0 +1,7 @@
+Starting: Intent { cmp=com.jlnavas3.bovedalocal/.ui.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: com.jlnavas3.bovedalocal/.ui.MainActivity
+TotalTime: 3854
+WaitTime: 4023
+Complete

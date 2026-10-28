@@ -1,0 +1,18 @@
+{
+  "android_api": 35,
+  "boveda": {
+    "apk_sha256": "5746092a43176e6a9e92b78a5562dc8dcd016c7007a9594f1d13f76b5d1e7d7e",
+    "package": "com.jlnavas3.bovedalocal",
+    "release": "v1.11.4"
+  },
+  "emulator_abi": "x86_64",
+  "foreground_verified_for_each_app": true,
+  "google_play_services_installed": true,
+  "monica": {
+    "apk_sha256": "1ad65e8d1bf2354ed09fddfd3bd084e0aa1f67da69b7f99cdf9358dfa7f2e8f8",
+    "package": "takagi.ru.monica",
+    "source_commit": "5ef2f3a64b53094351210f1e316fbab51852708e"
+  },
+  "scope": "Fresh emulator installation and launch only; no vault setup, credential, CXF transfer, or RP assertion.",
+  "status": "OPEN_PAIR_INSTALL_LAUNCH_PASS"
+}

@@ -1,0 +1,7 @@
+Starting: Intent { cmp=takagi.ru.monica/.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: takagi.ru.monica/.MainActivity
+TotalTime: 8556
+WaitTime: 8628
+Complete
