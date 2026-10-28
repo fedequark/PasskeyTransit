@@ -24,10 +24,8 @@ for entry in "boveda:$boveda_pkg" "monica:$monica_pkg"; do
   label=${entry%%:*}
   pkg=${entry#*:}
   adb shell pm path "$pkg"
-  apk=$boveda_apk
-  if [ "$label" = monica ]; then apk=$monica_apk; fi
-  activity=$("$aapt" dump badging "$apk" | sed -n "s/^launchable-activity: name='\([^']*\)'.*/\1/p")
-  test -n "$activity"
+  activity=.ui.MainActivity
+  if [ "$label" = monica ]; then activity=.MainActivity; fi
   adb shell am start -W -n "$pkg/$activity" > "$out/$label-launch.txt"
   sleep 5
   adb shell pidof "$pkg" > "$out/$label-pid.txt"
