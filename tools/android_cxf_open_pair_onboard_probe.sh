@@ -139,7 +139,6 @@ sleep 3
 capture monica-before
 tap_text "$out/monica-before.xml" 'Master Password'
 type_serially "$synthetic_monica_password"
-adb shell input keyevent 4
 capture monica-after-input
 tap_text "$out/monica-after-input.xml" 'Show password'
 capture monica-first-visible
