@@ -1,4 +1,4 @@
-name: Open Android CXF source audit
+name: Public-source Android CXF audit
 
 on:
   workflow_dispatch:

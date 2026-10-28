@@ -1,4 +1,4 @@
-name: Open Android CXF emulator smoke
+name: Public-source Android CXF emulator smoke
 
 on:
   workflow_dispatch:

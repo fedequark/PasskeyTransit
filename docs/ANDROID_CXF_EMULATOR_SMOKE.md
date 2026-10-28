@@ -1,4 +1,6 @@
-# Open Android CXF emulator bootstrap
+# Android CXF emulator bootstrap with public-source apps
+
+Keyguard is source-available and commercially licensed; Monica is open source. Keyguard's premium gate prevented an authorized vault setup in this smoke test.
 
 Checked 2026-10-26. [CI run 40374032112](https://github.com/fedequark/PasskeyTransit/actions/runs/40374032112) completed on a fresh Android 15 / API 35 `x86_64` emulator with a Google Play Store system image. Google Play services was installed. This is an **installation and foreground launch control**, not a credential-transfer result.
 

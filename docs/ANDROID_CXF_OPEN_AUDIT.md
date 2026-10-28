@@ -1,4 +1,6 @@
-# Open Android CXF passkey extension audit
+# Public-source Android CXF passkey extension audit
+
+Keyguard publishes inspectable source but is a commercial, source-available app, not open source; Monica is open source. The label here describes source visibility, not a shared license.
 
 Checked 2026-10-26. This is a **source comparison and verification of the providers' own CI test reports**, not an Android transfer or an independent execution of their test suites. The retained [report](../experiments/android_cxf_open/report.json) pins [Keyguard `ef84e29`](https://github.com/AChep/keyguard-app/tree/ef84e290665277866adcb7f061824de06f43ef9c) and [Monica `5ef2f3a`](https://github.com/Monica-Pass/Monica/tree/5ef2f3a64b53094351210f1e316fbab51852708e). Run `python tools/verify_android_cxf_open.py` for the retained XML; replay the source inspection with `python tools/audit_android_cxf_open.py --keyguard <pinned-keyguard-checkout> --monica <pinned-monica-checkout> --output <report.json>`.
 
