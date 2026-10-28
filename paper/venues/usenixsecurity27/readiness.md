@@ -530,7 +530,9 @@ compiló el texto final en seis páginas U.S. letter; inspeccioné las páginas
 cinco y seis. SHA-256 de `compiled/main.pdf`:
 `8b76cd698610f7d10a350bd1f6e814b0f06dff25b20723c39f4c10a603640bb5`.
 
-## Avance del 26 de octubre: auditoría Android CXF abierta
+## Avance del 26 de octubre: auditoría Android CXF de código visible
+
+Keyguard publica código inspeccionable, pero su licencia comercial no es de código abierto. Monica sí es de código abierto. La auditoría compara rutas visibles; no presupone licencias equivalentes.
 
 Se fijaron revisiones de Keyguard y Monica y se cotejaron sus rutas de
 importación de passkeys con tres XML originales de sus propios CI: 62 pruebas
