@@ -29,13 +29,10 @@ for entry in "boveda:$boveda_pkg" "monica:$monica_pkg"; do
   adb shell am start -W -n "$pkg/$activity" > "$out/$label-launch.txt"
   sleep 5
   adb shell pidof "$pkg" > "$out/$label-pid.txt"
-  focus=$(adb shell dumpsys window windows | grep 'mCurrentFocus=' | tail -n1)
-  printf '%s\n' "$focus" > "$out/$label-focus.txt"
   adb shell uiautomator dump /sdcard/window.xml
   adb pull /sdcard/window.xml "$out/$label-window.xml"
   adb shell screencap -p /sdcard/window.png
   adb pull /sdcard/window.png "$out/$label-window.png"
-  echo "$focus" | grep -F "$pkg"
 done
 
 export EMULATOR_API="$(adb shell getprop ro.build.version.sdk | tr -d '\r')"
@@ -44,6 +41,12 @@ python3 - <<'PY'
 import json
 import os
 from pathlib import Path
+from xml.etree import ElementTree
+
+for label, package in (("boveda", "com.jlnavas3.bovedalocal"), ("monica", "takagi.ru.monica")):
+    hierarchy = ElementTree.parse(Path("tmp/android-cxf-open-pair-smoke") / f"{label}-window.xml").getroot()
+    visible_packages = {node.get("package") for node in hierarchy.iter("node")}
+    assert package in visible_packages, f"{label} UI is not visible: {sorted(visible_packages)}"
 
 result = {
     "status": "OPEN_PAIR_INSTALL_LAUNCH_PASS",
