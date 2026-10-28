@@ -29,8 +29,16 @@ for entry in "boveda:$boveda_pkg" "monica:$monica_pkg"; do
   adb shell am start -W -n "$pkg/$activity" > "$out/$label-launch.txt"
   sleep 5
   adb shell pidof "$pkg" > "$out/$label-pid.txt"
-  adb shell uiautomator dump /sdcard/window.xml
-  adb pull /sdcard/window.xml "$out/$label-window.xml"
+  for attempt in 1 2 3 4 5; do
+    adb shell uiautomator dump /sdcard/window.xml
+    adb pull /sdcard/window.xml "$out/$label-window.xml"
+    if grep -Fq "package=\"$pkg\"" "$out/$label-window.xml"; then
+      printf '%s\n' "$attempt" > "$out/$label-ui-attempts.txt"
+      break
+    fi
+    sleep 3
+  done
+  grep -Fq "package=\"$pkg\"" "$out/$label-window.xml"
   adb shell screencap -p /sdcard/window.png
   adb pull /sdcard/window.png "$out/$label-window.png"
 done
@@ -59,11 +67,13 @@ result = {
         "package": "com.jlnavas3.bovedalocal",
         "release": "v1.11.4",
         "apk_sha256": "5746092a43176e6a9e92b78a5562dc8dcd016c7007a9594f1d13f76b5d1e7d7e",
+        "ui_probe_attempts": int(Path("tmp/android-cxf-open-pair-smoke/boveda-ui-attempts.txt").read_text()),
     },
     "monica": {
         "package": "takagi.ru.monica",
         "source_commit": "5ef2f3a64b53094351210f1e316fbab51852708e",
         "apk_sha256": "1ad65e8d1bf2354ed09fddfd3bd084e0aa1f67da69b7f99cdf9358dfa7f2e8f8",
+        "ui_probe_attempts": int(Path("tmp/android-cxf-open-pair-smoke/monica-ui-attempts.txt").read_text()),
     },
 }
 assert result["android_api"] >= 34

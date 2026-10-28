@@ -8,6 +8,7 @@ on:
     paths:
       - .github/workflows/android-cxf-open-pair-onboard-probe.yml
       - tools/android_cxf_open_pair_onboard_probe.sh
+      - tools/android_cxf_open_pair_smoke.sh
 
 permissions:
   contents: read
