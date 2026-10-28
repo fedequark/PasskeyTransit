@@ -3,7 +3,8 @@ set -euo pipefail
 
 out=tmp/android-cxf-open-pair-onboard-probe
 mkdir -p "$out"
-synthetic_password=probe123456789
+synthetic_boveda_password=probe123456789
+synthetic_monica_password=777777777777
 
 capture() {
   label=$1
@@ -34,6 +35,18 @@ PY
   adb shell input tap "$x" "$y"
 }
 
+assert_visible_password() {
+  file=$1
+  expected=$2
+  python3 - "$file" "$expected" <<'PY'
+import sys
+from xml.etree import ElementTree
+root = ElementTree.parse(sys.argv[1]).getroot()
+labels = {node.get("text") for node in root.iter("node")}
+assert sys.argv[2] in labels, "ADB text input did not match the synthetic value"
+PY
+}
+
 adb shell am start -W -n com.jlnavas3.bovedalocal/.ui.MainActivity > "$out/boveda-launch.txt"
 sleep 3
 capture boveda-before
@@ -41,11 +54,11 @@ tap_text "$out/boveda-before.xml" 'Crear mi bóveda'
 sleep 3
 capture boveda-after-create-tap
 tap_text "$out/boveda-after-create-tap.xml" 'Contraseña maestra (protegido)'
-adb shell input text "$synthetic_password"
+adb shell input text "$synthetic_boveda_password"
 adb shell input keyevent 4
 capture boveda-after-first-password
 tap_text "$out/boveda-after-first-password.xml" 'Repite la contraseña (protegido)'
-adb shell input text "$synthetic_password"
+adb shell input text "$synthetic_boveda_password"
 adb shell input keyevent 4
 capture boveda-before-forge
 tap_text "$out/boveda-before-forge.xml" 'Forjar la bóveda'
@@ -54,25 +67,30 @@ capture boveda-after-forge
 tap_text "$out/boveda-after-forge.xml" 'Omitir por ahora'
 sleep 5
 capture boveda-after-skip
+tap_text "$out/boveda-after-skip.xml" 'Ahora no'
+sleep 5
+capture boveda-after-manager-prompt
 
 adb shell am start -W -n takagi.ru.monica/.MainActivity > "$out/monica-launch.txt"
 sleep 3
 capture monica-before
 tap_text "$out/monica-before.xml" 'Master Password'
-adb shell input text "$synthetic_password"
+adb shell input text "$synthetic_monica_password"
 adb shell input keyevent 4
 capture monica-after-input
 tap_text "$out/monica-after-input.xml" 'Show password'
 capture monica-first-visible
+assert_visible_password "$out/monica-first-visible.xml" "$synthetic_monica_password"
 tap_text "$out/monica-first-visible.xml" 'Set Up Password'
 sleep 3
 capture monica-after-setup-tap
 tap_text "$out/monica-after-setup-tap.xml" 'Confirm Master Password'
-adb shell input text "$synthetic_password"
+adb shell input text "$synthetic_monica_password"
 adb shell input keyevent 4
 capture monica-before-confirm
 tap_text "$out/monica-before-confirm.xml" 'Show password'
 capture monica-confirm-visible
+assert_visible_password "$out/monica-confirm-visible.xml" "$synthetic_monica_password"
 tap_text "$out/monica-confirm-visible.xml" 'Confirm'
 sleep 5
 capture monica-after-confirm
@@ -84,7 +102,7 @@ from xml.etree import ElementTree
 
 out = Path("tmp/android-cxf-open-pair-onboard-probe")
 screens = {}
-for label in ("boveda-before", "boveda-after-create-tap", "boveda-after-first-password", "boveda-before-forge", "boveda-after-forge", "boveda-after-skip", "monica-before", "monica-after-input", "monica-first-visible", "monica-after-setup-tap", "monica-before-confirm", "monica-confirm-visible", "monica-after-confirm"):
+for label in ("boveda-before", "boveda-after-create-tap", "boveda-after-first-password", "boveda-before-forge", "boveda-after-forge", "boveda-after-skip", "boveda-after-manager-prompt", "monica-before", "monica-after-input", "monica-first-visible", "monica-after-setup-tap", "monica-before-confirm", "monica-confirm-visible", "monica-after-confirm"):
     root = ElementTree.parse(out / f"{label}.xml").getroot()
     screens[label] = {
         "packages": sorted({node.get("package") for node in root.iter("node") if node.get("package")}),
