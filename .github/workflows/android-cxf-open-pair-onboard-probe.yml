@@ -1,0 +1,63 @@
+name: Open Android CXF pair onboarding probe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/android-cxf-open-pair-onboard-probe.yml
+      - tools/android_cxf_open_pair_onboard_probe.sh
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+      - name: Fetch pinned Boveda Local APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p tmp
+          if ! curl --fail --location --retry 3 --retry-all-errors \
+              https://github.com/jlnavas3/boveda/releases/download/v1.11.4/boveda-local-1.11.4-x86_64.apk \
+              --output tmp/boveda-v1.11.4-x86_64.apk; then
+            gh api -H 'Accept: application/octet-stream' \
+              repos/jlnavas3/boveda/releases/assets/641918786 \
+              > tmp/boveda-v1.11.4-x86_64.apk
+          fi
+          echo '5746092a43176e6a9e92b78a5562dc8dcd016c7007a9594f1d13f76b5d1e7d7e  tmp/boveda-v1.11.4-x86_64.apk' | sha256sum --check
+      - uses: actions/download-artifact@v4
+        with:
+          name: monica-x86_64-debug
+          repository: fedequark/PasskeyTransit
+          run-id: 40371271466
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: tmp
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis_playstore
+          arch: x86_64
+          profile: pixel_7
+          disable-animations: true
+          script: bash tools/android_cxf_open_pair_smoke.sh && bash tools/android_cxf_open_pair_onboard_probe.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-cxf-open-pair-onboard-probe
+          path: |
+            tmp/android-cxf-open-pair-smoke
+            tmp/android-cxf-open-pair-onboard-probe
+          if-no-files-found: ignore
+          retention-days: 14
