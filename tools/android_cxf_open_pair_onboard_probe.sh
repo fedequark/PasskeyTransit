@@ -8,15 +8,27 @@ synthetic_monica_password=777777777777
 
 capture() {
   label=$1
-  adb shell uiautomator dump /sdcard/window.xml
-  adb pull /sdcard/window.xml "$out/$label.xml"
-  python3 - "$out/$label.xml" "$label" <<'PY'
+  for attempt in 1 2 3; do
+    adb shell uiautomator dump /sdcard/window.xml
+    adb pull /sdcard/window.xml "$out/$label.xml"
+    if python3 - "$out/$label.xml" "$label" <<'PY'
 import sys
 from xml.etree import ElementTree
 expected = "com.jlnavas3.bovedalocal" if sys.argv[2].startswith("boveda-") else "takagi.ru.monica"
 packages = {node.get("package") for node in ElementTree.parse(sys.argv[1]).iter("node")}
 assert expected in packages, f"Unexpected foreground package for {sys.argv[2]}: {packages}"
 PY
+    then
+      return 0
+    fi
+    if grep -Fq "isn't responding" "$out/$label.xml" && grep -Fq 'text="Wait"' "$out/$label.xml"; then
+      tap_text "$out/$label.xml" 'Wait'
+      sleep 10
+    else
+      sleep 3
+    fi
+  done
+  return 1
 }
 
 capture_system() {
