@@ -47,6 +47,14 @@ assert sys.argv[2] in labels, "ADB text input did not match the synthetic value"
 PY
 }
 
+type_serially() {
+  value=$1
+  for ((index=0; index<${#value}; index++)); do
+    adb shell input text "${value:index:1}"
+    sleep 0.1
+  done
+}
+
 adb shell am start -W -n com.jlnavas3.bovedalocal/.ui.MainActivity > "$out/boveda-launch.txt"
 sleep 3
 capture boveda-before
@@ -54,13 +62,19 @@ tap_text "$out/boveda-before.xml" 'Crear mi bóveda'
 sleep 3
 capture boveda-after-create-tap
 tap_text "$out/boveda-after-create-tap.xml" 'Contraseña maestra (protegido)'
-adb shell input text "$synthetic_boveda_password"
+type_serially "$synthetic_boveda_password"
 adb shell input keyevent 4
 capture boveda-after-first-password
 tap_text "$out/boveda-after-first-password.xml" 'Repite la contraseña (protegido)'
-adb shell input text "$synthetic_boveda_password"
+type_serially "$synthetic_boveda_password"
 adb shell input keyevent 4
 capture boveda-before-forge
+python3 - "$out/boveda-before-forge.xml" <<'PY'
+import sys
+from xml.etree import ElementTree
+labels = {node.get("text") for node in ElementTree.parse(sys.argv[1]).iter("node")}
+assert "✓ Las contraseñas coinciden" in labels, "Bóveda master passwords differ"
+PY
 tap_text "$out/boveda-before-forge.xml" 'Forjar la bóveda'
 sleep 8
 capture boveda-after-forge
@@ -75,7 +89,7 @@ adb shell am start -W -n takagi.ru.monica/.MainActivity > "$out/monica-launch.tx
 sleep 3
 capture monica-before
 tap_text "$out/monica-before.xml" 'Master Password'
-adb shell input text "$synthetic_monica_password"
+type_serially "$synthetic_monica_password"
 adb shell input keyevent 4
 capture monica-after-input
 tap_text "$out/monica-after-input.xml" 'Show password'
@@ -85,7 +99,7 @@ tap_text "$out/monica-first-visible.xml" 'Set Up Password'
 sleep 3
 capture monica-after-setup-tap
 tap_text "$out/monica-after-setup-tap.xml" 'Confirm Master Password'
-adb shell input text "$synthetic_monica_password"
+type_serially "$synthetic_monica_password"
 adb shell input keyevent 4
 capture monica-before-confirm
 tap_text "$out/monica-before-confirm.xml" 'Show password'
