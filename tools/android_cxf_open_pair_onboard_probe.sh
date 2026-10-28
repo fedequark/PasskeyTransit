@@ -19,6 +19,12 @@ assert expected in packages, f"Unexpected foreground package for {sys.argv[2]}: 
 PY
 }
 
+capture_system() {
+  label=$1
+  adb shell uiautomator dump /sdcard/window.xml
+  adb pull /sdcard/window.xml "$out/$label.xml"
+}
+
 tap_text() {
   file=$1
   sought=$2
@@ -159,6 +165,14 @@ capture monica-settings
 tap_text "$out/monica-settings.xml" 'Database & Backup'
 sleep 2
 capture monica-database-backup
+tap_text "$out/monica-database-backup.xml" 'Import Data'
+sleep 2
+capture monica-import-data
+if grep -Fq 'Choose source app' "$out/monica-import-data.xml"; then
+  tap_text "$out/monica-import-data.xml" 'Choose source app'
+  sleep 6
+  capture_system monica-after-choose-source
+fi
 
 python3 - <<'PY'
 import json
@@ -167,15 +181,16 @@ from xml.etree import ElementTree
 
 out = Path("tmp/android-cxf-open-pair-onboard-probe")
 screens = {}
-for label in ("boveda-before", "boveda-after-create-tap", "boveda-after-first-password", "boveda-before-forge", "boveda-after-forge", "boveda-after-skip", "boveda-after-manager-prompt", "boveda-new-entry-form", "boveda-entry-title", "boveda-entry-user", "boveda-entry-before-save", "boveda-after-entry-save", "boveda-more-menu", "boveda-export-menu", "boveda-export-dialog", "boveda-after-register-export", "boveda-register-final", "monica-before", "monica-after-input", "monica-first-visible", "monica-after-setup-tap", "monica-before-confirm", "monica-confirm-visible", "monica-after-confirm", "monica-after-wizard-skip", "monica-settings", "monica-database-backup"):
+labels = ("boveda-before", "boveda-after-create-tap", "boveda-after-first-password", "boveda-before-forge", "boveda-after-forge", "boveda-after-skip", "boveda-after-manager-prompt", "boveda-new-entry-form", "boveda-entry-title", "boveda-entry-user", "boveda-entry-before-save", "boveda-after-entry-save", "boveda-more-menu", "boveda-export-menu", "boveda-export-dialog", "boveda-after-register-export", "boveda-register-final", "monica-before", "monica-after-input", "monica-first-visible", "monica-after-setup-tap", "monica-before-confirm", "monica-confirm-visible", "monica-after-confirm", "monica-after-wizard-skip", "monica-settings", "monica-database-backup", "monica-import-data")
+for label in labels + (("monica-after-choose-source",) if (out / "monica-after-choose-source.xml").exists() else ()):
     root = ElementTree.parse(out / f"{label}.xml").getroot()
     screens[label] = {
         "packages": sorted({node.get("package") for node in root.iter("node") if node.get("package")}),
         "labels": [value for node in root.iter("node") if (value := node.get("text") or node.get("content-desc"))][:40],
     }
 result = {
-    "status": "IMPORT_NAVIGATION_PROBE_CAPTURED",
-    "scope": "Synthetic local vault and basic-auth setup, Bóveda export-registration attempt, Monica settings exploration. Registration and import require inspection of captured UI. No CXF transfer, RP assertion, or PRF result.",
+    "status": "IMPORT_REQUEST_PROBE_CAPTURED",
+    "scope": "Synthetic local vault and basic-auth setup, Bóveda export-registration attempt, Monica import-request exploration. Registration, source availability and import require inspection of captured UI. No claimed CXF transfer, RP assertion, or PRF result.",
     "screens": screens,
 }
 (out / "report.json").write_text(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
