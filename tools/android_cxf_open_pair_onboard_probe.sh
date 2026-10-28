@@ -84,6 +84,9 @@ capture boveda-after-skip
 tap_text "$out/boveda-after-skip.xml" 'Ahora no'
 sleep 5
 capture boveda-after-manager-prompt
+tap_text "$out/boveda-after-manager-prompt.xml" 'Nueva entrada'
+sleep 3
+capture boveda-new-entry-form
 
 adb shell am start -W -n takagi.ru.monica/.MainActivity > "$out/monica-launch.txt"
 sleep 3
@@ -108,6 +111,9 @@ assert_visible_password "$out/monica-confirm-visible.xml" "$synthetic_monica_pas
 tap_text "$out/monica-confirm-visible.xml" 'Confirm'
 sleep 5
 capture monica-after-confirm
+tap_text "$out/monica-after-confirm.xml" 'Skip'
+sleep 4
+capture monica-after-wizard-skip
 
 python3 - <<'PY'
 import json
@@ -116,7 +122,7 @@ from xml.etree import ElementTree
 
 out = Path("tmp/android-cxf-open-pair-onboard-probe")
 screens = {}
-for label in ("boveda-before", "boveda-after-create-tap", "boveda-after-first-password", "boveda-before-forge", "boveda-after-forge", "boveda-after-skip", "boveda-after-manager-prompt", "monica-before", "monica-after-input", "monica-first-visible", "monica-after-setup-tap", "monica-before-confirm", "monica-confirm-visible", "monica-after-confirm"):
+for label in ("boveda-before", "boveda-after-create-tap", "boveda-after-first-password", "boveda-before-forge", "boveda-after-forge", "boveda-after-skip", "boveda-after-manager-prompt", "boveda-new-entry-form", "monica-before", "monica-after-input", "monica-first-visible", "monica-after-setup-tap", "monica-before-confirm", "monica-confirm-visible", "monica-after-confirm", "monica-after-wizard-skip"):
     root = ElementTree.parse(out / f"{label}.xml").getroot()
     screens[label] = {
         "packages": sorted({node.get("package") for node in root.iter("node") if node.get("package")}),
