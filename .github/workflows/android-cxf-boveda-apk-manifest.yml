@@ -2,6 +2,11 @@ name: Boveda Android CXF APK manifest audit
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/android-cxf-boveda-apk-manifest.yml
 
 permissions:
   contents: read
