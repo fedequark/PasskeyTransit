@@ -1,0 +1,41 @@
+name: Boveda Android CXF APK manifest audit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Fetch pinned Boveda Local APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p tmp/android-cxf-boveda-apk-manifest
+          apk=tmp/android-cxf-boveda-apk-manifest/boveda-local-1.11.4-x86_64.apk
+          if ! curl --fail --location --retry 3 --retry-all-errors \
+              https://github.com/jlnavas3/boveda/releases/download/v1.11.4/boveda-local-1.11.4-x86_64.apk \
+              --output "$apk"; then
+            gh api -H 'Accept: application/octet-stream' \
+              repos/jlnavas3/boveda/releases/assets/641918786 > "$apk"
+          fi
+          echo '5746092a43176e6a9e92b78a5562dc8dcd016c7007a9594f1d13f76b5d1e7d7e  tmp/android-cxf-boveda-apk-manifest/boveda-local-1.11.4-x86_64.apk' | sha256sum --check
+      - name: Read merged Android manifest
+        run: |
+          out=tmp/android-cxf-boveda-apk-manifest
+          aapt=$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -n1)
+          test -x "$aapt"
+          "$aapt" dump xmltree "$out/boveda-local-1.11.4-x86_64.apk" AndroidManifest.xml > "$out/manifest.txt"
+          grep -E 'ProviderEventsMetadataHolder|PROVIDER_EVENTS_API_PROVIDER_KEY|ProviderEventsApiProviderPlayServices|ImportExportFileProvider' "$out/manifest.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: boveda-cxf-manifest
+          path: tmp/android-cxf-boveda-apk-manifest/manifest.txt
+          if-no-files-found: ignore
+          retention-days: 14
