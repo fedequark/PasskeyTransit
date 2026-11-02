@@ -37,10 +37,19 @@ jobs:
           test -x "$aapt"
           "$aapt" dump xmltree "$out/boveda-local-1.11.4-x86_64.apk" AndroidManifest.xml > "$out/manifest.txt"
           grep -E 'ProviderEventsMetadataHolder|PROVIDER_EVENTS_API_PROVIDER_KEY|ProviderEventsApiProviderPlayServices|ImportExportFileProvider' "$out/manifest.txt"
+      - name: Verify retained manifest evidence
+        run: |
+          python tools/verify_boveda_cxf_manifest.py \
+            --manifest tmp/android-cxf-boveda-apk-manifest/manifest.txt \
+            --output tmp/android-cxf-boveda-apk-manifest/report.json
+          cmp tmp/android-cxf-boveda-apk-manifest/report.json \
+            experiments/android_cxf_open_pair_apk_manifest/run_41515980521/report.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: boveda-cxf-manifest
-          path: tmp/android-cxf-boveda-apk-manifest/manifest.txt
+          path: |
+            tmp/android-cxf-boveda-apk-manifest/manifest.txt
+            tmp/android-cxf-boveda-apk-manifest/report.json
           if-no-files-found: ignore
           retention-days: 14

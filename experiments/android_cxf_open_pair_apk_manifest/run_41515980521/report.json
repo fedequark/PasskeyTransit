@@ -1,0 +1,13 @@
+{
+  "apk_sha256": "5746092a43176e6a9e92b78a5562dc8dcd016c7007a9594f1d13f76b5d1e7d7e",
+  "github_run": 41515980521,
+  "manifest_sha256": "f34180acb75f6ebc831735610166f6f809775efe682134c67953df17b14579e2",
+  "metadata_holder_service": "androidx.credentials.providerevents.playservices.ProviderEventsMetadataHolder",
+  "provider_implementation": "androidx.credentials.providerevents.playservices.ProviderEventsApiProviderPlayServices",
+  "provider_key": "androidx.credentials.providerevents.PROVIDER_EVENTS_API_PROVIDER_KEY",
+  "scope": "Merged manifest from pinned B\u00f3veda Local v1.11.4 x86_64 APK; does not prove runtime availability or successful transfer.",
+  "service_enabled": true,
+  "service_exported": false,
+  "status": "PROVIDER_EVENTS_PLAY_SERVICES_METADATA_PRESENT",
+  "transfer_file_provider_present": true
+}
