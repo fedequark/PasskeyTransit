@@ -1,0 +1,33 @@
+name: Independent CXF format check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/external-cxf-kit.yml
+      - tools/run_external_cxf_kit.py
+      - experiments/external_cxf_kit/report.json
+      - experiments/cxporter_cxp_open/vectors/cxporter-poc2-v1.json
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Fetch pinned independent validator
+        run: |
+          git clone --quiet --filter=blob:none https://github.com/pengshuhao62-lang/credential-exchange-conformance-kit.git tmp/cxf-kit-external
+          git -C tmp/cxf-kit-external checkout --quiet 94d49c95c12ba28e1058e290010c0826820fcea5
+      - name: Verify baseline and two negative controls
+        run: |
+          python tools/run_external_cxf_kit.py --kit tmp/cxf-kit-external --output tmp/external-cxf-kit-report.json
+          cmp tmp/external-cxf-kit-report.json experiments/external_cxf_kit/report.json

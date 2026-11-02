@@ -1,0 +1,33 @@
+{
+  "scope": "Independent structural CXF validation of a project-authored synthetic fixture; no CXP transfer, vault import, RP assertion, or cryptographic key validation",
+  "kit": "pengshuhao62-lang/credential-exchange-conformance-kit",
+  "kit_commit": "94d49c95c12ba28e1058e290010c0826820fcea5",
+  "profile": "cxf-1.0-rd-20250313",
+  "vector_sha256": "998fa5770295f38d537cdb36fcfbff41358c7a87504d9df37ab2ec8ff97c5e60",
+  "baseline": {
+    "valid": true,
+    "credential_types": [
+      "passkey"
+    ],
+    "credential_count": 1,
+    "findings": []
+  },
+  "missing_version_control": {
+    "rejected": true,
+    "findings": [
+      "CXF005"
+    ]
+  },
+  "changed_key_control": {
+    "classification": "semantic_loss",
+    "changed_values": 1,
+    "findings": [
+      "CXF102"
+    ]
+  },
+  "canonical_roundtrip": {
+    "classification": "passed",
+    "comparable_values": 28,
+    "preserved_values": 28
+  }
+}
