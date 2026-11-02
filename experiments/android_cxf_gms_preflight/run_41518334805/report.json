@@ -1,0 +1,7 @@
+{
+  "provider": "AndroidX providerevents-play-services 1.0.0-beta01",
+  "minimum_gms_version_code": 253800000,
+  "installed_gms_version_code": 242335041,
+  "eligible_for_provider_events_ui_probe": false,
+  "classification": "NOT_EVALUABLE_GMS_BELOW_MINIMUM"
+}
