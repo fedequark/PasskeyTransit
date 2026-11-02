@@ -9,6 +9,7 @@ on:
       - .github/workflows/android-cxf-open-pair-onboard-probe.yml
       - tools/android_cxf_open_pair_onboard_probe.sh
       - tools/android_cxf_open_pair_smoke.sh
+      - tools/android_cxf_gms_preflight.py
 
 permissions:
   contents: read
@@ -52,7 +53,14 @@ jobs:
           arch: x86_64
           profile: pixel_7
           disable-animations: true
-          script: bash tools/android_cxf_open_pair_smoke.sh && bash tools/android_cxf_open_pair_onboard_probe.sh
+          script: |
+            if python tools/android_cxf_gms_preflight.py --output tmp/android-cxf-gms-preflight/report.json; then
+              bash tools/android_cxf_open_pair_smoke.sh && bash tools/android_cxf_open_pair_onboard_probe.sh
+            else
+              code=$?
+              if [ "$code" -ne 2 ]; then exit "$code"; fi
+              echo 'Provider-events UI probe skipped: installed Google Play services is below AndroidX minimum.'
+            fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -60,5 +68,6 @@ jobs:
           path: |
             tmp/android-cxf-open-pair-smoke
             tmp/android-cxf-open-pair-onboard-probe
+            tmp/android-cxf-gms-preflight
           if-no-files-found: ignore
           retention-days: 14
