@@ -3,7 +3,7 @@
   "kit": "pengshuhao62-lang/credential-exchange-conformance-kit",
   "kit_commit": "94d49c95c12ba28e1058e290010c0826820fcea5",
   "profile": "cxf-1.0-rd-20250313",
-  "vector_sha256": "998fa5770295f38d537cdb36fcfbff41358c7a87504d9df37ab2ec8ff97c5e60",
+  "cxf_canonical_sha256": "a0952dcc4e81017e691e4102b9d86823e87c66f6d661ec8fb7809ee6a93e23a7",
   "baseline": {
     "valid": true,
     "credential_types": [

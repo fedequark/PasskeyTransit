@@ -41,8 +41,7 @@ def main() -> None:
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=kit, text=True).strip()
     if commit != PIN:
         raise RuntimeError(f"Unexpected cxf-kit commit: {commit}")
-    vector_bytes = VECTOR.read_bytes()
-    vector = json.loads(vector_bytes)
+    vector = json.loads(VECTOR.read_text(encoding="utf-8"))
     source = vector["cxf"]
     credential = source["accounts"][0]["items"][0]["credentials"][0]
     if credential["type"] != "passkey" or source["accounts"][0]["items"][0]["title"] != "Synthetic User 91":
@@ -80,7 +79,7 @@ def main() -> None:
         "kit": "pengshuhao62-lang/credential-exchange-conformance-kit",
         "kit_commit": commit,
         "profile": valid["profile"],
-        "vector_sha256": hashlib.sha256(vector_bytes).hexdigest(),
+        "cxf_canonical_sha256": hashlib.sha256(json.dumps(source, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest(),
         "baseline": {"valid": valid["valid"], "credential_types": valid["credential_types"], "credential_count": valid["credential_count"], "findings": [f["code"] for f in valid["findings"]]},
         "missing_version_control": {"rejected": invalid_code != 0 and not invalid_result["valid"], "findings": [f["code"] for f in invalid_result["findings"]]},
         "changed_key_control": {"classification": change["classification"], "changed_values": change["summary"]["changed_values"], "findings": [f["code"] for f in change["findings"]]},
