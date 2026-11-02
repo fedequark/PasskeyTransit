@@ -85,10 +85,18 @@ same-provider functional continuity, not preservation of the original CXF
 seeds or CXP interoperability. See `docs/PHASE_16.md`.
 
 Android's documented provider-transfer API passes CXF JSON through a
-platform-brokered Content URI. An eventual Android app-to-app result must be
-classified separately from the public CXP Working Draft ZIP/JWE wire claim;
-neither has yet been measured here. See
-`docs/CXP_PROVIDER_FEASIBILITY_2026.md`.
+platform-brokered Content URI. Our Bóveda Local–Monica emulator attempt reached
+app setup but not provider delivery or import. In the versioned run, installed
+Play services was below the AndroidX provider-events minimum; the Bóveda APK
+contained the required merged provider metadata. The Android app-to-app outcome
+remains `NOT_EVALUABLE`, separately from the public CXP Working Draft ZIP/JWE
+wire claim. See `docs/ANDROID_CXF_OPEN_PAIR_SMOKE.md`.
+
+An independent CXF structural validator accepted a project-authored synthetic
+passkey document, rejected a missing-version control, and detected an altered
+key field. This is a format check only; it supplies no provider export/import,
+cryptographic-key validation, or RP assertion. See
+`experiments/external_cxf_kit/report.json`.
 
 Phase 17 uses Proton Pass 2.0.0's official prebuilt WASM as an independent
 software CXF/PRF control. In two synthetic repetitions, both HMAC seed fields
