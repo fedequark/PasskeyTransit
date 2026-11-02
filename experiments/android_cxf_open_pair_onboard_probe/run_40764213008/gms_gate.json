@@ -1,0 +1,20 @@
+{
+  "android_build_fingerprint": "google/sdk_gphone64_x86_64/emu64xa:15/AE3A.240806.036/12592187:user/release-keys",
+  "android_ci_run": 40764213008,
+  "androidx_minimum_gms_version_code": 253800000,
+  "inference": "The Play-services provider reports unavailable below its minimum; AndroidX can then emit the observed no-provider-dependencies message. This sufficient gate does not prove APK packaging is correct or rule out other failures on newer devices.",
+  "observed_gms_version_code": 242335041,
+  "observed_gms_version_name": "24.23.35",
+  "scope": "Availability gate for the Play-services provider in AndroidX 1.0.0-beta01 on CI run 40764213008; not a CXF transfer or a diagnosis of earlier runs without GMS version evidence.",
+  "source_jars": {
+    "providerevents": {
+      "sha256": "faacda19efec00eff12c2658b2a955d40920a596a82e9d5f2676986b6e8fce09",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/credentials/providerevents/providerevents/1.0.0-beta01/providerevents-1.0.0-beta01-sources.jar"
+    },
+    "providerevents-play-services": {
+      "sha256": "59589da41ca1402c1fcb341a33b0f7d6e566b82db71c456a78d82a350a608ec9",
+      "url": "https://dl.google.com/dl/android/maven2/androidx/credentials/providerevents/providerevents-play-services/1.0.0-beta01/providerevents-play-services-1.0.0-beta01-sources.jar"
+    }
+  },
+  "status": "GMS_BELOW_ANDROIDX_PROVIDER_EVENTS_MINIMUM"
+}

@@ -1,0 +1,39 @@
+name: Android CXF Play-services availability gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/usenix27-pdf
+    paths:
+      - .github/workflows/android-cxf-gms-gate.yml
+      - tools/verify_android_cxf_gms_gate.py
+      - experiments/android_cxf_open_pair_onboard_probe/run_40764213008/emulator-report.json
+      - experiments/android_cxf_open_pair_onboard_probe/run_40764213008/gms_gate.json
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Fetch pinned official AndroidX source JARs
+        run: |
+          mkdir -p tmp
+          for name in providerevents providerevents-play-services; do
+            curl --fail --location --retry 3 --retry-all-errors \
+              "https://dl.google.com/dl/android/maven2/androidx/credentials/providerevents/$name/1.0.0-beta01/$name-1.0.0-beta01-sources.jar" \
+              --output "tmp/$name-1.0.0-beta01-sources.jar"
+          done
+      - name: Recompute and compare gate report
+        run: |
+          python tools/verify_android_cxf_gms_gate.py \
+            --source-dir tmp --output tmp/gms_gate.json
+          cmp tmp/gms_gate.json \
+            experiments/android_cxf_open_pair_onboard_probe/run_40764213008/gms_gate.json
